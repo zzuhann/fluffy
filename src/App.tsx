@@ -1,9 +1,9 @@
-import app from "./utils/firebase";
 import store from "../src/store/configureStore";
 import { Provider, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
+import Header from "./component/Header";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -17,7 +17,7 @@ function App() {
     <Provider store={store}>
       <Reset />
       <GlobalStyle />
-      {/* <Header /> */}
+      <Header />
       <Outlet />
       {/* <Footer /> */}
     </Provider>

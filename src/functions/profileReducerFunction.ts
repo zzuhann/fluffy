@@ -21,8 +21,29 @@ export function setPassword(password: string) {
   };
 }
 
+export function setImage(img: object) {
+  return {
+    type: ActionType.setProfileImage,
+    payload: { img },
+  };
+}
+
 export function clearProfileInfo() {
   return {
     type: ActionType.clearProfileInfo,
+  };
+}
+
+export function checkIfLogged(isLogged: boolean) {
+  return {
+    type: ActionType.checkIfLogged,
+    payload: { isLogged },
+  };
+}
+
+export function setProfileUid(uid: string) {
+  return {
+    type: ActionType.setProfileUid,
+    payload: { uid },
   };
 }
