@@ -4,9 +4,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { auth, db, storage } from "../../utils/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { auth, uploadImage, db } from "../../utils/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
 import {
   setName,
   setEmail,
@@ -62,31 +62,8 @@ const ProfileLoginRegister = () => {
     createUserWithEmailAndPassword(auth, profile.email, profile.password).then(
       (response) => {
         const userUid = response.user.uid;
-        const storageRef = ref(storage, `images/${response.user.uid}`);
-        const uploadTask = uploadBytesResumable(
-          storageRef,
-          profile.img as File
-        );
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            console.log("upload");
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then(
-              async (downloadURL) => {
-                await setDoc(doc(db, "memberProfiles", userUid), {
-                  name: profile.name,
-                  img: downloadURL,
-                });
-              }
-            );
-            dispatch(afterRegisterSaveName());
-          }
-        );
+        uploadImage(userUid, profile.img as File, profile.name);
+        dispatch(afterRegisterSaveName());
         window.alert("註冊成功！");
       }
     );
@@ -116,7 +93,6 @@ const ProfileLoginRegister = () => {
   function signOutProfile() {
     signOut(auth)
       .then(() => {
-        console.log("signout");
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
       })

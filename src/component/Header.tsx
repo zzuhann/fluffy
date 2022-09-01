@@ -6,12 +6,12 @@ import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { setName, setImage } from "../functions/profileReducerFunction";
+
 import {
   checkIfLogged,
   targetRegisterOrLogin,
-  setName,
   setProfileUid,
-  setImage,
 } from "../functions/profileReducerFunction";
 import { Profile } from "../reducers/profile";
 

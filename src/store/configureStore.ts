@@ -1,5 +1,5 @@
 import { createStore } from "redux";
-import ProfileReducer from "../reducers/profile";
+import reducer from "../reducers/index";
 
-const store = createStore(ProfileReducer);
+const store = createStore(reducer);
 export default store;
