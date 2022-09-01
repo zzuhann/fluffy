@@ -21,7 +21,7 @@ export function setPassword(password: string) {
   };
 }
 
-export function setImage(img: object) {
+export function setImage(img: File | string) {
   return {
     type: ActionType.setProfileImage,
     payload: { img },
@@ -45,5 +45,18 @@ export function setProfileUid(uid: string) {
   return {
     type: ActionType.setProfileUid,
     payload: { uid },
+  };
+}
+
+export function targetRegisterOrLogin(target: string) {
+  return {
+    type: ActionType.clickLoginOrRegister,
+    payload: { target },
+  };
+}
+
+export function afterRegisterSaveName() {
+  return {
+    type: ActionType.afterRegisterSaveName,
   };
 }

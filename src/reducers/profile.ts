@@ -6,6 +6,8 @@ export enum ActionType {
   clearProfileInfo,
   checkIfLogged,
   setProfileUid,
+  clickLoginOrRegister,
+  afterRegisterSaveName,
 }
 
 interface setProfileName {
@@ -25,7 +27,7 @@ interface setProfilePassword {
 
 interface setProfileImage {
   type: ActionType.setProfileImage;
-  payload: { img: object };
+  payload: { img: File | string };
 }
 
 interface clearProfileInfo {
@@ -42,6 +44,15 @@ interface setProfileUid {
   payload: { uid: string };
 }
 
+interface clickLoginOrRegister {
+  type: ActionType.clickLoginOrRegister;
+  payload: { target: string };
+}
+
+interface afterRegisterSaveName {
+  type: ActionType.afterRegisterSaveName;
+}
+
 export type ProfileActions =
   | setProfileName
   | setProfileEmail
@@ -49,13 +60,15 @@ export type ProfileActions =
   | setProfileImage
   | clearProfileInfo
   | checkIsLogged
-  | setProfileUid;
+  | setProfileUid
+  | clickLoginOrRegister
+  | afterRegisterSaveName;
 
 export type Profile = {
   name: string;
   password: string;
   email: string;
-  img: object;
+  img: string | File;
   isLogged: boolean;
   clickLoginOrRegister: string;
   uid: string;
@@ -65,7 +78,7 @@ const initialState: Profile = {
   name: "",
   password: "",
   email: "",
-  img: {},
+  img: "",
   isLogged: false,
   clickLoginOrRegister: "",
   uid: "",
@@ -92,10 +105,21 @@ const ProfileReducer = (
       return { ...state, isLogged: action.payload.isLogged };
     }
     case ActionType.clearProfileInfo: {
-      return { ...state, name: "", password: "", email: "", img: {} };
+      return { ...state, name: "", password: "", email: "", img: "" };
+    }
+    case ActionType.afterRegisterSaveName: {
+      return {
+        ...state,
+        password: "",
+        email: "",
+        img: "",
+      };
     }
     case ActionType.setProfileUid: {
       return { ...state, uid: action.payload.uid };
+    }
+    case ActionType.clickLoginOrRegister: {
+      return { ...state, clickLoginOrRegister: action.payload.target };
     }
     default:
       return state;

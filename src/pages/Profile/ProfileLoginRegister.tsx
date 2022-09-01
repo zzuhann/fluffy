@@ -2,132 +2,228 @@ import React from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
-import { auth, db } from "../../utils/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { auth, db, storage } from "../../utils/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {
   setName,
   setEmail,
   setPassword,
   setImage,
   clearProfileInfo,
+  targetRegisterOrLogin,
   checkIfLogged,
-  setProfileUid,
+  afterRegisterSaveName,
 } from "../../functions/profileReducerFunction";
 import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
-import { useEffect } from "react";
+import { useRef } from "react";
 import styled from "styled-components";
+
+const RegisterLoginWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  margin: 0 auto;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+`;
+
+const Label = styled.label``;
+
+const Input = styled.input``;
+
+const RegisterLoginBtn = styled.div`
+  width: 200px;
+  cursor: pointer;
+  align-self: center;
+  text-align: center;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
 
 const ProfileLoginRegister = () => {
   const profile = useSelector((state: Profile) => state);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(checkIfLogged(true));
-        dispatch(setProfileUid(user.uid));
-      } else {
-        dispatch(checkIfLogged(false));
-      }
-    });
-  }, []);
+  const imageRef = useRef<HTMLInputElement>(null);
 
   function createProfile() {
-    if (
-      !profile.name &&
-      !profile.email &&
-      !profile.password &&
-      Object.keys(profile.img).length === 0
-    ) {
+    if (!profile.name || !profile.email || !profile.password || !profile.img) {
       window.alert("請填寫好基本資料再進行註冊");
       return;
     }
 
     createUserWithEmailAndPassword(auth, profile.email, profile.password).then(
-      async (response) => {
-        await setDoc(doc(db, "memberProfiles", response.user.uid), {
-          name: profile.name,
-          img: profile.img,
-          //   上傳到storage 取用 url
-        });
+      (response) => {
+        const userUid = response.user.uid;
+        const storageRef = ref(storage, `images/${response.user.uid}`);
+        const uploadTask = uploadBytesResumable(
+          storageRef,
+          profile.img as File
+        );
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            console.log("upload");
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(
+              async (downloadURL) => {
+                await setDoc(doc(db, "memberProfiles", userUid), {
+                  name: profile.name,
+                  img: downloadURL,
+                });
+              }
+            );
+            dispatch(afterRegisterSaveName());
+          }
+        );
+        window.alert("註冊成功！");
       }
     );
-    dispatch(clearProfileInfo());
+    if (null !== imageRef.current) {
+      imageRef.current.value = "";
+    }
   }
 
   function logInProfile() {
     if (!profile.email && !profile.password) return;
     signInWithEmailAndPassword(auth, profile.email, profile.password).then(
-      (userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
+      async (userCredential) => {
+        window.alert("登入成功！");
+        dispatch(clearProfileInfo());
+        const docRef = doc(db, "memberProfiles", userCredential.user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          dispatch(setName(docSnap.data().name));
+          dispatch(setImage(docSnap.data().img));
+        } else {
+          console.log("No such document!");
+        }
       }
     );
-    dispatch(clearProfileInfo());
+  }
+
+  function signOutProfile() {
+    signOut(auth)
+      .then(() => {
+        console.log("signout");
+        dispatch(checkIfLogged(false));
+        dispatch(clearProfileInfo());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (
     <>
-      <form>
-        <label htmlFor="name">姓名</label>
-        <input
-          type="text"
-          id="name"
-          onChange={(e) => {
-            dispatch(setName(e.target.value));
-          }}
-        />
-        <label htmlFor="email">信箱</label>
-        <input
-          type="text"
-          id="email"
-          onChange={(e) => {
-            dispatch(setEmail(e.target.value));
-          }}
-        />
-        <label htmlFor="password">密碼</label>
-        <input
-          type="text"
-          id="password"
-          onChange={(e) => {
-            dispatch(setPassword(e.target.value));
-          }}
-        />
-        <label htmlFor="image">上傳個人圖片</label>
-        <input
-          type="file"
-          accept="image/*"
-          id="image"
-          onChange={(e) => {
-            if (!e.target.files) return;
-            dispatch(setImage(e.target.files[0]));
-          }}
-        />
-        <div onClick={() => createProfile()}>註冊</div>
-      </form>
-
-      <form>
-        <label htmlFor="email">信箱</label>
-        <input
-          type="text"
-          id="email"
-          onChange={(e) => {
-            dispatch(setEmail(e.target.value));
-          }}
-        />
-        <label htmlFor="password">密碼</label>
-        <input
-          type="text"
-          id="password"
-          onChange={(e) => {
-            dispatch(setPassword(e.target.value));
-          }}
-        />
-        <div onClick={() => logInProfile()}>登入</div>
-      </form>
+      {profile.isLogged ? (
+        <>
+          <div>已經登入</div>
+          <img src={profile.img as string} alt="" style={{ width: "200px" }} />
+          <RegisterLoginBtn onClick={() => signOutProfile()}>
+            登出
+          </RegisterLoginBtn>
+        </>
+      ) : profile.clickLoginOrRegister === "login" ? (
+        <RegisterLoginWrapper>
+          <InputContainer>
+            <Label htmlFor="email">信箱</Label>
+            <Input
+              type="text"
+              id="email"
+              onChange={(e) => {
+                dispatch(setEmail(e.target.value));
+              }}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Label htmlFor="password">密碼</Label>
+            <Input
+              type="text"
+              id="password"
+              onChange={(e) => {
+                dispatch(setPassword(e.target.value));
+              }}
+            />
+          </InputContainer>
+          <RegisterLoginBtn onClick={() => logInProfile()}>
+            登入
+          </RegisterLoginBtn>
+          <RegisterLoginBtn
+            onClick={() => dispatch(targetRegisterOrLogin("register"))}
+          >
+            尚未有帳號？進行註冊
+          </RegisterLoginBtn>
+        </RegisterLoginWrapper>
+      ) : (
+        <RegisterLoginWrapper>
+          <InputContainer>
+            <Label htmlFor="name">姓名</Label>
+            <Input
+              type="text"
+              id="name"
+              value={profile.name}
+              onChange={(e) => {
+                dispatch(setName(e.target.value));
+              }}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Label htmlFor="email">信箱</Label>
+            <Input
+              type="text"
+              id="email"
+              value={profile.email}
+              onChange={(e) => {
+                dispatch(setEmail(e.target.value));
+              }}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Label htmlFor="password">密碼</Label>
+            <Input
+              type="password"
+              id="password"
+              value={profile.password}
+              onChange={(e) => {
+                dispatch(setPassword(e.target.value));
+              }}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Label htmlFor="image">上傳個人圖片</Label>
+            <Input
+              type="file"
+              accept="image/*"
+              id="image"
+              ref={imageRef}
+              onChange={(e) => {
+                if (!e.target.files) return;
+                dispatch(setImage(e.target.files[0]));
+              }}
+            />
+          </InputContainer>
+          <RegisterLoginBtn onClick={() => createProfile()}>
+            註冊
+          </RegisterLoginBtn>
+          <RegisterLoginBtn
+            onClick={() => dispatch(targetRegisterOrLogin("login"))}
+          >
+            已經有帳號？進行登入
+          </RegisterLoginBtn>
+        </RegisterLoginWrapper>
+      )}
     </>
   );
 };
