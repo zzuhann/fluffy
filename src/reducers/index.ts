@@ -3,6 +3,6 @@ import ProfileReducer from "./profile";
 import DatingReducer from "./dating";
 
 export default combineReducers({
-  ProfileReducer,
-  DatingReducer,
+  profile: ProfileReducer,
+  dating: DatingReducer,
 });

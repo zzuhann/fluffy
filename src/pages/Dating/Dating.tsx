@@ -1,8 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import setting from "./setting.png";
 import styled from "styled-components";
-import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
+import {
+  setAllCardInfrontOfUser,
+  setUserKindPreference,
+  setUserLocationPreference,
+} from "../../functions/datingReducerFunction";
 import { Card, Dating } from "../../reducers/dating";
 
 const SettingPreference = styled.img`
@@ -115,8 +119,12 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
 };
 
 const Pairing: React.FC = () => {
-  const dating = useSelector((state: any) => state.DatingReducer);
+  const dating = useSelector<{ dating: Dating }>(
+    (state) => state.dating
+  ) as Dating;
   const dispatch = useDispatch();
+  const [preference, setPreference] = useState({ kind: "all", location: "0" });
+
   const area = [
     "臺北市",
     "新北市",
@@ -167,32 +175,92 @@ const Pairing: React.FC = () => {
         }
       });
   }, []);
-  function choosePreference(target: string) {
-    fetch(
-      `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_kind=${target}`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        const cards: Card[] = [];
-        for (let i = 0; i < 20; i++) {
-          cards.push({
-            id: res.Data[i].animal_id,
-            area: res.Data[i].animal_area_pkid,
-            shelterName: res.Data[i].animal_place,
-            shelterAddress: res.Data[i].shelter_address,
-            shelterTel: res.Data[i].shelter_tel,
-            kind: res.Data[i].animal_kind,
-            sex: res.Data[i].animal_sex,
-            color: res.Data[i].animal_colour,
-            sterilization: res.Data[i].animal_sterilization,
-            foundPlace: res.Data[i].animal_foundplace,
-            image: res.Data[i].album_file,
-          });
-          dispatch(setAllCardInfrontOfUser(cards));
-        }
-      });
+
+  useEffect(() => {
+    choosePreference();
+  }, [preference]);
+
+  function choosePreference() {
+    console.log(preference);
+    if (preference.kind !== "all" && preference.location !== "0") {
+      fetch(
+        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_area_pkid=${preference.location}&animal_kind=${preference.kind}`
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          const cards: Card[] = [];
+          for (let i = 0; i < 20; i++) {
+            cards.push({
+              id: res.Data[i]?.animal_id,
+              area: res.Data[i]?.animal_area_pkid,
+              shelterName: res.Data[i]?.animal_place,
+              shelterAddress: res.Data[i]?.shelter_address,
+              shelterTel: res.Data[i]?.shelter_tel,
+              kind: res.Data[i]?.animal_kind,
+              sex: res.Data[i]?.animal_sex,
+              color: res.Data[i]?.animal_colour,
+              sterilization: res.Data[i]?.animal_sterilization,
+              foundPlace: res.Data[i]?.animal_foundplace,
+              image: res.Data[i]?.album_file,
+            });
+            dispatch(setAllCardInfrontOfUser(cards));
+          }
+        });
+    } else if (preference.kind !== "all") {
+      fetch(
+        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_kind=${preference.kind}`
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          const cards: Card[] = [];
+          for (let i = 0; i < 20; i++) {
+            cards.push({
+              id: res.Data[i]?.animal_id,
+              area: res.Data[i]?.animal_area_pkid,
+              shelterName: res.Data[i]?.animal_place,
+              shelterAddress: res.Data[i]?.shelter_address,
+              shelterTel: res.Data[i]?.shelter_tel,
+              kind: res.Data[i]?.animal_kind,
+              sex: res.Data[i]?.animal_sex,
+              color: res.Data[i]?.animal_colour,
+              sterilization: res.Data[i]?.animal_sterilization,
+              foundPlace: res.Data[i]?.animal_foundplace,
+              image: res.Data[i]?.album_file,
+            });
+            dispatch(setAllCardInfrontOfUser(cards));
+          }
+        });
+    } else if (preference.location !== "0") {
+      fetch(
+        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_area_pkid=${preference.location}`
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          const cards: Card[] = [];
+          for (let i = 0; i < 20; i++) {
+            cards.push({
+              id: res.Data[i]?.animal_id,
+              area: res.Data[i]?.animal_area_pkid,
+              shelterName: res.Data[i]?.animal_place,
+              shelterAddress: res.Data[i]?.shelter_address,
+              shelterTel: res.Data[i]?.shelter_tel,
+              kind: res.Data[i]?.animal_kind,
+              sex: res.Data[i]?.animal_sex,
+              color: res.Data[i]?.animal_colour,
+              sterilization: res.Data[i]?.animal_sterilization,
+              foundPlace: res.Data[i]?.animal_foundplace,
+              image: res.Data[i]?.album_file,
+            });
+            dispatch(setAllCardInfrontOfUser(cards));
+          }
+        });
+    }
   }
 
   return (
@@ -201,22 +269,34 @@ const Pairing: React.FC = () => {
       <SettingSelectContainer>
         <SettingOption
           onClick={() => {
-            choosePreference("%E7%8B%97");
+            setPreference({ ...preference, kind: "%E7%8B%97" });
+            // choosePreference();
           }}
         >
           狗
         </SettingOption>
         <SettingOption
           onClick={() => {
-            choosePreference("%E8%B2%93");
+            setPreference({ ...preference, kind: "%E8%B2%93" });
+            // choosePreference();
           }}
         >
           貓
         </SettingOption>
       </SettingSelectContainer>
-      <SettingSelectContainer>
-        {area.map((loc) => (
-          <SettingOption>{loc}</SettingOption>
+      <SettingSelectContainer style={{ top: "200px" }}>
+        {area.map((loc, index) => (
+          <SettingOption
+            id={`${index + 2}`}
+            onClick={(e) => {
+              setPreference({
+                ...preference,
+                location: (e.target as HTMLElement).id,
+              });
+            }}
+          >
+            {loc}
+          </SettingOption>
         ))}
       </SettingSelectContainer>
       <Cards>

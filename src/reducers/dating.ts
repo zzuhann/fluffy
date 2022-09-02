@@ -1,5 +1,6 @@
 export enum ActionType {
-  setUserPreference,
+  setUserKindPreference,
+  setUserLocationPreference,
   toggleDetailInfo,
   setUserDirection,
   setAllCardInfrontOfUser,
@@ -20,13 +21,26 @@ interface setAllCardInfrontOfUser {
   payload: { allCards: Card[] };
 }
 
-export type ProfileActions =
+interface setUserKindPreference {
+  type: ActionType.setUserKindPreference;
+  payload: { kind: string };
+}
+
+interface setUserLocationPreference {
+  type: ActionType.setUserLocationPreference;
+  payload: { location: string };
+}
+
+export type DatingActions =
   | toggleDetailInfo
   | setUserDirection
-  | setAllCardInfrontOfUser;
+  | setAllCardInfrontOfUser
+  | setUserKindPreference
+  | setUserLocationPreference;
 
 export type Dating = {
-  preference: string;
+  kind: string;
+  location: string;
   openDetail: boolean;
   direction: string;
   allCards: Card[];
@@ -47,17 +61,21 @@ export type Card = {
 };
 
 const initialState: Dating = {
-  preference: "",
+  kind: "",
+  location: "",
   openDetail: false,
   direction: "",
   allCards: [],
 };
 
-const DatingReducer = (
-  state: Dating = initialState,
-  action: ProfileActions
-) => {
+const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
   switch (action.type) {
+    case ActionType.setUserKindPreference: {
+      return { ...state, kind: action.payload.kind };
+    }
+    case ActionType.setUserLocationPreference: {
+      return { ...state, location: action.payload.location };
+    }
     case ActionType.toggleDetailInfo: {
       return { ...state, openDetail: action.payload.openDetail };
     }
@@ -71,5 +89,6 @@ const DatingReducer = (
       return state;
   }
 };
+export type DatingReducerType = typeof DatingReducer;
 
 export default DatingReducer;
