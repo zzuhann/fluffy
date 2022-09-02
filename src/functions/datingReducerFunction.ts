@@ -20,17 +20,3 @@ export function setAllCardInfrontOfUser(allCards: Card[]) {
     payload: { allCards },
   };
 }
-
-export function setUserKindPreference(kind: string) {
-  return {
-    type: ActionType.setUserKindPreference,
-    payload: { kind },
-  };
-}
-
-export function setUserLocationPreference(location: string) {
-  return {
-    type: ActionType.setUserLocationPreference,
-    payload: { location },
-  };
-}

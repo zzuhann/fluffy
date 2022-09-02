@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import setting from "./setting.png";
 import styled from "styled-components";
-import {
-  setAllCardInfrontOfUser,
-  setUserKindPreference,
-  setUserLocationPreference,
-} from "../../functions/datingReducerFunction";
-import { Card, Dating } from "../../reducers/dating";
+import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
+import { Card, Dating, petCardInfo } from "../../reducers/dating";
+import api from "../../utils/api";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -99,8 +96,8 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
 
   return (
     <>
-      {props.petInfo.map((info) => (
-        <PetCard>
+      {props.petInfo.map((info, index) => (
+        <PetCard key={index}>
           <PetImg src={info.image} alt="" />
           <PetId>{info.id}</PetId>
           <PetArea>{area[info.area]}</PetArea>
@@ -151,115 +148,50 @@ const Pairing: React.FC = () => {
   ];
 
   useEffect(() => {
-    fetch("https://data.coa.gov.tw/api/v1/AnimalRecognition")
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        const cards: Card[] = [];
-        for (let i = 0; i < 20; i++) {
-          cards.push({
-            id: res.Data[i].animal_id,
-            area: res.Data[i].animal_area_pkid,
-            shelterName: res.Data[i].animal_place,
-            shelterAddress: res.Data[i].shelter_address,
-            shelterTel: res.Data[i].shelter_tel,
-            kind: res.Data[i].animal_kind,
-            sex: res.Data[i].animal_sex,
-            color: res.Data[i].animal_colour,
-            sterilization: res.Data[i].animal_sterilization,
-            foundPlace: res.Data[i].animal_foundplace,
-            image: res.Data[i].album_file,
-          });
-          dispatch(setAllCardInfrontOfUser(cards));
-        }
-      });
+    api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
   }, []);
 
   useEffect(() => {
     choosePreference();
   }, [preference]);
 
+  function pushCardsinAllCards(info: petCardInfo[]) {
+    const cards: Card[] = [];
+    for (let i = 0; i < 20; i++) {
+      if (info[i]?.hasOwnProperty("animal_id")) {
+        cards.push({
+          id: info[i].animal_id,
+          area: info[i].animal_area_pkid,
+          shelterName: info[i].animal_place,
+          shelterAddress: info[i].shelter_address,
+          shelterTel: info[i].shelter_tel,
+          kind: info[i].animal_kind,
+          sex: info[i].animal_sex,
+          color: info[i].animal_colour,
+          sterilization: info[i].animal_sterilization,
+          foundPlace: info[i].animal_foundplace,
+          image: info[i].album_file,
+        });
+        dispatch(setAllCardInfrontOfUser(cards));
+      }
+    }
+  }
+
   function choosePreference() {
-    console.log(preference);
     if (preference.kind !== "all" && preference.location !== "0") {
-      fetch(
-        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_area_pkid=${preference.location}&animal_kind=${preference.kind}`
-      )
+      api
+        .getAnimapAPIWithAreaAndKind(preference.location, preference.kind)
         .then((res) => {
-          return res.json();
-        })
-        .then((res) => {
-          const cards: Card[] = [];
-          for (let i = 0; i < 20; i++) {
-            cards.push({
-              id: res.Data[i]?.animal_id,
-              area: res.Data[i]?.animal_area_pkid,
-              shelterName: res.Data[i]?.animal_place,
-              shelterAddress: res.Data[i]?.shelter_address,
-              shelterTel: res.Data[i]?.shelter_tel,
-              kind: res.Data[i]?.animal_kind,
-              sex: res.Data[i]?.animal_sex,
-              color: res.Data[i]?.animal_colour,
-              sterilization: res.Data[i]?.animal_sterilization,
-              foundPlace: res.Data[i]?.animal_foundplace,
-              image: res.Data[i]?.album_file,
-            });
-            dispatch(setAllCardInfrontOfUser(cards));
-          }
+          pushCardsinAllCards(res.Data);
         });
     } else if (preference.kind !== "all") {
-      fetch(
-        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_kind=${preference.kind}`
-      )
-        .then((res) => {
-          return res.json();
-        })
-        .then((res) => {
-          const cards: Card[] = [];
-          for (let i = 0; i < 20; i++) {
-            cards.push({
-              id: res.Data[i]?.animal_id,
-              area: res.Data[i]?.animal_area_pkid,
-              shelterName: res.Data[i]?.animal_place,
-              shelterAddress: res.Data[i]?.shelter_address,
-              shelterTel: res.Data[i]?.shelter_tel,
-              kind: res.Data[i]?.animal_kind,
-              sex: res.Data[i]?.animal_sex,
-              color: res.Data[i]?.animal_colour,
-              sterilization: res.Data[i]?.animal_sterilization,
-              foundPlace: res.Data[i]?.animal_foundplace,
-              image: res.Data[i]?.album_file,
-            });
-            dispatch(setAllCardInfrontOfUser(cards));
-          }
-        });
+      api.getAnimapAPIWithKind(preference.kind).then((res) => {
+        pushCardsinAllCards(res.Data);
+      });
     } else if (preference.location !== "0") {
-      fetch(
-        `https://data.coa.gov.tw/api/v1/AnimalRecognition/?animal_area_pkid=${preference.location}`
-      )
-        .then((res) => {
-          return res.json();
-        })
-        .then((res) => {
-          const cards: Card[] = [];
-          for (let i = 0; i < 20; i++) {
-            cards.push({
-              id: res.Data[i]?.animal_id,
-              area: res.Data[i]?.animal_area_pkid,
-              shelterName: res.Data[i]?.animal_place,
-              shelterAddress: res.Data[i]?.shelter_address,
-              shelterTel: res.Data[i]?.shelter_tel,
-              kind: res.Data[i]?.animal_kind,
-              sex: res.Data[i]?.animal_sex,
-              color: res.Data[i]?.animal_colour,
-              sterilization: res.Data[i]?.animal_sterilization,
-              foundPlace: res.Data[i]?.animal_foundplace,
-              image: res.Data[i]?.album_file,
-            });
-            dispatch(setAllCardInfrontOfUser(cards));
-          }
-        });
+      api.getAnimapAPIWithArea(preference.location).then((res) => {
+        pushCardsinAllCards(res.Data);
+      });
     }
   }
 
@@ -270,7 +202,6 @@ const Pairing: React.FC = () => {
         <SettingOption
           onClick={() => {
             setPreference({ ...preference, kind: "%E7%8B%97" });
-            // choosePreference();
           }}
         >
           狗
@@ -278,7 +209,6 @@ const Pairing: React.FC = () => {
         <SettingOption
           onClick={() => {
             setPreference({ ...preference, kind: "%E8%B2%93" });
-            // choosePreference();
           }}
         >
           貓
@@ -288,6 +218,7 @@ const Pairing: React.FC = () => {
         {area.map((loc, index) => (
           <SettingOption
             id={`${index + 2}`}
+            key={index}
             onClick={(e) => {
               setPreference({
                 ...preference,

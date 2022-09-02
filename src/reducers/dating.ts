@@ -1,6 +1,4 @@
 export enum ActionType {
-  setUserKindPreference,
-  setUserLocationPreference,
   toggleDetailInfo,
   setUserDirection,
   setAllCardInfrontOfUser,
@@ -21,26 +19,12 @@ interface setAllCardInfrontOfUser {
   payload: { allCards: Card[] };
 }
 
-interface setUserKindPreference {
-  type: ActionType.setUserKindPreference;
-  payload: { kind: string };
-}
-
-interface setUserLocationPreference {
-  type: ActionType.setUserLocationPreference;
-  payload: { location: string };
-}
-
 export type DatingActions =
   | toggleDetailInfo
   | setUserDirection
-  | setAllCardInfrontOfUser
-  | setUserKindPreference
-  | setUserLocationPreference;
+  | setAllCardInfrontOfUser;
 
 export type Dating = {
-  kind: string;
-  location: string;
   openDetail: boolean;
   direction: string;
   allCards: Card[];
@@ -60,9 +44,21 @@ export type Card = {
   image: string;
 };
 
+export type petCardInfo = {
+  animal_id: number;
+  animal_area_pkid: number;
+  animal_place: string;
+  shelter_address: string;
+  shelter_tel: string;
+  animal_kind: string;
+  animal_sex: string;
+  animal_colour: string;
+  animal_sterilization: string;
+  animal_foundplace: string;
+  album_file: string;
+};
+
 const initialState: Dating = {
-  kind: "",
-  location: "",
   openDetail: false,
   direction: "",
   allCards: [],
@@ -70,12 +66,6 @@ const initialState: Dating = {
 
 const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
   switch (action.type) {
-    case ActionType.setUserKindPreference: {
-      return { ...state, kind: action.payload.kind };
-    }
-    case ActionType.setUserLocationPreference: {
-      return { ...state, location: action.payload.location };
-    }
     case ActionType.toggleDetailInfo: {
       return { ...state, openDetail: action.payload.openDetail };
     }
