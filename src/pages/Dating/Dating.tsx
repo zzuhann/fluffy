@@ -6,7 +6,7 @@ import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
 import { Card, Dating, petCardInfo } from "../../reducers/dating";
 import api from "../../utils/api";
 import { db } from "../../utils/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -186,6 +186,7 @@ const Pairing: React.FC = () => {
   ) as Dating;
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
+  const [userChosenPetId, setUserChosenPetId] = useState<number[]>([]);
 
   const area = [
     "臺北市",
@@ -214,13 +215,27 @@ const Pairing: React.FC = () => {
 
   useEffect(() => {
     api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
+    const getListsData = async (lists: string) => {
+      let userChosenId: number[] = [];
+      const q = collection(
+        db,
+        "memberProfiles",
+        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+        lists
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        userChosenId.push(info.data().id);
+      });
+      setUserChosenPetId(userChosenId);
+    };
+    getListsData("considerLists");
+    getListsData("notConsiderLists");
   }, []);
 
   useEffect(() => {
     choosePreference();
   }, [preference]);
-
-  useEffect(() => {}, [dating]);
 
   function pushCardsinAllCards(info: petCardInfo[]) {
     const cards: Card[] = [];
@@ -231,6 +246,9 @@ const Pairing: React.FC = () => {
         info[i]?.hasOwnProperty("album_file") &&
         info[i].album_file
       ) {
+        for (let j = 0; j < userChosenPetId.length; j++) {
+          if (userChosenPetId[j] === info[i].animal_id) return;
+        }
         cards.push({
           id: info[i].animal_id,
           area: info[i].animal_area_pkid,
