@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
 import { Card, Dating, petCardInfo } from "../../reducers/dating";
 import api from "../../utils/api";
+import { db } from "../../utils/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -62,6 +64,21 @@ const PetSterilization = styled.div``;
 const PetArea = styled.div``;
 const PetSex = styled.div``;
 
+const ChooseIcon = styled.div`
+  font-size: 50px;
+  position: absolute;
+  bottom: 15px;
+  cursor: pointer;
+`;
+
+const Cross = styled(ChooseIcon)`
+  left: 40px;
+`;
+
+const Circle = styled(ChooseIcon)`
+  right: 40px;
+`;
+
 interface PetInfos {
   petInfo: Card[];
 }
@@ -93,6 +110,10 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
     "金門縣",
     "連江縣",
   ];
+  const dating = useSelector<{ dating: Dating }>(
+    (state) => state.dating
+  ) as Dating;
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -109,6 +130,50 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
           <PetSterilization>
             {info.sterilization === "F" ? "尚未結紮" : "已結紮"}
           </PetSterilization>
+          <Cross
+            onClick={async () => {
+              await addDoc(
+                collection(
+                  db,
+                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
+                ),
+                { id: info.id }
+              );
+              let cardsInFrontOfUser = dating.allCards;
+              cardsInFrontOfUser.pop();
+              dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
+            }}
+          >
+            X
+          </Cross>
+          <Circle
+            onClick={async () => {
+              await addDoc(
+                collection(
+                  db,
+                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/considerLists"
+                ),
+                {
+                  id: info.id,
+                  area: info.area,
+                  shelterName: info.shelterName,
+                  shelterAddress: info.shelterAddress,
+                  shelterTel: info.shelterTel,
+                  kind: info.kind,
+                  sex: info.sex,
+                  color: info.color,
+                  sterilization: info.sterilization,
+                  foundPlace: info.foundPlace,
+                  image: info.image,
+                }
+              );
+              let cardsInFrontOfUser = dating.allCards;
+              cardsInFrontOfUser.pop();
+              dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
+            }}
+          >
+            O
+          </Circle>
         </PetCard>
       ))}
     </>
@@ -155,10 +220,17 @@ const Pairing: React.FC = () => {
     choosePreference();
   }, [preference]);
 
+  useEffect(() => {}, [dating]);
+
   function pushCardsinAllCards(info: petCardInfo[]) {
     const cards: Card[] = [];
     for (let i = 0; i < 20; i++) {
-      if (info[i]?.hasOwnProperty("animal_id")) {
+      if (
+        info[i]?.hasOwnProperty("animal_id") &&
+        info[i].animal_id &&
+        info[i]?.hasOwnProperty("album_file") &&
+        info[i].album_file
+      ) {
         cards.push({
           id: info[i].animal_id,
           area: info[i].animal_area_pkid,
