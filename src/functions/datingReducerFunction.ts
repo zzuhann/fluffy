@@ -20,3 +20,10 @@ export function setAllCardInfrontOfUser(allCards: Card[]) {
     payload: { allCards },
   };
 }
+
+export function setConsiderList(considerList: Card[]) {
+  return {
+    type: ActionType.setConsiderList,
+    payload: { considerList },
+  };
+}

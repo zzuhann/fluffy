@@ -2,6 +2,7 @@ export enum ActionType {
   toggleDetailInfo,
   setUserDirection,
   setAllCardInfrontOfUser,
+  setConsiderList,
 }
 
 interface toggleDetailInfo {
@@ -19,15 +20,22 @@ interface setAllCardInfrontOfUser {
   payload: { allCards: Card[] };
 }
 
+interface setConsiderList {
+  type: ActionType.setConsiderList;
+  payload: { considerList: Card[] };
+}
+
 export type DatingActions =
   | toggleDetailInfo
   | setUserDirection
-  | setAllCardInfrontOfUser;
+  | setAllCardInfrontOfUser
+  | setConsiderList;
 
 export type Dating = {
   openDetail: boolean;
   direction: string;
   allCards: Card[];
+  considerList: Card[];
 };
 
 export type Card = {
@@ -62,6 +70,7 @@ const initialState: Dating = {
   openDetail: false,
   direction: "",
   allCards: [],
+  considerList: [],
 };
 
 const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
@@ -74,6 +83,9 @@ const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
     }
     case ActionType.setAllCardInfrontOfUser: {
       return { ...state, allCards: action.payload.allCards };
+    }
+    case ActionType.setConsiderList: {
+      return { ...state, considerList: action.payload.considerList };
     }
     default:
       return state;

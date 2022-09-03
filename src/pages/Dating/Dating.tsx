@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import setting from "./setting.png";
 import styled from "styled-components";
-import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
+import {
+  setAllCardInfrontOfUser,
+  setConsiderList,
+} from "../../functions/datingReducerFunction";
 import { Card, Dating, petCardInfo } from "../../reducers/dating";
 import api from "../../utils/api";
 import { db } from "../../utils/firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
+import PetCardDetail from "./DatingCard";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -42,143 +54,58 @@ const Cards = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const PetCard = styled.div`
-  width: 100%;
-  position: absolute;
-  top: 20px;
-  left: 0;
+const TogglePairingTabs = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-`;
-
-const PetImg = styled.img`
-  width: 300px;
-  height: 500px;
-  object-fit: cover;
-`;
-const PetId = styled.div``;
-const PetColorKind = styled.div``;
-const PetSterilization = styled.div``;
-const PetArea = styled.div``;
-const PetSex = styled.div``;
-
-const ChooseIcon = styled.div`
-  font-size: 50px;
+  width: 200px;
   position: absolute;
-  bottom: 15px;
+  top: 150px;
+  left: 10px;
+`;
+
+const PairingTab = styled.div`
+  text-align: center;
   cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
 `;
 
-const Cross = styled(ChooseIcon)`
-  left: 40px;
+const ConsiderList = styled.div`
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  width: 750px;
+  right: 80px;
+  top: 120px;
 `;
 
-const Circle = styled(ChooseIcon)`
-  right: 40px;
+const ConsiderPetCard = styled.div`
+  position: relative;
+  width: 250px;
+  flex-shrink: 0;
 `;
 
-interface PetInfos {
-  petInfo: Card[];
-}
+const ConsiderImg = styled.img`
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  object-position: center;
+`;
 
-const PetCardDetail: React.FC<PetInfos> = (props) => {
-  const area = [
-    0,
-    1,
-    "臺北市",
-    "新北市",
-    "基隆市",
-    "宜蘭縣",
-    "桃園市",
-    "新竹縣",
-    "新竹市",
-    "苗栗縣",
-    "臺中市",
-    "彰化縣",
-    "南投縣",
-    "雲林縣",
-    "嘉義縣",
-    "嘉義市",
-    "臺南市",
-    "高雄市",
-    "屏東縣",
-    "花蓮縣",
-    "臺東縣",
-    "澎湖縣",
-    "金門縣",
-    "連江縣",
-  ];
-  const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
-  const dispatch = useDispatch();
+const ConsiderTitle = styled.div``;
 
-  return (
-    <>
-      {props.petInfo.map((info, index) => (
-        <PetCard key={index}>
-          <PetImg src={info.image} alt="" />
-          <PetId>{info.id}</PetId>
-          <PetArea>{area[info.area]}</PetArea>
-          <PetColorKind>
-            {info.color}
-            {info.kind}
-          </PetColorKind>
-          <PetSex>{info.sex === "M" ? "♂" : "♀"}</PetSex>
-          <PetSterilization>
-            {info.sterilization === "F" ? "尚未結紮" : "已結紮"}
-          </PetSterilization>
-          <Cross
-            onClick={async () => {
-              await addDoc(
-                collection(
-                  db,
-                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
-                ),
-                { id: info.id }
-              );
-              let cardsInFrontOfUser = dating.allCards;
-              cardsInFrontOfUser.pop();
-              dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
-            }}
-          >
-            X
-          </Cross>
-          <Circle
-            onClick={async () => {
-              await addDoc(
-                collection(
-                  db,
-                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/considerLists"
-                ),
-                {
-                  id: info.id,
-                  area: info.area,
-                  shelterName: info.shelterName,
-                  shelterAddress: info.shelterAddress,
-                  shelterTel: info.shelterTel,
-                  kind: info.kind,
-                  sex: info.sex,
-                  color: info.color,
-                  sterilization: info.sterilization,
-                  foundPlace: info.foundPlace,
-                  image: info.image,
-                }
-              );
-              let cardsInFrontOfUser = dating.allCards;
-              cardsInFrontOfUser.pop();
-              dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
-            }}
-          >
-            O
-          </Circle>
-        </PetCard>
-      ))}
-    </>
-  );
-};
+const NotConsiderBtn = styled.div`
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
 
 const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
@@ -186,8 +113,10 @@ const Pairing: React.FC = () => {
   ) as Dating;
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
-  const [userChosenPetId, setUserChosenPetId] = useState<number[]>([]);
-
+  const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
+  // const [userChosenPetId, setUserChosenPetId] = useState<number[]>([]);
+  const [tab, setTab] = useState<string>("pairing");
+  const chosenIdRef = useRef<number[]>([]);
   const area = [
     "臺北市",
     "新北市",
@@ -214,41 +143,51 @@ const Pairing: React.FC = () => {
   ];
 
   useEffect(() => {
+    getListsData();
     api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
-    const getListsData = async (lists: string) => {
-      let userChosenId: number[] = [];
-      const q = collection(
-        db,
-        "memberProfiles",
-        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-        lists
-      );
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((info) => {
-        userChosenId.push(info.data().id);
-      });
-      setUserChosenPetId(userChosenId);
-    };
-    getListsData("considerLists");
-    getListsData("notConsiderLists");
   }, []);
 
   useEffect(() => {
     choosePreference();
   }, [preference]);
 
+  async function getListsData() {
+    let userChosenId: number[] = [];
+    let consider: Card[] = [];
+    const q = collection(
+      db,
+      "memberProfiles",
+      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+      "considerLists"
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      userChosenId.push(info.data().id);
+      consider.push(info.data() as Card);
+    });
+    dispatch(setConsiderList(consider));
+
+    const p = collection(
+      db,
+      "memberProfiles",
+      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+      "considerLists"
+    );
+    const querySecond = await getDocs(p);
+    querySecond.forEach((info) => {
+      userChosenId.push(info.data().id);
+    });
+    chosenIdRef.current = userChosenId;
+  }
   function pushCardsinAllCards(info: petCardInfo[]) {
-    const cards: Card[] = [];
+    let cards: Card[] = [];
     for (let i = 0; i < 20; i++) {
       if (
-        info[i]?.hasOwnProperty("animal_id") &&
+        info[i].hasOwnProperty("animal_id") &&
         info[i].animal_id &&
-        info[i]?.hasOwnProperty("album_file") &&
+        info[i].hasOwnProperty("album_file") &&
         info[i].album_file
       ) {
-        for (let j = 0; j < userChosenPetId.length; j++) {
-          if (userChosenPetId[j] === info[i].animal_id) return;
-        }
         cards.push({
           id: info[i].animal_id,
           area: info[i].animal_area_pkid,
@@ -262,12 +201,21 @@ const Pairing: React.FC = () => {
           foundPlace: info[i].animal_foundplace,
           image: info[i].album_file,
         });
+        // for (let j = 0; j < chosenIdRef.current.length; j++) {
+        //   if (chosenIdRef.current[j] === cards[i].id) {
+        //     console.log(chosenIdRef.current[j]);
+        //   }
+        // }
+        // cards = cards.filter((card) => card.id !== 0);
         dispatch(setAllCardInfrontOfUser(cards));
       }
     }
   }
 
   function choosePreference() {
+    if (preference.kind === "all" && preference.location === "0") {
+      api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
+    }
     if (preference.kind !== "all" && preference.location !== "0") {
       api
         .getAnimapAPIWithAreaAndKind(preference.location, preference.kind)
@@ -287,42 +235,115 @@ const Pairing: React.FC = () => {
 
   return (
     <>
-      <SettingPreference src={setting} alt="" />
-      <SettingSelectContainer>
-        <SettingOption
+      <TogglePairingTabs>
+        <PairingTab onClick={() => setTab("pairing")}>配對系統</PairingTab>
+        <PairingTab
           onClick={() => {
-            setPreference({ ...preference, kind: "%E7%8B%97" });
+            setTab("considerAdopt");
+            getListsData();
           }}
         >
-          狗
-        </SettingOption>
-        <SettingOption
-          onClick={() => {
-            setPreference({ ...preference, kind: "%E8%B2%93" });
-          }}
-        >
-          貓
-        </SettingOption>
-      </SettingSelectContainer>
-      <SettingSelectContainer style={{ top: "200px" }}>
-        {area.map((loc, index) => (
-          <SettingOption
-            id={`${index + 2}`}
-            key={index}
-            onClick={(e) => {
-              setPreference({
-                ...preference,
-                location: (e.target as HTMLElement).id,
-              });
-            }}
-          >
-            {loc}
-          </SettingOption>
-        ))}
-      </SettingSelectContainer>
-      <Cards>
-        <PetCardDetail petInfo={dating.allCards} />
-      </Cards>
+          考慮領養清單
+        </PairingTab>
+        <PairingTab onClick={() => setTab("upcomingDate")}>
+          即將到來的約會
+        </PairingTab>
+      </TogglePairingTabs>
+      {tab === "pairing" ? (
+        <>
+          <SettingPreference src={setting} alt="" />
+          <SettingSelectContainer>
+            <SettingOption
+              onClick={() => {
+                setPreference({ ...preference, kind: "%E7%8B%97" });
+              }}
+            >
+              狗
+            </SettingOption>
+            <SettingOption
+              onClick={() => {
+                setPreference({ ...preference, kind: "%E8%B2%93" });
+              }}
+            >
+              貓
+            </SettingOption>
+          </SettingSelectContainer>
+          <SettingSelectContainer style={{ top: "200px" }}>
+            {area.map((loc, index) => (
+              <SettingOption
+                id={`${index + 2}`}
+                key={index}
+                onClick={(e) => {
+                  setPreference({
+                    ...preference,
+                    location: (e.target as HTMLElement).id,
+                  });
+                }}
+              >
+                {loc}
+              </SettingOption>
+            ))}
+          </SettingSelectContainer>
+          <Cards>
+            <PetCardDetail petInfo={dating.allCards} />
+          </Cards>
+        </>
+      ) : (
+        ""
+      )}
+      {tab === "considerAdopt" && !considerDetail ? (
+        <ConsiderList>
+          {dating.considerList.map((pet, index) => (
+            <ConsiderPetCard key={index}>
+              <ConsiderImg src={pet.image} />
+              <ConsiderTitle>
+                {area[Number(pet.area) + 2]}
+                {pet.color}
+                {pet.kind}
+              </ConsiderTitle>
+              <NotConsiderBtn
+                onClick={async () => {
+                  const q = query(
+                    collection(
+                      db,
+                      "memberProfiles",
+                      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+                      "considerLists"
+                    ),
+                    where("id", "==", pet.id)
+                  );
+
+                  const querySnapshot = await getDocs(q);
+                  querySnapshot.forEach(async (info) => {
+                    await deleteDoc(
+                      doc(
+                        db,
+                        "memberProfiles",
+                        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+                        "considerLists",
+                        info.id
+                      )
+                    );
+                    getListsData();
+
+                    await addDoc(
+                      collection(
+                        db,
+                        "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
+                      ),
+                      { id: pet.id }
+                    );
+                  });
+                }}
+              >
+                不考慮領養
+              </NotConsiderBtn>
+            </ConsiderPetCard>
+          ))}
+        </ConsiderList>
+      ) : (
+        ""
+      )}
     </>
   );
 };
