@@ -41,6 +41,7 @@ export type Dating = {
 export type Card = {
   id: number;
   area: number;
+  shleterPkid: number;
   shelterName: string;
   shelterAddress: string;
   shelterTel: string;
@@ -55,6 +56,7 @@ export type Card = {
 export type petCardInfo = {
   animal_id: number;
   animal_area_pkid: number;
+  animal_shelter_pkid: number;
   animal_place: string;
   shelter_address: string;
   shelter_tel: string;

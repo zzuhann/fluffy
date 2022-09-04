@@ -19,6 +19,8 @@ import {
   addDoc,
 } from "firebase/firestore";
 import PetCardDetail from "./DatingCard";
+import { area } from "./ConstantInfo";
+import ConsiderPetDetail from "./ConsiderPetDetail";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -114,33 +116,10 @@ const Pairing: React.FC = () => {
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
   const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
+  const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1);
   // const [userChosenPetId, setUserChosenPetId] = useState<number[]>([]);
   const [tab, setTab] = useState<string>("pairing");
   const chosenIdRef = useRef<number[]>([]);
-  const area = [
-    "臺北市",
-    "新北市",
-    "基隆市",
-    "宜蘭縣",
-    "桃園市",
-    "新竹縣",
-    "新竹市",
-    "苗栗縣",
-    "臺中市",
-    "彰化縣",
-    "南投縣",
-    "雲林縣",
-    "嘉義縣",
-    "嘉義市",
-    "臺南市",
-    "高雄市",
-    "屏東縣",
-    "花蓮縣",
-    "臺東縣",
-    "澎湖縣",
-    "金門縣",
-    "連江縣",
-  ];
 
   useEffect(() => {
     getListsData();
@@ -192,6 +171,7 @@ const Pairing: React.FC = () => {
           id: info[i].animal_id,
           area: info[i].animal_area_pkid,
           shelterName: info[i].animal_place,
+          shleterPkid: info[i].animal_shelter_pkid,
           shelterAddress: info[i].shelter_address,
           shelterTel: info[i].shelter_tel,
           kind: info[i].animal_kind,
@@ -294,10 +274,16 @@ const Pairing: React.FC = () => {
       {tab === "considerAdopt" && !considerDetail ? (
         <ConsiderList>
           {dating.considerList.map((pet, index) => (
-            <ConsiderPetCard key={index}>
+            <ConsiderPetCard
+              key={index}
+              onClick={() => {
+                setNowChosenPetIndex(index);
+                setConsiderDetail(true);
+              }}
+            >
               <ConsiderImg src={pet.image} />
               <ConsiderTitle>
-                {area[Number(pet.area) + 2]}
+                {area[Number(pet.area) - 2]}
                 {pet.color}
                 {pet.kind}
               </ConsiderTitle>
@@ -341,6 +327,14 @@ const Pairing: React.FC = () => {
             </ConsiderPetCard>
           ))}
         </ConsiderList>
+      ) : (
+        ""
+      )}
+      {tab === "considerAdopt" && considerDetail ? (
+        <ConsiderPetDetail
+          nowChosenPetIndex={nowChosenPetIndex}
+          setConsiderDetail={setConsiderDetail}
+        />
       ) : (
         ""
       )}

@@ -5,6 +5,7 @@ import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
 import { Card, Dating } from "../../reducers/dating";
 import { db } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { area } from "./ConstantInfo";
 
 const PetCard = styled.div`
   width: 100%;
@@ -48,32 +49,6 @@ interface PetInfos {
 }
 
 const PetCardDetail: React.FC<PetInfos> = (props) => {
-  const area = [
-    0,
-    1,
-    "臺北市",
-    "新北市",
-    "基隆市",
-    "宜蘭縣",
-    "桃園市",
-    "新竹縣",
-    "新竹市",
-    "苗栗縣",
-    "臺中市",
-    "彰化縣",
-    "南投縣",
-    "雲林縣",
-    "嘉義縣",
-    "嘉義市",
-    "臺南市",
-    "高雄市",
-    "屏東縣",
-    "花蓮縣",
-    "臺東縣",
-    "澎湖縣",
-    "金門縣",
-    "連江縣",
-  ];
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
@@ -85,7 +60,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
         <PetCard key={index}>
           <PetImg src={info.image} alt="" />
           <PetId>{info.id}</PetId>
-          <PetArea>{area[info.area]}</PetArea>
+          <PetArea>{area[info.area - 2]}</PetArea>
           <PetColorKind>
             {info.color}
             {info.kind}
@@ -120,6 +95,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
                 {
                   id: info.id,
                   area: info.area,
+                  shleterPkid: info.shleterPkid,
                   shelterName: info.shelterName,
                   shelterAddress: info.shelterAddress,
                   shelterTel: info.shelterTel,
