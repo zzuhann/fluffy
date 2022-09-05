@@ -1,5 +1,5 @@
 import store from "../src/store/configureStore";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
@@ -19,7 +19,6 @@ function App() {
       <GlobalStyle />
       <Header />
       <Outlet />
-      {/* <Footer /> */}
     </Provider>
   );
 }
