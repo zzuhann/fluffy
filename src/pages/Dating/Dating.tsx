@@ -120,9 +120,9 @@ const Pairing: React.FC = () => {
     let repeatId: number[] = [];
     for (let i = 0; i < totalCards; i++) {
       if (
-        info[i].hasOwnProperty("animal_id") &&
+        info[i]?.hasOwnProperty("animal_id") &&
         info[i].animal_id &&
-        info[i].hasOwnProperty("album_file") &&
+        info[i]?.hasOwnProperty("album_file") &&
         info[i].album_file
       ) {
         for (let j = 0; j < chosenIdRef.current.length; j++) {
