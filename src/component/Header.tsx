@@ -97,12 +97,18 @@ const Header = () => {
           配對專區
         </NavBar>
         <NavBar>寵物日記</NavBar>
-        <NavBar>24 小時動物醫院</NavBar>
+        <NavBar
+          onClick={() => {
+            navigate("/clinic");
+          }}
+        >
+          24 小時動物醫院
+        </NavBar>
         <NavBar>寵物走失協尋</NavBar>
       </NavBarContainer>
 
       {profile.isLogged ? (
-        <p>{profile.name} 您好！</p>
+        <p onClick={() => navigate("/profile")}>{profile.name} 您好！</p>
       ) : (
         <LoginRegisterBtnWrapper>
           <LoginRegisterBtn

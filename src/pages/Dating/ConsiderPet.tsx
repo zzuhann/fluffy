@@ -101,6 +101,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  if (!dating.considerList) return null;
   return (
     <>
       {dating.considerList.map((pet, index) => (
