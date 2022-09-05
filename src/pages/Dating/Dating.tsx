@@ -5,8 +5,9 @@ import styled from "styled-components";
 import {
   setAllCardInfrontOfUser,
   setConsiderList,
+  setUpcomingDateList,
 } from "../../functions/datingReducerFunction";
-import { Card, Dating, petCardInfo } from "../../reducers/dating";
+import { Card, Dating, petCardInfo, InviteDating } from "../../reducers/dating";
 import api from "../../utils/api";
 import { db } from "../../utils/firebase";
 import {
@@ -19,8 +20,9 @@ import {
   addDoc,
 } from "firebase/firestore";
 import PetCardDetail from "./DatingCard";
-import { area } from "./ConstantInfo";
+import { area, shelterInfo } from "./ConstantInfo";
 import ConsiderPetDetail from "./ConsiderPetDetail";
+import UpcomingList from "./UpcomingList";
 
 const SettingPreference = styled.img`
   position: absolute;
@@ -54,6 +56,21 @@ const Cards = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const RequestMoreCardsBtn = styled.div`
+  text-align: center;
+  position: relative;
+  left: 50%;
+  top: 200px;
+  width: 200px;
+  transform: translate(-50%);
+  margin-bottom: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
 `;
 
 const TogglePairingTabs = styled.div`
@@ -109,6 +126,15 @@ const NotConsiderBtn = styled.div`
   }
 `;
 
+const UpcomingListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  left: 30%;
+  top: 50%;
+  position: relative;
+`;
+
 const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -116,19 +142,19 @@ const Pairing: React.FC = () => {
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
   const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
+
   const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1);
-  // const [userChosenPetId, setUserChosenPetId] = useState<number[]>([]);
   const [tab, setTab] = useState<string>("pairing");
   const chosenIdRef = useRef<number[]>([]);
 
   useEffect(() => {
-    getListsData();
-    api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
-  }, []);
-
-  useEffect(() => {
-    choosePreference();
+    checkChosenAndAppendNewPet(50);
   }, [preference]);
+
+  async function checkChosenAndAppendNewPet(quantity: number) {
+    await getListsData();
+    await choosePreference(quantity);
+  }
 
   async function getListsData() {
     let userChosenId: number[] = [];
@@ -150,7 +176,7 @@ const Pairing: React.FC = () => {
       db,
       "memberProfiles",
       "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-      "considerLists"
+      "notConsiderLists"
     );
     const querySecond = await getDocs(p);
     querySecond.forEach((info) => {
@@ -158,15 +184,25 @@ const Pairing: React.FC = () => {
     });
     chosenIdRef.current = userChosenId;
   }
-  function pushCardsinAllCards(info: petCardInfo[]) {
+
+  function pushCardsinAllCards(info: petCardInfo[], totalCards: number) {
     let cards: Card[] = [];
-    for (let i = 0; i < 20; i++) {
+    let repeatId: number[] = [];
+    for (let i = 0; i < totalCards; i++) {
       if (
         info[i].hasOwnProperty("animal_id") &&
         info[i].animal_id &&
         info[i].hasOwnProperty("album_file") &&
         info[i].album_file
       ) {
+        for (let j = 0; j < chosenIdRef.current.length; j++) {
+          if (chosenIdRef.current[j] === info[i].animal_id) {
+            repeatId.push(chosenIdRef.current[j]);
+          }
+        }
+        if (repeatId.includes(info[i].animal_id)) {
+          continue;
+        }
         cards.push({
           id: info[i].animal_id,
           area: info[i].animal_area_pkid,
@@ -181,36 +217,45 @@ const Pairing: React.FC = () => {
           foundPlace: info[i].animal_foundplace,
           image: info[i].album_file,
         });
-        // for (let j = 0; j < chosenIdRef.current.length; j++) {
-        //   if (chosenIdRef.current[j] === cards[i].id) {
-        //     console.log(chosenIdRef.current[j]);
-        //   }
-        // }
-        // cards = cards.filter((card) => card.id !== 0);
         dispatch(setAllCardInfrontOfUser(cards));
       }
     }
   }
 
-  function choosePreference() {
+  async function choosePreference(quantity: number) {
     if (preference.kind === "all" && preference.location === "0") {
-      api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data));
+      api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data, quantity));
     }
     if (preference.kind !== "all" && preference.location !== "0") {
       api
         .getAnimapAPIWithAreaAndKind(preference.location, preference.kind)
         .then((res) => {
-          pushCardsinAllCards(res.Data);
+          pushCardsinAllCards(res.Data, quantity);
         });
     } else if (preference.kind !== "all") {
       api.getAnimapAPIWithKind(preference.kind).then((res) => {
-        pushCardsinAllCards(res.Data);
+        pushCardsinAllCards(res.Data, quantity);
       });
     } else if (preference.location !== "0") {
       api.getAnimapAPIWithArea(preference.location).then((res) => {
-        pushCardsinAllCards(res.Data);
+        pushCardsinAllCards(res.Data, quantity);
       });
     }
+  }
+
+  async function getUpcomingListData() {
+    let upcomingDate: InviteDating[] = [];
+    const q = collection(
+      db,
+      "memberProfiles",
+      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+      "upcomingDates"
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      upcomingDate.push(info.data() as InviteDating);
+    });
+    dispatch(setUpcomingDateList(upcomingDate));
   }
 
   return (
@@ -221,11 +266,17 @@ const Pairing: React.FC = () => {
           onClick={() => {
             setTab("considerAdopt");
             getListsData();
+            setConsiderDetail(false);
           }}
         >
           考慮領養清單
         </PairingTab>
-        <PairingTab onClick={() => setTab("upcomingDate")}>
+        <PairingTab
+          onClick={() => {
+            setTab("upcomingDate");
+            getUpcomingListData();
+          }}
+        >
           即將到來的約會
         </PairingTab>
       </TogglePairingTabs>
@@ -264,9 +315,28 @@ const Pairing: React.FC = () => {
               </SettingOption>
             ))}
           </SettingSelectContainer>
-          <Cards>
-            <PetCardDetail petInfo={dating.allCards} />
-          </Cards>
+          {dating.allCards.length <= 0 ? (
+            <>
+              <RequestMoreCardsBtn
+                onClick={() => checkChosenAndAppendNewPet(200)}
+              >
+                配對更多狗狗貓貓
+              </RequestMoreCardsBtn>
+              <RequestMoreCardsBtn
+                onClick={() => {
+                  setTab("considerAdopt");
+                  getListsData();
+                  setConsiderDetail(false);
+                }}
+              >
+                看目前考慮領養清單
+              </RequestMoreCardsBtn>
+            </>
+          ) : (
+            <Cards>
+              <PetCardDetail petInfo={dating.allCards} />
+            </Cards>
+          )}
         </>
       ) : (
         ""
@@ -335,6 +405,13 @@ const Pairing: React.FC = () => {
           nowChosenPetIndex={nowChosenPetIndex}
           setConsiderDetail={setConsiderDetail}
         />
+      ) : (
+        ""
+      )}
+      {tab === "upcomingDate" ? (
+        <UpcomingListContainer>
+          <UpcomingList getUpcomingListData={getUpcomingListData} />
+        </UpcomingListContainer>
       ) : (
         ""
       )}

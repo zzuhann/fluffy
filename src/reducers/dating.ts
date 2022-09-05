@@ -3,6 +3,7 @@ export enum ActionType {
   setUserDirection,
   setAllCardInfrontOfUser,
   setConsiderList,
+  setUpcomingDateList,
 }
 
 interface toggleDetailInfo {
@@ -25,17 +26,40 @@ interface setConsiderList {
   payload: { considerList: Card[] };
 }
 
+interface setUpcomingDateList {
+  type: ActionType.setUpcomingDateList;
+  payload: { upcomingDateList: InviteDating[] };
+}
+
 export type DatingActions =
   | toggleDetailInfo
   | setUserDirection
   | setAllCardInfrontOfUser
-  | setConsiderList;
+  | setConsiderList
+  | setUpcomingDateList;
 
 export type Dating = {
   openDetail: boolean;
   direction: string;
   allCards: Card[];
   considerList: Card[];
+  upcomingDateList: InviteDating[];
+};
+
+export type InviteDating = {
+  id: number;
+  area: number;
+  shleterPkid: number;
+  shelterName: string;
+  shelterAddress: string;
+  shelterTel: string;
+  kind: string;
+  sex: string;
+  color: string;
+  sterilization: string;
+  image: string;
+  datingDate: number;
+  inviter: string;
 };
 
 export type Card = {
@@ -73,6 +97,7 @@ const initialState: Dating = {
   direction: "",
   allCards: [],
   considerList: [],
+  upcomingDateList: [],
 };
 
 const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
@@ -88,6 +113,9 @@ const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
     }
     case ActionType.setConsiderList: {
       return { ...state, considerList: action.payload.considerList };
+    }
+    case ActionType.setUpcomingDateList: {
+      return { ...state, upcomingDateList: action.payload.upcomingDateList };
     }
     default:
       return state;

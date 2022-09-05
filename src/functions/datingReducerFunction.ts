@@ -1,4 +1,4 @@
-import { ActionType, Card } from "../reducers/dating";
+import { ActionType, Card, InviteDating } from "../reducers/dating";
 
 export function toggleDetailInfo(openDetail: boolean) {
   return {
@@ -25,5 +25,12 @@ export function setConsiderList(considerList: Card[]) {
   return {
     type: ActionType.setConsiderList,
     payload: { considerList },
+  };
+}
+
+export function setUpcomingDateList(upcomingDateList: InviteDating[]) {
+  return {
+    type: ActionType.setUpcomingDateList,
+    payload: { upcomingDateList },
   };
 }
