@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
@@ -20,6 +21,27 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `;
 
+const NavBarContainer = styled.ul`
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  margin-left: 50px;
+`;
+
+const NavBar = styled.li`
+  margin-right: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: black;
+    color: white;
+  }
+`;
+
+const LoginRegisterBtnWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const LoginRegisterBtn = styled.div`
   cursor: pointer;
   &:hover {
@@ -29,8 +51,11 @@ const LoginRegisterBtn = styled.div`
 `;
 
 const Header = () => {
-  const profile = useSelector((state: Profile) => state);
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -56,13 +81,34 @@ const Header = () => {
       <a href="/">
         <img src={logo} alt="" style={{ width: "150px" }} />
       </a>
+      <NavBarContainer>
+        <NavBar
+          onClick={() => {
+            if (!profile.isLogged) {
+              window.alert(
+                "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
+              );
+              navigate("/profile");
+            } else {
+              navigate("/dating");
+            }
+          }}
+        >
+          配對專區
+        </NavBar>
+        <NavBar>寵物日記</NavBar>
+        <NavBar>24 小時動物醫院</NavBar>
+        <NavBar>寵物走失協尋</NavBar>
+      </NavBarContainer>
+
       {profile.isLogged ? (
         <p>{profile.name} 您好！</p>
       ) : (
-        <div>
+        <LoginRegisterBtnWrapper>
           <LoginRegisterBtn
             onClick={() => {
               dispatch(targetRegisterOrLogin("register"));
+              navigate("/profile");
             }}
           >
             註冊
@@ -70,11 +116,12 @@ const Header = () => {
           <LoginRegisterBtn
             onClick={() => {
               dispatch(targetRegisterOrLogin("login"));
+              navigate("/profile");
             }}
           >
             登入
           </LoginRegisterBtn>
-        </div>
+        </LoginRegisterBtnWrapper>
       )}
     </Wrapper>
   );

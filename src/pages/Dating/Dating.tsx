@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import setting from "./setting.png";
 import styled from "styled-components";
 import {
   setAllCardInfrontOfUser,
@@ -19,36 +18,12 @@ import {
   doc,
   addDoc,
 } from "firebase/firestore";
-import PetCardDetail from "./DatingCard";
-import { area, shelterInfo } from "./ConstantInfo";
-import ConsiderPetDetail from "./ConsiderPetDetail";
+import PetCardDetail from "./PairingFeature";
+import { SettingPreference } from "./PairingFeature";
+import ConsiderPetDetail from "./ConsiderPet";
 import UpcomingList from "./UpcomingList";
-
-const SettingPreference = styled.img`
-  position: absolute;
-  width: 50px;
-  right: 20px;
-  top: 100px;
-  cursor: pointer;
-`;
-
-const SettingSelectContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  right: 20px;
-  top: 150px;
-  width: 60px;
-`;
-
-const SettingOption = styled.div`
-  text-align: center;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
+import TogglePairingTabs from "./TogglePairingTabs";
+import { ConsiderEverySinglePetCard } from "./ConsiderPet";
 
 const Cards = styled.div`
   position: relative;
@@ -73,24 +48,6 @@ const RequestMoreCardsBtn = styled.div`
   }
 `;
 
-const TogglePairingTabs = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  position: absolute;
-  top: 150px;
-  left: 10px;
-`;
-
-const PairingTab = styled.div`
-  text-align: center;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
 const ConsiderList = styled.div`
   position: absolute;
   display: flex;
@@ -98,32 +55,6 @@ const ConsiderList = styled.div`
   width: 750px;
   right: 80px;
   top: 120px;
-`;
-
-const ConsiderPetCard = styled.div`
-  position: relative;
-  width: 250px;
-  flex-shrink: 0;
-`;
-
-const ConsiderImg = styled.img`
-  width: 250px;
-  height: 250px;
-  object-fit: cover;
-  object-position: center;
-`;
-
-const ConsiderTitle = styled.div``;
-
-const NotConsiderBtn = styled.div`
-  position: absolute;
-  right: 5px;
-  bottom: 0;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
 `;
 
 const UpcomingListContainer = styled.div`
@@ -142,7 +73,6 @@ const Pairing: React.FC = () => {
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
   const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
-
   const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1);
   const [tab, setTab] = useState<string>("pairing");
   const chosenIdRef = useRef<number[]>([]);
@@ -258,63 +188,53 @@ const Pairing: React.FC = () => {
     dispatch(setUpcomingDateList(upcomingDate));
   }
 
+  async function deleteConsiderAndUpdateList(id: number) {
+    const q = query(
+      collection(
+        db,
+        "memberProfiles",
+        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+        "considerLists"
+      ),
+      where("id", "==", id)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (info) => {
+      await deleteDoc(
+        doc(
+          db,
+          "memberProfiles",
+          "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+          "considerLists",
+          info.id
+        )
+      );
+      getListsData();
+
+      await addDoc(
+        collection(
+          db,
+          "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
+        ),
+        { id: id }
+      );
+    });
+  }
+  if (!dating.allCards) return null;
   return (
     <>
-      <TogglePairingTabs>
-        <PairingTab onClick={() => setTab("pairing")}>配對系統</PairingTab>
-        <PairingTab
-          onClick={() => {
-            setTab("considerAdopt");
-            getListsData();
-            setConsiderDetail(false);
-          }}
-        >
-          考慮領養清單
-        </PairingTab>
-        <PairingTab
-          onClick={() => {
-            setTab("upcomingDate");
-            getUpcomingListData();
-          }}
-        >
-          即將到來的約會
-        </PairingTab>
-      </TogglePairingTabs>
+      <TogglePairingTabs
+        setTab={setTab}
+        getListsData={getListsData}
+        setConsiderDetail={setConsiderDetail}
+        getUpcomingListData={getUpcomingListData}
+      />
       {tab === "pairing" ? (
         <>
-          <SettingPreference src={setting} alt="" />
-          <SettingSelectContainer>
-            <SettingOption
-              onClick={() => {
-                setPreference({ ...preference, kind: "%E7%8B%97" });
-              }}
-            >
-              狗
-            </SettingOption>
-            <SettingOption
-              onClick={() => {
-                setPreference({ ...preference, kind: "%E8%B2%93" });
-              }}
-            >
-              貓
-            </SettingOption>
-          </SettingSelectContainer>
-          <SettingSelectContainer style={{ top: "200px" }}>
-            {area.map((loc, index) => (
-              <SettingOption
-                id={`${index + 2}`}
-                key={index}
-                onClick={(e) => {
-                  setPreference({
-                    ...preference,
-                    location: (e.target as HTMLElement).id,
-                  });
-                }}
-              >
-                {loc}
-              </SettingOption>
-            ))}
-          </SettingSelectContainer>
+          <SettingPreference
+            setPreference={setPreference}
+            preference={preference}
+          />
           {dating.allCards.length <= 0 ? (
             <>
               <RequestMoreCardsBtn
@@ -343,59 +263,11 @@ const Pairing: React.FC = () => {
       )}
       {tab === "considerAdopt" && !considerDetail ? (
         <ConsiderList>
-          {dating.considerList.map((pet, index) => (
-            <ConsiderPetCard
-              key={index}
-              onClick={() => {
-                setNowChosenPetIndex(index);
-                setConsiderDetail(true);
-              }}
-            >
-              <ConsiderImg src={pet.image} />
-              <ConsiderTitle>
-                {area[Number(pet.area) - 2]}
-                {pet.color}
-                {pet.kind}
-              </ConsiderTitle>
-              <NotConsiderBtn
-                onClick={async () => {
-                  const q = query(
-                    collection(
-                      db,
-                      "memberProfiles",
-                      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                      "considerLists"
-                    ),
-                    where("id", "==", pet.id)
-                  );
-
-                  const querySnapshot = await getDocs(q);
-                  querySnapshot.forEach(async (info) => {
-                    await deleteDoc(
-                      doc(
-                        db,
-                        "memberProfiles",
-                        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                        "considerLists",
-                        info.id
-                      )
-                    );
-                    getListsData();
-
-                    await addDoc(
-                      collection(
-                        db,
-                        "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
-                      ),
-                      { id: pet.id }
-                    );
-                  });
-                }}
-              >
-                不考慮領養
-              </NotConsiderBtn>
-            </ConsiderPetCard>
-          ))}
+          <ConsiderEverySinglePetCard
+            setNowChosenPetIndex={setNowChosenPetIndex}
+            setConsiderDetail={setConsiderDetail}
+            deleteConsiderAndUpdateList={deleteConsiderAndUpdateList}
+          />
         </ConsiderList>
       ) : (
         ""

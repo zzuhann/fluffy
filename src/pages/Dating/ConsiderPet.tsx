@@ -63,6 +63,73 @@ const InviteInfoContainer = styled.div``;
 const InviteInfoLabel = styled.label``;
 const InviteInfoInput = styled.input``;
 
+const ConsiderPetCard = styled.div`
+  position: relative;
+  width: 250px;
+  flex-shrink: 0;
+`;
+
+const ConsiderImg = styled.img`
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  object-position: center;
+`;
+
+const ConsiderTitle = styled.div``;
+
+const NotConsiderBtn = styled.div`
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+type ConsiderSingleCard = {
+  setNowChosenPetIndex: (value: number) => void;
+  setConsiderDetail: (value: Boolean) => void;
+  deleteConsiderAndUpdateList: (value: number) => void;
+};
+
+export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
+  props
+) => {
+  const dating = useSelector<{ dating: Dating }>(
+    (state) => state.dating
+  ) as Dating;
+  return (
+    <>
+      {dating.considerList.map((pet, index) => (
+        <ConsiderPetCard key={index}>
+          <ConsiderImg
+            src={pet.image}
+            onClick={() => {
+              props.setNowChosenPetIndex(index);
+              props.setConsiderDetail(true);
+            }}
+          />
+          <ConsiderTitle>
+            {area[Number(pet.area) - 2]}
+            {pet.color}
+            {pet.kind}
+          </ConsiderTitle>
+          <NotConsiderBtn
+            onClick={async () => {
+              props.deleteConsiderAndUpdateList(pet.id);
+            }}
+          >
+            不考慮領養
+          </NotConsiderBtn>
+        </ConsiderPetCard>
+      ))}
+    </>
+  );
+};
+
 const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;

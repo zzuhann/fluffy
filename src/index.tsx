@@ -12,9 +12,6 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        {/* <Route path="products/:id" element={<Product />} />
-        <Route path="hello" element={<Hello />} />
-<Route path="checkout" element={<Checkout />} /> */}
         <Route path="dating" element={<Pairing />} />
         <Route path="profile" element={<ProfileLoginRegister />} />
         <Route path="*" element={<Navigate to="/" replace />} />

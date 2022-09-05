@@ -7,6 +7,34 @@ import { db } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { area } from "./ConstantInfo";
 
+// preference
+
+const SettingSelectContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 20px;
+  top: 150px;
+  width: 60px;
+`;
+
+const SettingTitle = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+`;
+
+const SettingOption = styled.div`
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+// card
+
 const PetCard = styled.div`
   width: 100%;
   position: absolute;
@@ -47,6 +75,46 @@ const Circle = styled(ChooseIcon)`
 interface PetInfos {
   petInfo: Card[];
 }
+type preference = {
+  setPreference: (value: { kind: string; location: string }) => void;
+  preference: { kind: string; location: string };
+};
+export const SettingPreference: React.FC<preference> = (props) => {
+  return (
+    <SettingSelectContainer>
+      <SettingTitle>種類</SettingTitle>
+      <SettingOption
+        onClick={() => {
+          props.setPreference({ ...props.preference, kind: "%E7%8B%97" });
+        }}
+      >
+        狗
+      </SettingOption>
+      <SettingOption
+        onClick={() => {
+          props.setPreference({ ...props.preference, kind: "%E8%B2%93" });
+        }}
+      >
+        貓
+      </SettingOption>
+      <SettingTitle>地區</SettingTitle>
+      {area.map((loc, index) => (
+        <SettingOption
+          id={`${index + 2}`}
+          key={index}
+          onClick={(e) => {
+            props.setPreference({
+              ...props.preference,
+              location: (e.target as HTMLElement).id,
+            });
+          }}
+        >
+          {loc}
+        </SettingOption>
+      ))}
+    </SettingSelectContainer>
+  );
+};
 
 const PetCardDetail: React.FC<PetInfos> = (props) => {
   const dating = useSelector<{ dating: Dating }>(

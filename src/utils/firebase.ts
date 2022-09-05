@@ -3,7 +3,17 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  addDoc,
+  doc,
+  setDoc,
+} from "firebase/firestore";
+import {} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDAkTylknc1WuxVFunAYYec33YBelSDBQ0",

@@ -49,7 +49,9 @@ const RegisterLoginBtn = styled.div`
 `;
 
 const ProfileLoginRegister = () => {
-  const profile = useSelector<{ dating: Profile }>((state) => state) as Profile;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   const dispatch = useDispatch();
   const imageRef = useRef<HTMLInputElement>(null);
 
