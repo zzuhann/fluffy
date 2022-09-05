@@ -102,7 +102,7 @@ const Header = () => {
       </NavBarContainer>
 
       {profile.isLogged ? (
-        <p>{profile.name} 您好！</p>
+        <p onClick={() => navigate("/profile")}>{profile.name} 您好！</p>
       ) : (
         <LoginRegisterBtnWrapper>
           <LoginRegisterBtn

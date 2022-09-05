@@ -94,8 +94,8 @@ const UpcomingList: React.FC<Props> = (props) => {
   }>({ name: "", birthYear: 0 });
   return (
     <>
-      {dating.upcomingDateList.map((date) => (
-        <UpcomingListCard>
+      {dating.upcomingDateList.map((date, index) => (
+        <UpcomingListCard key={index}>
           <InvitePetImg src={date.image} />
           <UpcomingInfoContainer>
             <UpcomingInfo>{date.id}</UpcomingInfo>
