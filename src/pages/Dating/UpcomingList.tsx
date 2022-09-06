@@ -92,6 +92,8 @@ const UpcomingList: React.FC<Props> = (props) => {
     name: string;
     birthYear: number;
   }>({ name: "", birthYear: 0 });
+
+  if (!dating.upcomingDateList) return null;
   return (
     <>
       {dating.upcomingDateList.map((date, index) => (

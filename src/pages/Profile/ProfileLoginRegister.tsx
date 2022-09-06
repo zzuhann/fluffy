@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -54,6 +55,7 @@ const ProfileLoginRegister = () => {
   ) as Profile;
   const dispatch = useDispatch();
   const imageRef = useRef<HTMLInputElement>(null);
+  let navigate = useNavigate();
 
   function createProfile() {
     if (!profile.name || !profile.email || !profile.password || !profile.img) {
@@ -67,6 +69,7 @@ const ProfileLoginRegister = () => {
         uploadImage(userUid, profile.img as File, profile.name);
         dispatch(afterRegisterSaveName());
         window.alert("註冊成功！");
+        navigate("/");
       }
     );
     if (null !== imageRef.current) {
@@ -80,6 +83,7 @@ const ProfileLoginRegister = () => {
       async (userCredential) => {
         window.alert("登入成功！");
         dispatch(clearProfileInfo());
+        navigate("/");
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
