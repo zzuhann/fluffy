@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import upload from "./plus.png";
-import { db, storage } from "../../utils/firebase";
+import { db, deleteFirebaseData, storage } from "../../utils/firebase";
 import {
   getDocs,
   collection,
@@ -129,7 +129,6 @@ type SimplePetCardType = {
   };
   getOwnPetList: () => void;
   setAddPet: (value: boolean) => void;
-  deleteOwnPet: (value: string) => void;
 };
 
 export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
@@ -159,7 +158,11 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
           <CloseBtn
             style={{ top: "50px" }}
             onClick={async () => {
-              props.deleteOwnPet(profile.ownPets[index].name);
+              deleteFirebaseData(
+                `/memberProfiles/${profile.uid}/ownPets`,
+                "name",
+                profile.ownPets[index].name
+              );
               window.alert("刪除完成！");
               props.getOwnPetList();
             }}

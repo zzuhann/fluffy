@@ -6,6 +6,7 @@ import { Card, Dating } from "../../reducers/dating";
 import { db } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { area } from "./constantInfo";
+import { Profile } from "../../reducers/profile";
 
 // preference
 
@@ -120,6 +121,9 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   const dispatch = useDispatch();
 
   return (
@@ -142,7 +146,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
               await addDoc(
                 collection(
                   db,
-                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
+                  `/memberProfiles/${profile.uid}/notConsiderLists`
                 ),
                 { id: info.id }
               );
@@ -156,10 +160,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
           <Circle
             onClick={async () => {
               await addDoc(
-                collection(
-                  db,
-                  "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/considerLists"
-                ),
+                collection(db, `/memberProfiles/${profile.uid}/considerLists`),
                 {
                   id: info.id,
                   area: info.area,

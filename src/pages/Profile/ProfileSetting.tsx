@@ -5,15 +5,7 @@ import { Profile, OwnPet } from "../../reducers/profile";
 import { RegisterLoginBtn } from "./ProfileLoginRegister";
 import UserInfos from "./UserInfos";
 import { db, storage } from "../../utils/firebase";
-import {
-  getDocs,
-  collection,
-  addDoc,
-  doc,
-  query,
-  where,
-  deleteDoc,
-} from "firebase/firestore";
+import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
@@ -169,21 +161,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     );
   }
 
-  async function deleteOwnPet(name: string) {
-    const q = query(
-      collection(db, `/memberProfiles/${profile.uid}/ownPets`),
-      where("name", "==", name)
-    );
-    const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
-    querySnapshot.forEach(async (d) => {
-      promises.push(
-        deleteDoc(doc(db, `/memberProfiles/${profile.uid}/ownPets`, d.id))
-      );
-    });
-    await Promise.all(promises);
-  }
-
   return (
     <Wrapper>
       <SidebarProfileTab>
@@ -231,7 +208,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
             setPetNewInfo={setPetNewInfo}
             getOwnPetList={getOwnPetList}
             setAddPet={setAddPet}
-            deleteOwnPet={deleteOwnPet}
           />
         ) : (
           ""
@@ -264,6 +240,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         ) : (
           ""
         )}
+        {/* {selectedTab === tabs[2]? } */}
       </MainInfo>
     </Wrapper>
   );

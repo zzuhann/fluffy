@@ -4,10 +4,11 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { area, shelterInfo } from "./constantInfo";
 import { Dating } from "../../reducers/dating";
-import { db } from "../../utils/firebase";
+import { db, deleteFirebaseData } from "../../utils/firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
 import { setUpcomingDateList } from "../../functions/datingReducerFunction";
+import { Profile } from "../../reducers/profile";
 
 const PetCard = styled.div`
   width: 400px;
@@ -92,7 +93,6 @@ const NotConsiderBtn = styled.div`
 type ConsiderSingleCard = {
   setNowChosenPetIndex: (value: number) => void;
   setConsiderDetail: (value: Boolean) => void;
-  deleteConsiderAndUpdateList: (value: number) => void;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -101,6 +101,9 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   if (!dating.considerList) return null;
   return (
     <>
@@ -120,7 +123,16 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           </ConsiderTitle>
           <NotConsiderBtn
             onClick={async () => {
-              props.deleteConsiderAndUpdateList(pet.id);
+              deleteFirebaseData(
+                `/memberProfiles/${profile.uid}/considerLists`,
+                "id",
+                pet.id
+              );
+              getListsData();
+              await addDoc(
+                collection(db, `/memberProfiles/${profile.uid}/considerLists`),
+                { id: pet.id }
+              );
             }}
           >
             不考慮領養
@@ -138,6 +150,9 @@ const ConsiderPetDetail = (props: {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   const dispatch = useDispatch();
   const [inviteDatingInfo, setInviteDatingInfo] = useState<{
     name: string;
@@ -148,10 +163,7 @@ const ConsiderPetDetail = (props: {
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
-      collection(
-        db,
-        "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/upcomingDates"
-      ),
+      collection(db, `/memberProfiles/${profile.uid}/upcomingDates`),
       {
         id: list.id,
         area: list.area,
@@ -197,12 +209,7 @@ const ConsiderPetDetail = (props: {
 
   async function getUpcomingListData() {
     let upcomingDate: InviteDating[] = [];
-    const q = collection(
-      db,
-      "memberProfiles",
-      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-      "upcomingDates"
-    );
+    const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       upcomingDate.push(info.data() as InviteDating);
@@ -372,3 +379,6 @@ const ConsiderPetDetail = (props: {
 };
 
 export default ConsiderPetDetail;
+function getListsData() {
+  throw new Error("Function not implemented.");
+}

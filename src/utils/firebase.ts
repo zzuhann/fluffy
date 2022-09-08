@@ -1,6 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
@@ -41,3 +48,17 @@ export const uploadImage = (uid: string, file: File, name: string) => {
     }
   );
 };
+
+export async function deleteFirebaseData(
+  url: string,
+  field: string,
+  target: string | number
+) {
+  const q = query(collection(db, url), where(field, "==", target));
+  const querySnapshot = await getDocs(q);
+  const promises: any[] = [];
+  querySnapshot.forEach(async (d) => {
+    promises.push(deleteDoc(doc(db, url, d.id)));
+  });
+  await Promise.all(promises);
+}
