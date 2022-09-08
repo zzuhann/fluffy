@@ -198,28 +198,33 @@ const Pairing: React.FC = () => {
       ),
       where("id", "==", id)
     );
+
     const querySnapshot = await getDocs(q);
+    const promises: any[] = [];
     querySnapshot.forEach(async (info) => {
-      await deleteDoc(
-        doc(
-          db,
-          "memberProfiles",
-          "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-          "considerLists",
-          info.id
+      promises.push(
+        deleteDoc(
+          doc(
+            db,
+            "memberProfiles",
+            "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+            "considerLists",
+            info.id
+          )
         )
       );
-      getListsData();
-
-      await addDoc(
-        collection(
-          db,
-          "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
-        ),
-        { id: id }
-      );
     });
+    await Promise.all(promises);
+    getListsData();
+    await addDoc(
+      collection(
+        db,
+        "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
+      ),
+      { id: id }
+    );
   }
+
   if (!dating.allCards) return null;
   return (
     <>

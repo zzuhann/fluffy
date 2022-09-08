@@ -93,6 +93,35 @@ const UpcomingList: React.FC<Props> = (props) => {
     birthYear: number;
   }>({ name: "", birthYear: 0 });
 
+  async function deleteUpcomingDate(id: number) {
+    const q = query(
+      collection(
+        db,
+        "memberProfiles",
+        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+        "upcomingDates"
+      ),
+      where("id", "==", id)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const promises: any[] = [];
+    querySnapshot.forEach(async (info) => {
+      promises.push(
+        deleteDoc(
+          doc(
+            db,
+            "memberProfiles",
+            "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+            "upcomingDates",
+            info.id
+          )
+        )
+      );
+    });
+    await Promise.all(promises);
+  }
+
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -160,32 +189,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                     </AnswerBtn>
                     <AnswerBtn
                       onClick={async () => {
-                        const q = query(
-                          collection(
-                            db,
-                            "memberProfiles",
-                            "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                            "upcomingDates"
-                          ),
-                          where("id", "==", date.id)
-                        );
-
-                        const querySnapshot = await getDocs(q);
-                        // await 的 scope 只存在foreach 裡面 foreach 本身沒有 await => for loop
-                        // promise all
-                        // promise all 傳 array, 裡面是 promise, ex delete doc 是 promise
-                        for (let i = 0; i < querySnapshot.length; i++)
-                          querySnapshot.forEach(async (info) => {
-                            await deleteDoc(
-                              doc(
-                                db,
-                                "memberProfiles",
-                                "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                                "upcomingDates",
-                                info.id
-                              )
-                            );
-                          });
+                        deleteUpcomingDate(date.id);
                         window.alert("好ㄛ🙆");
                         props.getUpcomingListData();
                       }}
@@ -250,28 +254,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                                 birthYear: adoptPetInfo.birthYear,
                               }
                             );
-                            const q = query(
-                              collection(
-                                db,
-                                "memberProfiles",
-                                "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                                "upcomingDates"
-                              ),
-                              where("id", "==", date.id)
-                            );
-
-                            const querySnapshot = await getDocs(q);
-                            querySnapshot.forEach(async (info) => {
-                              await deleteDoc(
-                                doc(
-                                  db,
-                                  "memberProfiles",
-                                  "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                                  "upcomingDates",
-                                  info.id
-                                )
-                              );
-                            });
+                            deleteUpcomingDate(date.id);
                             window.alert("已將領養寵物新增至您的會員資料！");
                             props.getUpcomingListData();
                           }}
@@ -291,29 +274,8 @@ const UpcomingList: React.FC<Props> = (props) => {
           ) : (
             <NotConsiderBtn
               onClick={async () => {
-                const q = query(
-                  collection(
-                    db,
-                    "memberProfiles",
-                    "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                    "upcomingDates"
-                  ),
-                  where("id", "==", date.id)
-                );
-
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(async (info) => {
-                  await deleteDoc(
-                    doc(
-                      db,
-                      "memberProfiles",
-                      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                      "upcomingDates",
-                      info.id
-                    )
-                  );
-                  props.getUpcomingListData();
-                });
+                deleteUpcomingDate(date.id);
+                props.getUpcomingListData();
               }}
             >
               取消此次約會
