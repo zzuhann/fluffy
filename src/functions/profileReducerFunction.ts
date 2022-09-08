@@ -1,4 +1,4 @@
-import { ActionType } from "../reducers/profile";
+import { ActionType, OwnPet } from "../reducers/profile";
 
 export function setName(name: string) {
   return {
@@ -58,5 +58,12 @@ export function targetRegisterOrLogin(target: string) {
 export function afterRegisterSaveName() {
   return {
     type: ActionType.afterRegisterSaveName,
+  };
+}
+
+export function setOwnPets(ownPets: OwnPet[]) {
+  return {
+    type: ActionType.setOwnPets,
+    payload: { ownPets },
   };
 }

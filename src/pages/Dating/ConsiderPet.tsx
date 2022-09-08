@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { area, shelterInfo } from "./ConstantInfo";
+import { area, shelterInfo } from "./constantInfo";
 import { Dating } from "../../reducers/dating";
 import { db } from "../../utils/firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";

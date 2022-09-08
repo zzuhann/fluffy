@@ -5,7 +5,7 @@ import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
 import { Card, Dating } from "../../reducers/dating";
 import { db } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import { area } from "./ConstantInfo";
+import { area } from "./constantInfo";
 
 // preference
 

@@ -11,7 +11,7 @@ import {
   doc,
   addDoc,
 } from "firebase/firestore";
-import { shelterInfo } from "./ConstantInfo";
+import { shelterInfo } from "./constantInfo";
 import { Dating } from "../../reducers/dating";
 
 const UpcomingListCard = styled.div`
@@ -171,17 +171,21 @@ const UpcomingList: React.FC<Props> = (props) => {
                         );
 
                         const querySnapshot = await getDocs(q);
-                        querySnapshot.forEach(async (info) => {
-                          await deleteDoc(
-                            doc(
-                              db,
-                              "memberProfiles",
-                              "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                              "upcomingDates",
-                              info.id
-                            )
-                          );
-                        });
+                        // await 的 scope 只存在foreach 裡面 foreach 本身沒有 await => for loop
+                        // promise all
+                        // promise all 傳 array, 裡面是 promise, ex delete doc 是 promise
+                        for (let i = 0; i < querySnapshot.length; i++)
+                          querySnapshot.forEach(async (info) => {
+                            await deleteDoc(
+                              doc(
+                                db,
+                                "memberProfiles",
+                                "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
+                                "upcomingDates",
+                                info.id
+                              )
+                            );
+                          });
                         window.alert("好ㄛ🙆");
                         props.getUpcomingListData();
                       }}
@@ -241,6 +245,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                                 shelterName: date.shelterName,
                                 kind: date.kind,
                                 image: date.image,
+                                sex: date.sex,
                                 name: adoptPetInfo.name,
                                 birthYear: adoptPetInfo.birthYear,
                               }

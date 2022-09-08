@@ -39,6 +39,32 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+
+  function uploadProfileData() {
+    const storageRef = ref(storage, `images/${profile.uid}`);
+    const uploadTask = uploadBytesResumable(storageRef, props.img.file as File);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          dispatch(setName(props.newName));
+          dispatch(setImage(downloadURL));
+          const userProfileRef = doc(db, "memberProfiles", profile.uid);
+          await updateDoc(userProfileRef, {
+            name: props.newName,
+            img: downloadURL,
+          });
+        });
+      }
+    );
+  }
+
   return (
     <UserInfo>
       <EditContainer>
@@ -77,34 +103,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
             window.alert("未更新資料或更新資料不可為空值");
             return;
           }
-
-          const storageRef = ref(storage, `images/${profile.uid}`);
-          const uploadTask = uploadBytesResumable(
-            storageRef,
-            props.img.file as File
-          );
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              console.log("upload");
-            },
-            (error) => {
-              console.log(error);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref).then(
-                async (downloadURL) => {
-                  dispatch(setName(props.newName));
-                  dispatch(setImage(downloadURL));
-                  const userProfileRef = doc(db, "memberProfiles", profile.uid);
-                  await updateDoc(userProfileRef, {
-                    name: props.newName,
-                    img: downloadURL,
-                  });
-                }
-              );
-            }
-          );
+          uploadProfileData();
         }}
       >
         更新個人資料

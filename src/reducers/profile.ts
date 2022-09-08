@@ -8,6 +8,7 @@ export enum ActionType {
   setProfileUid,
   clickLoginOrRegister,
   afterRegisterSaveName,
+  setOwnPets,
 }
 
 interface setProfileName {
@@ -53,6 +54,11 @@ interface afterRegisterSaveName {
   type: ActionType.afterRegisterSaveName;
 }
 
+interface setOwnPets {
+  type: ActionType.setOwnPets;
+  payload: { ownPets: OwnPet[] };
+}
+
 export type ProfileActions =
   | setProfileName
   | setProfileEmail
@@ -62,7 +68,17 @@ export type ProfileActions =
   | checkIsLogged
   | setProfileUid
   | clickLoginOrRegister
-  | afterRegisterSaveName;
+  | afterRegisterSaveName
+  | setOwnPets;
+
+export type OwnPet = {
+  name: string;
+  img: string;
+  birthYear: number;
+  kind: string;
+  sex: string;
+  shelterName: string | boolean;
+};
 
 export type Profile = {
   name: string;
@@ -72,6 +88,7 @@ export type Profile = {
   isLogged: boolean;
   clickLoginOrRegister: string;
   uid: string;
+  ownPets: OwnPet[];
 };
 
 const initialState: Profile = {
@@ -82,6 +99,7 @@ const initialState: Profile = {
   isLogged: false,
   clickLoginOrRegister: "",
   uid: "",
+  ownPets: [],
 };
 
 const ProfileReducer = (
@@ -120,6 +138,9 @@ const ProfileReducer = (
     }
     case ActionType.clickLoginOrRegister: {
       return { ...state, clickLoginOrRegister: action.payload.target };
+    }
+    case ActionType.setOwnPets: {
+      return { ...state, ownPets: action.payload.ownPets };
     }
     default:
       return state;
