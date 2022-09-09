@@ -12,6 +12,7 @@ import {
   query,
   where,
   addDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { EditContainer, EditInfoLabel, EditInfoInput } from "./ProfileSetting";
@@ -229,7 +230,7 @@ export const PetDiary = () => {
 
   async function addPetDiaryDoc(imgURL: string) {
     await addDoc(collection(db, `/petDiaries`), {
-      ...newDiaryContext,
+      ...uploadDiaryInfo,
       img: imgURL,
       postTime: Date.now(),
       author: { img: profile.img, name: profile.name },
@@ -237,11 +238,8 @@ export const PetDiary = () => {
       likedBy: [],
       authorUid: profile.uid,
     });
-    window.alert("上傳成功！");
-    getAuthorPetDiary(profile.uid);
-    setEditDiaryBoxOpen(false);
-    setNewDiaryContext({ petName: "", takePhotoTime: 0, context: "" });
-    setNewDiaryImg({ file: null, url: "" });
+    setUploadDiaryInfo({ petName: "", takePhotoTime: 0, context: "" });
+    setDiaryImg({ file: null, url: "" });
   }
 
   async function updatePetDiaryInfo(imgURL: string) {
@@ -316,6 +314,26 @@ export const PetDiary = () => {
       authorPetDiary.push(info.data() as PetDiaryType);
     });
     dispatch(setOwnPetDiary(authorPetDiary));
+  }
+
+  async function deleteFirebaseData(
+    url: string,
+    field: string,
+    target: string | number,
+    field2: string,
+    target2: string
+  ) {
+    const q = query(
+      collection(db, url),
+      where(field, "==", target),
+      where(field2, "==", target2)
+    );
+    const querySnapshot = await getDocs(q);
+    const promises: any[] = [];
+    querySnapshot.forEach(async (d) => {
+      promises.push(deleteDoc(doc(db, url, d.id)));
+    });
+    await Promise.all(promises);
   }
 
   return (
@@ -422,6 +440,10 @@ export const PetDiary = () => {
                   diaryImg.file as File
                 );
               }
+              setWriteDiaryBoxOpen(false);
+              window.alert("上傳成功！");
+              getAuthorPetDiary(profile.uid);
+              setEditDiaryBoxOpen(false);
             }}
           >
             上傳日記
@@ -559,7 +581,22 @@ export const PetDiary = () => {
                 >
                   編輯
                 </CloseBtn>
-                <CloseBtn style={{ top: "50px" }}>刪除</CloseBtn>
+                <CloseBtn
+                  style={{ top: "50px" }}
+                  onClick={async () => {
+                    await deleteFirebaseData(
+                      `/petDiaries`,
+                      "postTime",
+                      diary.postTime,
+                      "authorUid",
+                      profile.uid
+                    );
+                    window.alert("刪除完成！");
+                    getAuthorPetDiary(profile.uid);
+                  }}
+                >
+                  刪除
+                </CloseBtn>
                 <PetSimpleImage src={diary.img} alt="" />
                 <PetSimpleInfos>
                   <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
