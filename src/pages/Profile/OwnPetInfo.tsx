@@ -400,7 +400,7 @@ type AddPetType = {
     birthYear: number;
   }) => void;
   setOwnPetDetail: (value: boolean) => void;
-  addPetDataFirebase: () => void;
+  addPetDataFirebase: (value: File) => void;
   petNewImg: { file: File | string; url: string };
   setPetNewImg: (value: { file: File | string; url: string }) => void;
 };
@@ -412,17 +412,17 @@ export const AddPet: React.FC<AddPetType> = (props) => {
       file: file[0],
       url: URL.createObjectURL(file[0]),
     };
-    props.setPetNewImg(newImage);
+    props.setPetImg(newImage);
   }
   return (
     <PetDetailCard>
       <CloseBtn onClick={() => props.setAddPet(false)}>X</CloseBtn>
-      {props.petNewImg.url ? (
+      {props.petImg.url ? (
         <PreviewContainer>
-          <PreviewImg src={props.petNewImg.url} />
+          <PreviewImg src={props.petImg.url} />
           <PreviewCancelBtn
             onClick={() => {
-              props.setPetNewImg({ file: "", url: "" });
+              props.setPetImg({ file: "", url: "" });
             }}
           >
             取消
@@ -504,8 +504,8 @@ export const AddPet: React.FC<AddPetType> = (props) => {
             window.alert("請填寫完整寵物資料");
             return;
           }
-          props.setOwnPetDetail(false);
-          props.addPetDataFirebase();
+          props.setAddPet(false);
+          props.addPetDataFirebase(props.petImg.file as File);
         }}
       >
         上傳寵物資料

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Profile, OwnPet } from "../../reducers/profile";
 import { RegisterLoginBtn } from "./ProfileLoginRegister";
 import UserInfos from "./UserInfos";
+import { PetDiary } from "./PetDiary";
 import { db, storage } from "../../utils/firebase";
 import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
@@ -82,24 +83,24 @@ type profileSettingType = {
   signOutProfile: () => void;
 };
 
+type UploadImgType = { file: File | string; url: string };
+const uploadImgInitialState: UploadImgType = {
+  file: "",
+  url: "",
+};
+
 const ProfileSetting: React.FC<profileSettingType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
-  const [img, setImg] = useState<{ file: File | string; url: string }>({
-    file: "",
-    url: "",
-  });
+  const [img, setImg] = useState<UploadImgType>(uploadImgInitialState);
   const [newName, setNewName] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState<string>("info");
   const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
   const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
   const [addPet, setAddPet] = useState<boolean>(false);
-  const [petImg, setPetImg] = useState<{ file: File | string; url: string }>({
-    file: "",
-    url: "",
-  });
+  const [petImg, setPetImg] = useState<UploadImgType>(uploadImgInitialState);
   const [addPetInfo, setAddPetInfo] = useState<{
     name: string;
     sex: string;
@@ -107,13 +108,9 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     kind: string;
     birthYear: number;
   }>({ name: "", sex: "", shelterName: "false", kind: "", birthYear: 0 });
-  const [petNewImg, setPetNewImg] = useState<{
-    file: File | string;
-    url: string;
-  }>({
-    file: "",
-    url: "",
-  });
+  const [petNewImg, setPetNewImg] = useState<UploadImgType>(
+    uploadImgInitialState
+  );
   const [petNewInfo, setPetNewInfo] = useState<{
     name: string;
     birthYear: number;
@@ -137,9 +134,9 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     dispatch(setOwnPets(allOwnPet));
   }
 
-  function addPetDataFirebase() {
+  function addPetDataFirebase(newPetImg: File) {
     const storageRef = ref(storage, `pets/${profile.uid}-${addPetInfo.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, petImg.file as File);
+    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -240,7 +237,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         ) : (
           ""
         )}
-        {/* {selectedTab === tabs[2]? } */}
+        {selectedTab === tabs[2] ? <PetDiary /> : ""}
       </MainInfo>
     </Wrapper>
   );

@@ -6,15 +6,16 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { setName, setImage } from "../functions/profileReducerFunction";
 
 import {
   checkIfLogged,
   targetRegisterOrLogin,
   setProfileUid,
+  setOwnPets,
 } from "../functions/profileReducerFunction";
-import { Profile } from "../reducers/profile";
+import { OwnPet, Profile } from "../reducers/profile";
 
 const Wrapper = styled.div`
   display: flex;
@@ -60,6 +61,7 @@ const Header = () => {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        getOwnPetList(user.uid);
         dispatch(setProfileUid(user.uid));
         dispatch(checkIfLogged(true));
         const docRef = doc(db, "memberProfiles", user.uid);
@@ -75,6 +77,16 @@ const Header = () => {
       }
     });
   }, []);
+
+  async function getOwnPetList(id: string) {
+    const allOwnPet: OwnPet[] = [];
+    const q = collection(db, `memberProfiles/${id}/ownPets`);
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      allOwnPet.push(info.data() as OwnPet);
+    });
+    dispatch(setOwnPets(allOwnPet));
+  }
 
   return (
     <Wrapper>
