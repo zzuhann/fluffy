@@ -10,6 +10,7 @@ import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
+import { ContextDetails, PetArticle } from "./PetArticle";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -59,12 +60,15 @@ const SettingTab = styled.div`
 export const EditContainer = styled.div`
   display: flex;
 `;
-export const EditInfoLabel = styled.label``;
+export const EditInfoLabel = styled.label`
+  flex-shrink: 0;
+`;
 export const EditInfoInput = styled.input``;
 
 const MainInfo = styled.div`
   position: relative;
   min-height: 100vh;
+  width: 100%;
 `;
 
 const CloseBtn = styled.div`
@@ -79,6 +83,51 @@ const CloseBtn = styled.div`
   z-index: 99;
 `;
 
+const SaveBtn = styled.div`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+const PreviewContainer = styled.div`
+  position: relative;
+  width: 350px;
+  height: 200px;
+`;
+
+const PreviewImg = styled.img`
+  width: 350px;
+  height: 200px;
+  object-fit: cover;
+  position: relative;
+`;
+
+const PreviewCancelBtn = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+const PetDetailImg = styled.label`
+  width: 350px;
+  height: 200px;
+  object-fit: cover;
+  background-color: transparent;
+`;
+const PetDetailInput = styled.input`
+  display: none;
+`;
+
 type profileSettingType = {
   signOutProfile: () => void;
 };
@@ -87,6 +136,11 @@ type UploadImgType = { file: File | string; url: string };
 const uploadImgInitialState: UploadImgType = {
   file: "",
   url: "",
+};
+
+type AddArticleInfo = {
+  title: string;
+  context: string;
 };
 
 const ProfileSetting: React.FC<profileSettingType> = (props) => {
@@ -115,6 +169,13 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     name: string;
     birthYear: number;
   }>({ name: "", birthYear: 0 });
+  const [articleCover, setArticleCover] = useState<UploadImgType>(
+    uploadImgInitialState
+  );
+  const [addArticleInfo, setAddArticleInfo] = useState<AddArticleInfo>({
+    title: "",
+    context: "",
+  });
   const tabs = ["info", "ownpet", "diary", "articles", "lostpet"];
 
   useEffect(() => {
@@ -156,6 +217,51 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         });
       }
     );
+  }
+
+  function updateInputImage(file: FileList) {
+    if (!file) return;
+    const newImage = {
+      file: file[0],
+      url: URL.createObjectURL(file[0]),
+    };
+    setArticleCover(newImage);
+  }
+
+  function addPetArticleDataFirebase(photoName: string, newPetImg: File) {
+    const storageRef = ref(storage, `petArticles/${photoName}`);
+    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          addPetArticleDoc(downloadURL);
+        });
+      }
+    );
+  }
+
+  async function addPetArticleDoc(imgURL: string) {
+    await addDoc(collection(db, `/petArticles`), {
+      ...addArticleInfo,
+      img: imgURL,
+      postTime: Date.now(),
+      author: { img: profile.img, name: profile.name },
+      commentCount: 0,
+      likedBy: [],
+      authorUid: profile.uid,
+    });
+    setAddArticleInfo({
+      title: "",
+      context: "",
+    });
+    setArticleCover({ file: "", url: "" });
   }
 
   return (
@@ -238,6 +344,77 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ""
         )}
         {selectedTab === tabs[2] ? <PetDiary /> : ""}
+        {selectedTab === tabs[3] ? (
+          <div className="editContainer">
+            <EditContainer>
+              <EditInfoLabel htmlFor="title">Title: </EditInfoLabel>
+              <EditInfoInput
+                id="title"
+                value={addArticleInfo.title}
+                onChange={(e) => {
+                  setAddArticleInfo({
+                    ...addArticleInfo,
+                    title: e.target.value,
+                  });
+                }}
+              />
+            </EditContainer>
+            <EditContainer>
+              <EditInfoLabel htmlFor="cover">文章封面: </EditInfoLabel>
+              {articleCover.url ? (
+                <PreviewContainer>
+                  <PreviewImg src={articleCover.url} alt="" />
+                  <PreviewCancelBtn
+                    onClick={() => {
+                      setArticleCover({ file: "", url: "" });
+                    }}
+                  >
+                    取消
+                  </PreviewCancelBtn>
+                </PreviewContainer>
+              ) : (
+                ""
+              )}
+              <PetDetailImg htmlFor="cover"></PetDetailImg>
+              <PetDetailInput
+                id="cover"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  updateInputImage(e.target.files as FileList);
+                }}
+              />
+            </EditContainer>
+
+            <PetArticle
+              setAddArticleInfo={setAddArticleInfo}
+              addArticleInfo={addArticleInfo}
+            />
+            <ContextDetails addArticleInfo={addArticleInfo} />
+            <SaveBtn
+              onClick={() => {
+                if (!addArticleInfo.title || !addArticleInfo.context) {
+                  window.alert("請填寫完整文章資訊");
+                  return;
+                }
+                if (!articleCover.url) {
+                  window.alert("請上傳文章封面");
+                  return;
+                }
+                if (articleCover.file instanceof File) {
+                  addPetArticleDataFirebase(
+                    articleCover.file.name,
+                    articleCover.file
+                  );
+                }
+              }}
+            >
+              上傳文章
+            </SaveBtn>
+          </div>
+        ) : (
+          ""
+        )}
       </MainInfo>
     </Wrapper>
   );
