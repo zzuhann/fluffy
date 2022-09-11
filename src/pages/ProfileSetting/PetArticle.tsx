@@ -90,7 +90,6 @@ export const PetArticle: React.FC<{
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       setAddArticleInfo({ ...addArticleInfo, context: html });
-      console.log(html);
     },
   });
 
@@ -120,6 +119,51 @@ export const ContextDetails: React.FC<{
       <MirrorTitle>文章預覽</MirrorTitle>
       <ProseMirror className="ProseMirror">
         {parse(addArticleInfo.context)}
+      </ProseMirror>
+    </>
+  );
+};
+
+export const EditPetArticle: React.FC<{
+  setEditArticleContext: (value: { title: string; context: string }) => void;
+  editArticleContext: {
+    title: string;
+    context: string;
+  };
+}> = ({ editArticleContext, setEditArticleContext }) => {
+  // useEffect(() => {
+  //   setEditArticleContext({ ...editArticleContext, context: "" });
+  // }, []);
+
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: `${editArticleContext.context}`,
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      setEditArticleContext({ ...editArticleContext, context: html });
+    },
+  });
+
+  return (
+    <div className="textEditor">
+      <MenuBar editor={editor} />
+      <EditorContent editor={editor} />
+    </div>
+  );
+};
+
+export const EditContextDetails: React.FC<{
+  editArticleContext: {
+    title: string;
+    context: string;
+  };
+}> = ({ editArticleContext }) => {
+  console.log(editArticleContext);
+  return (
+    <>
+      <MirrorTitle>文章預覽</MirrorTitle>
+      <ProseMirror className="ProseMirror">
+        {parse(editArticleContext.context)}
       </ProseMirror>
     </>
   );

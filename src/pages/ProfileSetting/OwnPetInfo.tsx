@@ -3,7 +3,13 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import upload from "./plus.png";
-import { db, deleteFirebaseData, storage } from "../../utils/firebase";
+import {
+  addDataWithUploadImage,
+  db,
+  deleteFirebaseData,
+  storage,
+  updateUseStateInputImage,
+} from "../../utils/firebase";
 import {
   getDocs,
   collection,
@@ -291,15 +297,6 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
     }
   }
 
-  function updateInputImage(file: FileList) {
-    if (!file) return;
-    const newImage = {
-      file: file[0],
-      url: URL.createObjectURL(file[0]),
-    };
-    props.setPetNewImg(newImage);
-  }
-
   return (
     <PetDetailCard>
       <CloseBtn onClick={() => props.setOwnPetDetail(false)}>X</CloseBtn>
@@ -324,7 +321,10 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         type="file"
         accept="image/*"
         onChange={(e) => {
-          updateInputImage(e.target.files as FileList);
+          updateUseStateInputImage(
+            e.target.files as FileList,
+            props.setPetNewImg
+          );
         }}
       />
       <EditContainer>
@@ -400,20 +400,16 @@ type AddPetType = {
     birthYear: number;
   }) => void;
   setOwnPetDetail: (value: boolean) => void;
-  addPetDataFirebase: (value: File) => void;
+  addDocOwnPets: (value: string) => void;
   petNewImg: { file: File | string; url: string };
   setPetNewImg: (value: { file: File | string; url: string }) => void;
 };
 
 export const AddPet: React.FC<AddPetType> = (props) => {
-  function updateInputImage(file: FileList) {
-    if (!file) return;
-    const newImage = {
-      file: file[0],
-      url: URL.createObjectURL(file[0]),
-    };
-    props.setPetImg(newImage);
-  }
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
+
   return (
     <PetDetailCard>
       <CloseBtn onClick={() => props.setAddPet(false)}>X</CloseBtn>
@@ -440,7 +436,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
         type="file"
         accept="image/*"
         onChange={(e) => {
-          updateInputImage(e.target.files as FileList);
+          updateUseStateInputImage(e.target.files as FileList, props.setPetImg);
         }}
       />
       <EditContainer>
@@ -505,7 +501,11 @@ export const AddPet: React.FC<AddPetType> = (props) => {
             return;
           }
           props.setAddPet(false);
-          props.addPetDataFirebase(props.petImg.file as File);
+          addDataWithUploadImage(
+            `pets/${profile.uid}-${props.addPetInfo.name}`,
+            props.petImg.file as File,
+            props.addDocOwnPets
+          );
         }}
       >
         上傳寵物資料

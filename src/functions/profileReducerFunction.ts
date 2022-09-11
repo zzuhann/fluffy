@@ -1,4 +1,9 @@
-import { ActionType, OwnPet, PetDiaryType } from "../reducers/profile";
+import {
+  ActionType,
+  OwnArticle,
+  OwnPet,
+  PetDiaryType,
+} from "../reducers/profile";
 
 export function setName(name: string) {
   return {
@@ -72,5 +77,12 @@ export function setOwnPetDiary(petDiary: PetDiaryType[]) {
   return {
     type: ActionType.setOwnPetDiary,
     payload: { petDiary },
+  };
+}
+
+export function setOwnArticle(ownArticles: OwnArticle[]) {
+  return {
+    type: ActionType.setOwnArticle,
+    payload: { ownArticles },
   };
 }

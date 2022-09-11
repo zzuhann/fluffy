@@ -3,7 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile, PetDiaryType } from "../../reducers/profile";
 import upload from "./plus.png";
-import { db, storage } from "../../utils/firebase";
+import {
+  addDataWithUploadImage,
+  db,
+  deleteFirebaseDataMutipleWhere,
+  storage,
+  updateFirebaseDataMutipleWhere,
+  updateUseStateInputImage,
+} from "../../utils/firebase";
 import {
   getDocs,
   collection,
@@ -12,7 +19,6 @@ import {
   query,
   where,
   addDoc,
-  deleteDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { EditContainer, EditInfoLabel, EditInfoInput } from "./ProfileSetting";
@@ -172,43 +178,6 @@ export const PetDiary = () => {
     });
   }, []);
 
-  function updateInputImage(file: FileList) {
-    if (!file) return;
-    const newImage = {
-      file: file[0],
-      url: URL.createObjectURL(file[0]),
-    };
-    setDiaryImg(newImage);
-  }
-
-  function updateNewInputImage(file: FileList) {
-    if (!file) return;
-    const newImage = {
-      file: file[0],
-      url: URL.createObjectURL(file[0]),
-    };
-    setNewDiaryImg(newImage);
-  }
-
-  function addPetDiaryDataFirebase(photoName: string, newPetImg: File) {
-    const storageRef = ref(storage, `petDiary/${photoName}`);
-    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("upload");
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          addPetDiaryDoc(downloadURL);
-        });
-      }
-    );
-  }
-
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petDiary/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
@@ -240,6 +209,10 @@ export const PetDiary = () => {
     });
     setUploadDiaryInfo({ petName: "", takePhotoTime: 0, context: "" });
     setDiaryImg({ file: null, url: "" });
+    setWriteDiaryBoxOpen(false);
+    window.alert("上傳成功！");
+    getAuthorPetDiary(profile.uid);
+    setEditDiaryBoxOpen(false);
   }
 
   async function updatePetDiaryInfo(imgURL: string) {
@@ -297,7 +270,19 @@ export const PetDiary = () => {
       window.alert("更新完成！");
       setEditDiaryBoxOpen(false);
     } else {
-      await updatePetDiaryInfo("");
+      await updateFirebaseDataMutipleWhere(
+        `/petDiaries`,
+        "postTime",
+        initialDiaryTimeStamp as number,
+        "authorUid",
+        profile.uid,
+        "",
+        {
+          takePhotoTime: newDiaryContext.takePhotoTime,
+          context: newDiaryContext.context,
+        }
+      );
+      getAuthorPetDiary(profile.uid);
       window.alert("更新完成！");
       setEditDiaryBoxOpen(false);
     }
@@ -314,26 +299,6 @@ export const PetDiary = () => {
       authorPetDiary.push(info.data() as PetDiaryType);
     });
     dispatch(setOwnPetDiary(authorPetDiary));
-  }
-
-  async function deleteFirebaseData(
-    url: string,
-    field: string,
-    target: string | number,
-    field2: string,
-    target2: string
-  ) {
-    const q = query(
-      collection(db, url),
-      where(field, "==", target),
-      where(field2, "==", target2)
-    );
-    const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
-    querySnapshot.forEach(async (d) => {
-      promises.push(deleteDoc(doc(db, url, d.id)));
-    });
-    await Promise.all(promises);
   }
 
   return (
@@ -364,7 +329,7 @@ export const PetDiary = () => {
             type="file"
             accept="image/*"
             onChange={(e) => {
-              updateInputImage(e.target.files as FileList);
+              updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
             }}
           />
 
@@ -435,15 +400,12 @@ export const PetDiary = () => {
           <CheckBtn
             onClick={() => {
               if (diaryImg.file) {
-                addPetDiaryDataFirebase(
-                  diaryImg.file.name,
-                  diaryImg.file as File
+                addDataWithUploadImage(
+                  `petDiary/${diaryImg.file.name}`,
+                  diaryImg.file as File,
+                  addPetDiaryDoc
                 );
               }
-              setWriteDiaryBoxOpen(false);
-              window.alert("上傳成功！");
-              getAuthorPetDiary(profile.uid);
-              setEditDiaryBoxOpen(false);
             }}
           >
             上傳日記
@@ -475,7 +437,10 @@ export const PetDiary = () => {
             type="file"
             accept="image/*"
             onChange={(e) => {
-              updateNewInputImage(e.target.files as FileList);
+              updateUseStateInputImage(
+                e.target.files as FileList,
+                setNewDiaryImg
+              );
             }}
           />
 
@@ -584,7 +549,7 @@ export const PetDiary = () => {
                 <CloseBtn
                   style={{ top: "50px" }}
                   onClick={async () => {
-                    await deleteFirebaseData(
+                    await deleteFirebaseDataMutipleWhere(
                       `/petDiaries`,
                       "postTime",
                       diary.postTime,

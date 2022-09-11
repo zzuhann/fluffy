@@ -8,7 +8,7 @@ import {
 } from "./ProfileSetting";
 import styled from "styled-components";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../utils/firebase";
+import { db, storage, updateUseStateInputImage } from "../../utils/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
@@ -83,12 +83,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
           accept="image/*"
           id="image"
           onChange={(e) => {
-            if (!e.target.files) return;
-            const newImage = {
-              file: e.target.files[0],
-              url: URL.createObjectURL(e.target.files[0]),
-            };
-            props.setImg(newImage);
+            updateUseStateInputImage(e.target.files as FileList, props.setImg);
           }}
         />
         <ProfileImg src={props.img.url as string} alt="" />

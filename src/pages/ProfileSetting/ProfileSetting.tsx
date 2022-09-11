@@ -10,7 +10,7 @@ import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
-import { ContextDetails, PetArticle } from "./PetArticle";
+import { WritePetArticle } from "./WritePetArticle";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -69,63 +69,6 @@ const MainInfo = styled.div`
   position: relative;
   min-height: 100vh;
   width: 100%;
-`;
-
-const CloseBtn = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 30px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #000;
-  z-index: 99;
-`;
-
-const SaveBtn = styled.div`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
-const PreviewContainer = styled.div`
-  position: relative;
-  width: 350px;
-  height: 200px;
-`;
-
-const PreviewImg = styled.img`
-  width: 350px;
-  height: 200px;
-  object-fit: cover;
-  position: relative;
-`;
-
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
-const PetDetailImg = styled.label`
-  width: 350px;
-  height: 200px;
-  object-fit: cover;
-  background-color: transparent;
-`;
-const PetDetailInput = styled.input`
-  display: none;
 `;
 
 type profileSettingType = {
@@ -195,73 +138,13 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     dispatch(setOwnPets(allOwnPet));
   }
 
-  function addPetDataFirebase(newPetImg: File) {
-    const storageRef = ref(storage, `pets/${profile.uid}-${addPetInfo.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("upload");
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await addDoc(
-            collection(db, `/memberProfiles/${profile.uid}/ownPets`),
-            { ...addPetInfo, img: downloadURL }
-          );
-          window.alert("上傳成功！");
-          getOwnPetList();
-        });
-      }
-    );
-  }
-
-  function updateInputImage(file: FileList) {
-    if (!file) return;
-    const newImage = {
-      file: file[0],
-      url: URL.createObjectURL(file[0]),
-    };
-    setArticleCover(newImage);
-  }
-
-  function addPetArticleDataFirebase(photoName: string, newPetImg: File) {
-    const storageRef = ref(storage, `petArticles/${photoName}`);
-    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("upload");
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          addPetArticleDoc(downloadURL);
-        });
-      }
-    );
-  }
-
-  async function addPetArticleDoc(imgURL: string) {
-    await addDoc(collection(db, `/petArticles`), {
-      ...addArticleInfo,
-      img: imgURL,
-      postTime: Date.now(),
-      author: { img: profile.img, name: profile.name },
-      commentCount: 0,
-      likedBy: [],
-      authorUid: profile.uid,
+  async function addDocOwnPets(downloadURL: string) {
+    await addDoc(collection(db, `/memberProfiles/${profile.uid}/ownPets`), {
+      ...addPetInfo,
+      img: downloadURL,
     });
-    setAddArticleInfo({
-      title: "",
-      context: "",
-    });
-    setArticleCover({ file: "", url: "" });
+    window.alert("上傳成功！");
+    getOwnPetList();
   }
 
   return (
@@ -337,7 +220,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
             addPetInfo={addPetInfo}
             setAddPetInfo={setAddPetInfo}
             setOwnPetDetail={setOwnPetDetail}
-            addPetDataFirebase={addPetDataFirebase}
+            addDocOwnPets={addDocOwnPets}
             setPetNewImg={setPetNewImg}
           />
         ) : (
@@ -345,73 +228,12 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         )}
         {selectedTab === tabs[2] ? <PetDiary /> : ""}
         {selectedTab === tabs[3] ? (
-          <div className="editContainer">
-            <EditContainer>
-              <EditInfoLabel htmlFor="title">Title: </EditInfoLabel>
-              <EditInfoInput
-                id="title"
-                value={addArticleInfo.title}
-                onChange={(e) => {
-                  setAddArticleInfo({
-                    ...addArticleInfo,
-                    title: e.target.value,
-                  });
-                }}
-              />
-            </EditContainer>
-            <EditContainer>
-              <EditInfoLabel htmlFor="cover">文章封面: </EditInfoLabel>
-              {articleCover.url ? (
-                <PreviewContainer>
-                  <PreviewImg src={articleCover.url} alt="" />
-                  <PreviewCancelBtn
-                    onClick={() => {
-                      setArticleCover({ file: "", url: "" });
-                    }}
-                  >
-                    取消
-                  </PreviewCancelBtn>
-                </PreviewContainer>
-              ) : (
-                ""
-              )}
-              <PetDetailImg htmlFor="cover"></PetDetailImg>
-              <PetDetailInput
-                id="cover"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  updateInputImage(e.target.files as FileList);
-                }}
-              />
-            </EditContainer>
-
-            <PetArticle
-              setAddArticleInfo={setAddArticleInfo}
-              addArticleInfo={addArticleInfo}
-            />
-            <ContextDetails addArticleInfo={addArticleInfo} />
-            <SaveBtn
-              onClick={() => {
-                if (!addArticleInfo.title || !addArticleInfo.context) {
-                  window.alert("請填寫完整文章資訊");
-                  return;
-                }
-                if (!articleCover.url) {
-                  window.alert("請上傳文章封面");
-                  return;
-                }
-                if (articleCover.file instanceof File) {
-                  addPetArticleDataFirebase(
-                    articleCover.file.name,
-                    articleCover.file
-                  );
-                }
-              }}
-            >
-              上傳文章
-            </SaveBtn>
-          </div>
+          <WritePetArticle
+            addArticleInfo={addArticleInfo}
+            setAddArticleInfo={setAddArticleInfo}
+            articleCover={articleCover}
+            setArticleCover={setArticleCover}
+          />
         ) : (
           ""
         )}
