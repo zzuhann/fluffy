@@ -106,6 +106,7 @@ export type OwnArticle = {
     name: string;
     img: string;
   };
+  id: string;
 };
 
 export type PetDiaryType = {
@@ -121,6 +122,8 @@ export type PetDiaryType = {
   img: string;
   postTime: number;
   authorUid: string;
+  id: string;
+  birthYear: number;
 };
 
 export type Profile = {

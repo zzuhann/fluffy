@@ -6,8 +6,21 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import { setName, setImage } from "../functions/profileReducerFunction";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import {
+  setName,
+  setImage,
+  setOwnPetDiary,
+  setOwnArticle,
+} from "../functions/profileReducerFunction";
 
 import {
   checkIfLogged,
@@ -15,7 +28,7 @@ import {
   setProfileUid,
   setOwnPets,
 } from "../functions/profileReducerFunction";
-import { OwnPet, Profile } from "../reducers/profile";
+import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 
 const Wrapper = styled.div`
   display: flex;
@@ -58,12 +71,45 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  async function getAuthorPetDiary(authorUid: string) {
+    const authorPetDiary: PetDiaryType[] = [];
+    const q = query(
+      collection(db, "petDiaries"),
+      where("authorUid", "==", authorUid),
+      orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+    });
+    dispatch(setOwnPetDiary(authorPetDiary));
+  }
+
+  async function getAuthorArticles(authorUid: string) {
+    const authorPetDiary: OwnArticle[] = [];
+    const q = query(
+      collection(db, "petArticles"),
+      where("authorUid", "==", authorUid)
+      // orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({
+        id: info.id,
+        ...info.data(),
+      } as OwnArticle);
+    });
+    dispatch(setOwnArticle(authorPetDiary));
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         getOwnPetList(user.uid);
         dispatch(setProfileUid(user.uid));
         dispatch(checkIfLogged(true));
+        getAuthorPetDiary(user.uid);
+        getAuthorArticles(user.uid);
         const docRef = doc(db, "memberProfiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {

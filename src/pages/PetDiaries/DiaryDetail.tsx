@@ -208,8 +208,6 @@ const DiaryDetail = () => {
     getDiaryComments();
   }, [targetDiary]);
 
-  console.log(targetDiary);
-
   if (!targetDiary) return null;
   return (
     <DiaryContainer>

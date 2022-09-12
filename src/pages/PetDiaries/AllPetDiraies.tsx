@@ -14,7 +14,7 @@ const AllDiariesContainer = styled.div`
   flex-wrap: wrap;
   transition: 0.3s;
 `;
-const DiaryCard = styled(Link)<{ likeCount: number; commentCount: number }>`
+const DiaryCard = styled(Link)<{ likecount: number; commentcount: number }>`
   width: 300px;
   height: 300px;
   margin: 0 20px 50px;
@@ -25,8 +25,8 @@ const DiaryCard = styled(Link)<{ likeCount: number; commentCount: number }>`
   color: black;
   position: relative;
   &:hover:before {
-    content: "喜歡 ${(props) => props.likeCount} 
-    留言 ${(props) => props.commentCount}";
+    content: "喜歡 ${(props) => props.likecount} 
+    留言 ${(props) => props.commentcount}";
     position: absolute;
     width: 100%;
     height: 100%;
@@ -98,15 +98,14 @@ const AllPetDiaries = () => {
     getPetDiaries();
   }, []);
 
-  console.log(allPetDiraies);
   return (
     <AllDiariesContainer>
       {allPetDiraies.map((diary, index) => (
         <DiaryCard
           key={index}
           to={`/petdiary/${diary.id}`}
-          likeCount={diary.likedBy.length}
-          commentCount={diary.commentCount}
+          likecount={diary.likedBy.length}
+          commentcount={diary.commentCount}
         >
           <DiaryImg src={diary.img} />
           <DiaryBottom>

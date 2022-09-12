@@ -158,7 +158,6 @@ export const EditContextDetails: React.FC<{
     context: string;
   };
 }> = ({ editArticleContext }) => {
-  console.log(editArticleContext);
   return (
     <>
       <MirrorTitle>文章預覽</MirrorTitle>
