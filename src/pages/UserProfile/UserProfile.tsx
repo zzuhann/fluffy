@@ -1,12 +1,30 @@
 import { tab } from "@testing-library/user-event/dist/tab";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { setOwnPetDiary } from "../../functions/profileReducerFunction";
-import { PetDiaryType, Profile } from "../../reducers/profile";
+import {
+  setOwnArticle,
+  setOwnPetDiary,
+  setOwnPets,
+} from "../../functions/profileReducerFunction";
+import {
+  OwnArticle,
+  OwnPet,
+  PetDiaryType,
+  Profile,
+} from "../../reducers/profile";
 import { db } from "../../utils/firebase";
+import { useParams } from "react-router-dom";
 
 const Wrapper = styled.div`
   display: flex;
@@ -216,33 +234,105 @@ const UserProfile = () => {
   const tabs = ["日記", "文章", "寵物"];
   const [ownPet, setOwnPet] = useState<string[]>([]);
   const [choosePetDiary, setChoosePetDiary] = useState<number>(-1);
+  const [userInfo, setUserInfo] = useState<{ img: string; name: string }>({
+    img: "",
+    name: "",
+  });
+  const { id } = useParams();
+  const [userDiary, setUserDiary] = useState<PetDiaryType[]>();
+  const [userArticle, setUserArticle] = useState<OwnArticle[]>();
+  const [userPet, setUserPet] = useState<OwnPet[]>();
+
+  async function getAuthorPetDiary(authorUid: string) {
+    const authorPetDiary: PetDiaryType[] = [];
+    const q = query(
+      collection(db, "petDiaries"),
+      where("authorUid", "==", authorUid),
+      orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+    });
+    setUserDiary(authorPetDiary);
+  }
+
+  async function getAuthorArticles(authorUid: string) {
+    const authorPetDiary: OwnArticle[] = [];
+    const q = query(
+      collection(db, "petArticles"),
+      where("authorUid", "==", authorUid)
+      // orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({
+        id: info.id,
+        ...info.data(),
+      } as OwnArticle);
+    });
+    setUserArticle(authorPetDiary);
+  }
 
   useEffect(() => {
+    getOwnPetList(id as string);
+    getAuthorPetDiary(id as string);
+    getAuthorArticles(id as string);
+
+    async function getUserInfo() {
+      const docRef = doc(db, "memberProfiles", id as string);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setUserInfo({ ...userInfo, name: docSnap.data().name });
+        setUserInfo({ ...userInfo, img: docSnap.data().img });
+      } else {
+        console.log("No such document!");
+      }
+    }
+    getUserInfo();
+  }, []);
+
+  async function getOwnPetList(id: string) {
+    const allOwnPet: OwnPet[] = [];
+    const q = collection(db, `memberProfiles/${id}/ownPets`);
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      allOwnPet.push(info.data() as OwnPet);
+    });
+    setUserPet(allOwnPet);
+  }
+
+  useEffect(() => {
+    if (!userPet) return;
     let pets: string[] = [];
-    profile.ownPets.forEach((pet) => {
+    userPet.forEach((pet) => {
       pets.push(pet.name);
     });
     setOwnPet(pets);
-  }, [profile]);
+  }, [userPet]);
+
+  if (!userDiary) return null;
+  if (!userArticle) return null;
+  if (!userPet) return null;
 
   return (
     <Wrapper>
       <UserInfo>
         <UserImageContainer>
-          <UserImage src={profile.img as string} />
-          <UserName>{profile.name}</UserName>
+          <UserImage src={userInfo.img} />
+          <UserName>{userInfo.name}</UserName>
         </UserImageContainer>
         <OutputCountContainer>
           <OutputTitle>日記</OutputTitle>
-          <OutputCount>{profile.petDiary.length}</OutputCount>
+          <OutputCount>{userDiary.length}</OutputCount>
         </OutputCountContainer>
         <OutputCountContainer>
           <OutputTitle>文章</OutputTitle>
-          <OutputCount>{profile.ownArticles.length}</OutputCount>
+          <OutputCount>{userArticle.length}</OutputCount>
         </OutputCountContainer>
         <OutputCountContainer>
           <OutputTitle>寵物</OutputTitle>
-          <OutputCount>{profile.ownPets.length}</OutputCount>
+          <OutputCount>{userPet.length}</OutputCount>
         </OutputCountContainer>
       </UserInfo>
       <Tabs>
@@ -272,7 +362,7 @@ const UserProfile = () => {
               </AllPetBtn>
             </AllPetNameContainer>
             {choosePetDiary === 0
-              ? profile.petDiary
+              ? userDiary
                   .filter((diary) => diary.petName === ownPet[0])
                   .map((diary, index) => (
                     <DiaryCard
@@ -291,7 +381,7 @@ const UserProfile = () => {
                     </DiaryCard>
                   ))
               : choosePetDiary === 1
-              ? profile.petDiary
+              ? userDiary
                   .filter((diary) => diary.petName === ownPet[1])
                   .map((diary, index) => (
                     <DiaryCard
@@ -310,7 +400,7 @@ const UserProfile = () => {
                     </DiaryCard>
                   ))
               : choosePetDiary === 2
-              ? profile.petDiary
+              ? userDiary
                   .filter((diary) => diary.petName === ownPet[2])
                   .map((diary, index) => (
                     <DiaryCard
@@ -328,7 +418,7 @@ const UserProfile = () => {
                       </DiaryBottom>
                     </DiaryCard>
                   ))
-              : profile.petDiary.map((diary, index) => (
+              : userDiary.map((diary, index) => (
                   <DiaryCard
                     key={index}
                     to={`/petdiary/${diary.id}`}
@@ -347,7 +437,7 @@ const UserProfile = () => {
           </AllDiariesContainer>
         ) : tabIndex === 1 ? (
           <AllArticlesContainer>
-            {profile.ownArticles.map((article, index) => (
+            {userArticle.map((article, index) => (
               <ArticleCard key={index} to={`/articles/${article.id}`}>
                 <ArticleCover src={article.img} />
                 <ArticleCardBottom>
@@ -362,7 +452,7 @@ const UserProfile = () => {
           </AllArticlesContainer>
         ) : (
           <PetInfo>
-            {profile.ownPets.map((pet, index) => (
+            {userPet.map((pet, index) => (
               <PetSimpleCard key={index}>
                 <PetSimpleImage src={pet.img} alt="" />
                 <PetSimpleInfos>
