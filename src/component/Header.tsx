@@ -132,7 +132,17 @@ const Header = () => {
       </NavBarContainer>
 
       {profile.isLogged ? (
-        <p onClick={() => navigate("/profile")}>{profile.name} 您好！</p>
+        <NavBarContainer style={{ marginRight: "5px" }}>
+          <NavBar
+            style={{ marginRight: "20px" }}
+            onClick={() => navigate(`/profile/${profile.uid}`)}
+          >
+            會員專區
+          </NavBar>
+          <NavBar onClick={() => navigate("/profile")}>
+            {profile.name} 您好！
+          </NavBar>
+        </NavBarContainer>
       ) : (
         <LoginRegisterBtnWrapper>
           <LoginRegisterBtn

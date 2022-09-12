@@ -141,6 +141,7 @@ type UploadDiary = {
   petName: string;
   takePhotoTime: number;
   context: string;
+  birthYear: number;
 };
 
 export const PetDiary = () => {
@@ -156,6 +157,7 @@ export const PetDiary = () => {
     petName: "",
     takePhotoTime: 0,
     context: "",
+    birthYear: 0,
   });
 
   const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>();
@@ -164,6 +166,7 @@ export const PetDiary = () => {
     petName: "",
     takePhotoTime: 0,
     context: "",
+    birthYear: 0,
   });
   const [newDiaryImg, setNewDiaryImg] = useState<UploadImgType>(
     uploadImgInitialState
@@ -175,6 +178,7 @@ export const PetDiary = () => {
     setUploadDiaryInfo({
       ...uploadDiaryInfo,
       petName: profile.ownPets[0].name,
+      birthYear: profile.ownPets[0].birthYear,
     });
   }, []);
 
@@ -207,7 +211,12 @@ export const PetDiary = () => {
       likedBy: [],
       authorUid: profile.uid,
     });
-    setUploadDiaryInfo({ petName: "", takePhotoTime: 0, context: "" });
+    setUploadDiaryInfo({
+      petName: "",
+      takePhotoTime: 0,
+      context: "",
+      birthYear: 0,
+    });
     setDiaryImg({ file: null, url: "" });
     setWriteDiaryBoxOpen(false);
     window.alert("上傳成功！");
@@ -338,9 +347,13 @@ export const PetDiary = () => {
             <SelectPetName
               id="petName"
               onChange={(e) => {
+                const index = profile.ownPets.findIndex(
+                  (pet) => pet.name === e.target.value
+                );
                 setUploadDiaryInfo({
                   ...uploadDiaryInfo,
                   petName: e.target.value,
+                  birthYear: profile.ownPets[index].birthYear,
                 });
               }}
             >

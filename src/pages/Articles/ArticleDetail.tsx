@@ -105,7 +105,7 @@ const CommentTime = styled.div`
 `;
 const CommentContext = styled.div``;
 
-export type ArticleCommentType = {
+export type CommentType = {
   user: {
     name: string;
     img: string;
@@ -121,9 +121,7 @@ const ArticleDetail = () => {
   ) as Profile;
   const { id } = useParams();
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
-  const [articleComments, setArticleComments] = useState<ArticleCommentType[]>(
-    []
-  );
+  const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
 
   async function addArticleComment() {
@@ -151,11 +149,9 @@ const ArticleDetail = () => {
     getSpecificArticle();
   }
 
-  console.log(profile);
-
   async function getArticleComments() {
     if (!targetArticle) return;
-    const articleComments: ArticleCommentType[] = [];
+    const articleComments: CommentType[] = [];
     const articlesRef = collection(
       db,
       `petArticles/${targetArticle.id}/comments`
@@ -164,7 +160,7 @@ const ArticleDetail = () => {
       query(articlesRef, orderBy("commentTime"))
     );
     articlesSnapshot.forEach((info) => {
-      articleComments.push(info.data() as ArticleCommentType);
+      articleComments.push(info.data() as CommentType);
     });
 
     setArticleComments(articleComments);
@@ -216,7 +212,6 @@ const ArticleDetail = () => {
   useEffect(() => {
     getArticleComments();
   }, [targetArticle]);
-  console.log(articleComments);
 
   if (!targetArticle) return null;
   return (
@@ -225,7 +220,11 @@ const ArticleDetail = () => {
       <TitleContainer>
         <Title>{targetArticle.title}</Title>
         <Author>作者: {targetArticle.author.name}</Author>
-        <ArticleDate>{targetArticle.postTime}</ArticleDate>
+        <ArticleDate>
+          {new Date(targetArticle.postTime).getFullYear()}/
+          {new Date(targetArticle.postTime).getMonth() + 1}/
+          {new Date(targetArticle.postTime).getDate()}
+        </ArticleDate>
       </TitleContainer>
       <ArticleContext className="DetailProseMirror">
         {parse(targetArticle.context)}
@@ -253,6 +252,7 @@ const ArticleDetail = () => {
         <AddComment>
           <AddCommentTextArea
             value={newCommentContext}
+            placeholder="新增留言 ..."
             onChange={(e) => {
               setNewCommentContext(e.target.value);
             }}
@@ -272,7 +272,13 @@ const ArticleDetail = () => {
               <CommentUserImg src={comment.user.img} />
               <CommentUserName>{comment.user.name}</CommentUserName>
             </CommentUserContainer>
-            <CommentTime>{comment.commentTime}</CommentTime>
+            <CommentTime>
+              {new Date(comment.commentTime).getFullYear()}/
+              {new Date(comment.commentTime).getMonth() + 1}/
+              {new Date(comment.commentTime).getDate()}{" "}
+              {new Date(comment.commentTime).getHours()}:
+              {new Date(comment.commentTime).getMinutes()}
+            </CommentTime>
             <CommentContext>{comment.context}</CommentContext>
           </CommentCard>
         ))}

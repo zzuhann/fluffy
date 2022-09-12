@@ -1,9 +1,7 @@
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Profile } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
 
 const AllArticlesContainer = styled.div`
@@ -65,9 +63,6 @@ export type AllPetArticlesType = {
 };
 
 const AllArticles = () => {
-  const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
   const [allPetArticles, setAllPetArticles] = useState<AllPetArticlesType[]>(
     []
   );
