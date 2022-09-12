@@ -1,0 +1,115 @@
+.DetailProseMirror {
+  padding: 10px;
+  border-top: 1px solid grey;
+  background: white;
+  border-radius: 0 0 5px 5px;
+}
+
+.DetailProseMirror:focus {
+  border: none;
+}
+
+.DetailProseMirror > * + * {
+  margin-top: 0.75em;
+}
+
+.DetailProseMirror strong {
+  font-weight: bold;
+}
+
+.DetailProseMirror ul,
+.DetailProseMirror ol {
+  padding: 0 1rem;
+}
+
+.DetailProseMirror ul {
+  list-style-type: disc;
+}
+.DetailProseMirror ul ul {
+  list-style-type: circle;
+}
+.DetailProseMirror ol {
+  list-style-type: decimal;
+}
+.DetailProseMirror ol ol {
+  list-style-type: lower-roman;
+}
+
+.DetailProseMirror h1,
+.DetailProseMirror h2,
+.DetailProseMirror h3,
+.DetailProseMirror h4,
+.DetailProseMirror h5,
+.DetailProseMirror h6 {
+  line-height: 1.1;
+}
+
+.DetailProseMirror h1 {
+  font-size: 2em;
+}
+
+.DetailProseMirror h2 {
+  font-size: 1.5em;
+}
+.DetailProseMirror h3 {
+  font-size: 1.17em;
+}
+.DetailProseMirror h4 {
+  font-size: 1em;
+}
+.DetailProseMirror h5 {
+  font-size: 0.83em;
+}
+.DetailProseMirror h6 {
+  font-size: 0.75em;
+}
+
+.DetailProseMirror code {
+  background-color: rgba(97, 97, 97, 0.1);
+  color: #616161;
+}
+
+.DetailProseMirror pre {
+  background: #0d0d0d;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.DetailProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.8rem;
+}
+
+.DetailProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+
+.DetailProseMirror blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+.DetailProseMirror blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+.DetailProseMirror blockquote p {
+  display: inline;
+}
+
+.DetailProseMirror hr {
+  border: none;
+  border-top: 2px solid rgba(13, 13, 13, 0.1);
+  margin: 2rem 0;
+}

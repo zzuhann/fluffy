@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { Profile, OwnPet, OwnArticle } from "../../reducers/profile";
-import { RegisterLoginBtn } from "./ProfileLoginRegister";
-import UserInfos from "./UserInfos";
-import { PetDiary } from "./PetDiary";
+import { Profile, OwnArticle } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,
@@ -22,12 +19,8 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import {
-  setOwnArticle,
-  setOwnPets,
-} from "../../functions/profileReducerFunction";
+import { setOwnArticle } from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
 import {
   ContextDetails,
   EditContextDetails,
@@ -149,6 +142,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       context: "",
     });
     props.setArticleCover({ file: "", url: "" });
+    window.alert("成功上傳！");
   }
 
   function updateNewArticleDataFirebase(photoName: string, newPetImg: File) {
@@ -399,7 +393,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       ) : (
         <UserArticleContainer>
           {profile.ownArticles.map((article, index) => (
-            <UserArticle>
+            <UserArticle key={index}>
               <UserArticleImg src={article.img} />
               <UserArticleTitle>{article.title}</UserArticleTitle>
               <ArticleEditBtnContainer>

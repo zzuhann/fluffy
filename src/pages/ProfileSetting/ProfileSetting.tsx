@@ -119,7 +119,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     title: "",
     context: "",
   });
-  const tabs = ["info", "ownpet", "diary", "articles", "lostpet"];
+  const tabs = ["info", "ownpet", "diary", "articles"];
 
   useEffect(() => {
     if (profile.img) {

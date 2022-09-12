@@ -108,7 +108,20 @@ const Header = () => {
         >
           配對專區
         </NavBar>
-        <NavBar>寵物日記</NavBar>
+        <NavBar
+          onClick={() => {
+            navigate("/petdiary");
+          }}
+        >
+          寵物日記
+        </NavBar>
+        <NavBar
+          onClick={() => {
+            navigate("/articles");
+          }}
+        >
+          寵物文章補給
+        </NavBar>
         <NavBar
           onClick={() => {
             navigate("/clinic");
@@ -116,7 +129,6 @@ const Header = () => {
         >
           24 小時動物醫院
         </NavBar>
-        <NavBar>寵物走失協尋</NavBar>
       </NavBarContainer>
 
       {profile.isLogged ? (
