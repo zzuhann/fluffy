@@ -40,7 +40,7 @@ const Title = styled.div`
   font-size: 30px;
   font-weight: bold;
 `;
-const Author = styled.div`
+const Author = styled(Link)`
   font-size: 22px;
 `;
 const ArticleDate = styled.div`
@@ -219,7 +219,9 @@ const ArticleDetail = () => {
       <ArticleCover src={targetArticle.img} />
       <TitleContainer>
         <Title>{targetArticle.title}</Title>
-        <Author>作者: {targetArticle.author.name}</Author>
+        <Author to={`/profile/${targetArticle.authorUid}`}>
+          作者: {targetArticle.author.name}
+        </Author>
         <ArticleDate>
           {new Date(targetArticle.postTime).getFullYear()}/
           {new Date(targetArticle.postTime).getMonth() + 1}/
