@@ -10,6 +10,9 @@ const GlobalStyle = createGlobalStyle`
     outline: solid 1px black;
     box-sizing: border-box;
   }
+  a {
+    text-decoration:none;
+  }
 `;
 
 function App() {

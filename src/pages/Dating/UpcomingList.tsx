@@ -1,18 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { db } from "../../utils/firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  deleteDoc,
-  doc,
-  addDoc,
-} from "firebase/firestore";
-import { shelterInfo } from "./ConstantInfo";
+import { db, deleteFirebaseData } from "../../utils/firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { shelterInfo } from "./constantInfo";
 import { Dating } from "../../reducers/dating";
+import { Profile } from "../../reducers/profile";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -82,6 +75,9 @@ const UpcomingList: React.FC<Props> = (props) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   // const dispatch = useDispatch();
   const [checkToAdoptPet, setCheckToAdoptPet] = useState<Boolean>(false);
   const [datingDone, setDatingDone] = useState<{ id: number; open: Boolean }>({
@@ -92,6 +88,8 @@ const UpcomingList: React.FC<Props> = (props) => {
     name: string;
     birthYear: number;
   }>({ name: "", birthYear: 0 });
+
+  if (!dating.upcomingDateList) return null;
   return (
     <>
       {dating.upcomingDateList.map((date, index) => (
@@ -158,28 +156,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                     </AnswerBtn>
                     <AnswerBtn
                       onClick={async () => {
-                        const q = query(
-                          collection(
-                            db,
-                            "memberProfiles",
-                            "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                            "upcomingDates"
-                          ),
-                          where("id", "==", date.id)
+                        deleteFirebaseData(
+                          `/memberProfiles/${profile.uid}/upcomingDates`,
+                          "id",
+                          date.id
                         );
-
-                        const querySnapshot = await getDocs(q);
-                        querySnapshot.forEach(async (info) => {
-                          await deleteDoc(
-                            doc(
-                              db,
-                              "memberProfiles",
-                              "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                              "upcomingDates",
-                              info.id
-                            )
-                          );
-                        });
                         window.alert("好ㄛ🙆");
                         props.getUpcomingListData();
                       }}
@@ -232,39 +213,23 @@ const UpcomingList: React.FC<Props> = (props) => {
                             await addDoc(
                               collection(
                                 db,
-                                "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/ownPets"
+                                `/memberProfiles/${profile.uid}/ownPets`
                               ),
                               {
                                 id: date.id,
                                 shelterName: date.shelterName,
                                 kind: date.kind,
                                 image: date.image,
+                                sex: date.sex,
                                 name: adoptPetInfo.name,
                                 birthYear: adoptPetInfo.birthYear,
                               }
                             );
-                            const q = query(
-                              collection(
-                                db,
-                                "memberProfiles",
-                                "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                                "upcomingDates"
-                              ),
-                              where("id", "==", date.id)
+                            deleteFirebaseData(
+                              `/memberProfiles/${profile.uid}/upcomingDates`,
+                              "id",
+                              date.id
                             );
-
-                            const querySnapshot = await getDocs(q);
-                            querySnapshot.forEach(async (info) => {
-                              await deleteDoc(
-                                doc(
-                                  db,
-                                  "memberProfiles",
-                                  "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                                  "upcomingDates",
-                                  info.id
-                                )
-                              );
-                            });
                             window.alert("已將領養寵物新增至您的會員資料！");
                             props.getUpcomingListData();
                           }}
@@ -284,29 +249,12 @@ const UpcomingList: React.FC<Props> = (props) => {
           ) : (
             <NotConsiderBtn
               onClick={async () => {
-                const q = query(
-                  collection(
-                    db,
-                    "memberProfiles",
-                    "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                    "upcomingDates"
-                  ),
-                  where("id", "==", date.id)
+                deleteFirebaseData(
+                  `/memberProfiles/${profile.uid}/upcomingDates`,
+                  "id",
+                  date.id
                 );
-
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(async (info) => {
-                  await deleteDoc(
-                    doc(
-                      db,
-                      "memberProfiles",
-                      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-                      "upcomingDates",
-                      info.id
-                    )
-                  );
-                  props.getUpcomingListData();
-                });
+                props.getUpcomingListData();
               }}
             >
               取消此次約會

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -21,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
 import { useRef } from "react";
 import styled from "styled-components";
+import ProfileSetting from "./ProfileSetting";
 
 const RegisterLoginWrapper = styled.div`
   display: flex;
@@ -37,7 +39,7 @@ const Label = styled.label``;
 
 const Input = styled.input``;
 
-const RegisterLoginBtn = styled.div`
+export const RegisterLoginBtn = styled.div`
   width: 200px;
   cursor: pointer;
   align-self: center;
@@ -54,6 +56,7 @@ const ProfileLoginRegister = () => {
   ) as Profile;
   const dispatch = useDispatch();
   const imageRef = useRef<HTMLInputElement>(null);
+  let navigate = useNavigate();
 
   function createProfile() {
     if (!profile.name || !profile.email || !profile.password || !profile.img) {
@@ -67,6 +70,7 @@ const ProfileLoginRegister = () => {
         uploadImage(userUid, profile.img as File, profile.name);
         dispatch(afterRegisterSaveName());
         window.alert("註冊成功！");
+        navigate("/");
       }
     );
     if (null !== imageRef.current) {
@@ -80,6 +84,7 @@ const ProfileLoginRegister = () => {
       async (userCredential) => {
         window.alert("登入成功！");
         dispatch(clearProfileInfo());
+        navigate("/");
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -106,13 +111,7 @@ const ProfileLoginRegister = () => {
   return (
     <>
       {profile.isLogged ? (
-        <>
-          <div>已經登入</div>
-          <img src={profile.img as string} alt="" style={{ width: "200px" }} />
-          <RegisterLoginBtn onClick={() => signOutProfile()}>
-            登出
-          </RegisterLoginBtn>
-        </>
+        <ProfileSetting signOutProfile={signOutProfile} />
       ) : profile.clickLoginOrRegister === "login" ? (
         <RegisterLoginWrapper>
           <InputContainer>

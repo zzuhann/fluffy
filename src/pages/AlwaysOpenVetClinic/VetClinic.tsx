@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { db } from "../../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import styled from "styled-components";
@@ -23,16 +23,35 @@ const ClinicCard = styled.div`
 const ClinicTitle = styled.div``;
 const ClinicInfo = styled.div``;
 
+const AllArea = styled.div`
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  display: flex;
+  flex-direction: column;
+`;
+const SingleArea = styled.div`
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+const PhoneLink = styled.a``;
+
+type ClinicType = {
+  name: string;
+  location: string;
+  country: string;
+  phone: string;
+  note: string;
+};
+
 const VetClinic = () => {
-  const [clinics, setClinics] = useState<
-    {
-      name: string;
-      location: string;
-      country: string;
-      phone: string;
-      note: string;
-    }[]
-  >([]);
+  const clinicRef = useRef<ClinicType[]>([]);
+  const [clinics, setClinics] = useState<ClinicType[]>([]);
+  const areaList = ["all", "北部地區", "中部地區", "南部地區"];
   useEffect(() => {
     getVetClinicData();
   }, []);
@@ -58,20 +77,95 @@ const VetClinic = () => {
         }
       );
     });
+    clinicRef.current = allClinic;
     setClinics(allClinic);
   }
+
+  function changePreferenceArea(target: string) {
+    const displayClinic: ClinicType[] = [];
+    clinicRef.current.forEach((clinic) => {
+      if (
+        target === "北部地區" &&
+        [
+          "臺北市",
+          "新北市",
+          "桃園市",
+          "新竹市",
+          " 臺北市",
+          " 新北市",
+          " 桃園市",
+          " 新竹市",
+        ].indexOf(clinic.country) > -1
+      ) {
+        displayClinic.push(clinic);
+      } else if (
+        target === "中部地區" &&
+        [
+          "臺中市",
+          "苗栗縣",
+          "彰化縣",
+          "南投縣",
+          "雲林縣",
+          " 臺中市",
+          " 苗栗縣",
+          " 彰化縣",
+          " 南投縣",
+          " 雲林縣",
+        ].indexOf(clinic.country) > -1
+      ) {
+        displayClinic.push(clinic);
+      } else if (
+        target === "南部地區" &&
+        [
+          "高雄市",
+          "臺南市",
+          "嘉義市",
+          "嘉義縣",
+          "屏東縣",
+          " 高雄市",
+          " 臺南市",
+          " 嘉義市",
+          " 嘉義縣",
+          " 屏東縣",
+        ].indexOf(clinic.country) > -1
+      ) {
+        displayClinic.push(clinic);
+      } else if (target === "all") {
+        displayClinic.push(clinic);
+      }
+    });
+    setClinics(displayClinic);
+  }
+
   return (
-    <ClinicListContainer>
-      {clinics.map((clinic) => (
-        <ClinicCard>
-          <ClinicTitle>{clinic.name}</ClinicTitle>
-          <ClinicInfo>{clinic.country}</ClinicInfo>
-          <ClinicInfo>{clinic.phone}</ClinicInfo>
-          <ClinicInfo>{clinic.location}</ClinicInfo>
-          <ClinicInfo>{clinic.note}</ClinicInfo>
-        </ClinicCard>
-      ))}
-    </ClinicListContainer>
+    <>
+      <AllArea>
+        {areaList.map((area, index) => (
+          <SingleArea
+            key={index}
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              changePreferenceArea(target.innerText);
+            }}
+          >
+            {area}
+          </SingleArea>
+        ))}
+      </AllArea>
+      <ClinicListContainer>
+        {clinics.map((clinic, index) => (
+          <ClinicCard key={index}>
+            <ClinicTitle>{clinic.name}</ClinicTitle>
+            <ClinicInfo>{clinic.country}</ClinicInfo>
+            <ClinicInfo>
+              <PhoneLink href={`tel:${clinic.phone}`}>{clinic.phone}</PhoneLink>
+            </ClinicInfo>
+            <ClinicInfo>{clinic.location}</ClinicInfo>
+            <ClinicInfo>{clinic.note}</ClinicInfo>
+          </ClinicCard>
+        ))}
+      </ClinicListContainer>
+    </>
   );
 };
 
