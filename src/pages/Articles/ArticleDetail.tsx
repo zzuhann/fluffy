@@ -185,6 +185,7 @@ const ArticleDetail = () => {
     if (!profile.isLogged) {
       window.alert("按讚需先登入，確認後導向登入頁面");
       navigate("/profile");
+      return;
     }
     const articleDetailRef = doc(db, "petArticles", id as string);
     if (targetArticle.likedBy.includes(profile.uid)) {
@@ -269,6 +270,7 @@ const ArticleDetail = () => {
               if (!profile.isLogged) {
                 window.alert("留言需先登入，確認後導向登入頁面");
                 navigate("/profile");
+                return;
               }
               addArticleComment();
             }}

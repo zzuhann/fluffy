@@ -179,6 +179,7 @@ const DiaryDetail = () => {
     if (!profile.isLogged) {
       window.alert("按讚需先登入，確認後導向登入頁面");
       navigate("/profile");
+      return;
     }
     const articleDetailRef = doc(db, "petDiaries", id as string);
     if (targetDiary.likedBy.includes(profile.uid)) {
@@ -290,6 +291,7 @@ const DiaryDetail = () => {
               if (!profile.isLogged) {
                 window.alert("留言需先登入，確認後導向登入頁面");
                 navigate("/profile");
+                return;
               }
               addDiaryComment();
             }}
