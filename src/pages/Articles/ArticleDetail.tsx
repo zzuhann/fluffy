@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
@@ -120,6 +120,7 @@ const ArticleDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
+  const navigate = useNavigate();
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
@@ -181,6 +182,11 @@ const ArticleDetail = () => {
 
   async function toggleLike() {
     if (!targetArticle) return;
+    if (!profile.isLogged) {
+      window.alert("按讚需先登入，確認後導向登入頁面");
+      navigate("/profile");
+      return;
+    }
     const articleDetailRef = doc(db, "petArticles", id as string);
     if (targetArticle.likedBy.includes(profile.uid)) {
       await updateDoc(articleDetailRef, {
@@ -261,6 +267,11 @@ const ArticleDetail = () => {
           />
           <AddCommentBtn
             onClick={() => {
+              if (!profile.isLogged) {
+                window.alert("留言需先登入，確認後導向登入頁面");
+                navigate("/profile");
+                return;
+              }
               addArticleComment();
             }}
           >

@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import notyetLike from "./like.png";
 import alreadyLike from "./like (1).png";
 import { AllPetDiariesType } from "./AllPetDiraies";
@@ -117,6 +117,7 @@ const DiaryDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
+  const navigate = useNavigate();
   const [targetDiary, setTargetDiary] = useState<AllPetDiariesType>();
   const [diaryComments, setDiaryComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
@@ -175,6 +176,11 @@ const DiaryDetail = () => {
 
   async function toggleLike() {
     if (!targetDiary) return;
+    if (!profile.isLogged) {
+      window.alert("按讚需先登入，確認後導向登入頁面");
+      navigate("/profile");
+      return;
+    }
     const articleDetailRef = doc(db, "petDiaries", id as string);
     if (targetDiary.likedBy.includes(profile.uid)) {
       await updateDoc(articleDetailRef, {
@@ -275,12 +281,18 @@ const DiaryDetail = () => {
         <AddComment>
           <AddCommentTextArea
             value={newCommentContext}
+            placeholder="新增留言 ..."
             onChange={(e) => {
               setNewCommentContext(e.target.value);
             }}
           ></AddCommentTextArea>
           <AddCommentBtn
             onClick={() => {
+              if (!profile.isLogged) {
+                window.alert("留言需先登入，確認後導向登入頁面");
+                navigate("/profile");
+                return;
+              }
               addDiaryComment();
             }}
           >
