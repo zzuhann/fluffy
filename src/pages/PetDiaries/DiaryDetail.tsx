@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import notyetLike from "./like.png";
 import alreadyLike from "./like (1).png";
 import { AllPetDiariesType } from "./AllPetDiraies";
@@ -37,7 +37,7 @@ const DiaryTextInfo = styled.div`
   flex-direction: column;
   flex: 1;
 `;
-const DiaryAuthorContainer = styled.div`
+const DiaryAuthorContainer = styled(Link)`
   display: flex;
 `;
 const AuthorImg = styled.img`
@@ -213,7 +213,7 @@ const DiaryDetail = () => {
     <DiaryContainer>
       <DiaryImage src={targetDiary.img} />
       <DiaryTextInfo>
-        <DiaryAuthorContainer>
+        <DiaryAuthorContainer to={`/profile/${targetDiary.authorUid}`}>
           <AuthorImg src={targetDiary.author.img} />
           <AuthorName>Author: {targetDiary.author.name}</AuthorName>
         </DiaryAuthorContainer>
