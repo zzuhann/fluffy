@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
 import { useRef } from "react";
 import styled from "styled-components";
+import ProfileSetting from "./ProfileSetting";
 
 const RegisterLoginWrapper = styled.div`
   display: flex;
@@ -38,7 +39,7 @@ const Label = styled.label``;
 
 const Input = styled.input``;
 
-const RegisterLoginBtn = styled.div`
+export const RegisterLoginBtn = styled.div`
   width: 200px;
   cursor: pointer;
   align-self: center;
@@ -110,13 +111,7 @@ const ProfileLoginRegister = () => {
   return (
     <>
       {profile.isLogged ? (
-        <>
-          <div>已經登入</div>
-          <img src={profile.img as string} alt="" style={{ width: "200px" }} />
-          <RegisterLoginBtn onClick={() => signOutProfile()}>
-            登出
-          </RegisterLoginBtn>
-        </>
+        <ProfileSetting signOutProfile={signOutProfile} />
       ) : profile.clickLoginOrRegister === "login" ? (
         <RegisterLoginWrapper>
           <InputContainer>

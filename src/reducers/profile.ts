@@ -8,6 +8,9 @@ export enum ActionType {
   setProfileUid,
   clickLoginOrRegister,
   afterRegisterSaveName,
+  setOwnPets,
+  setOwnPetDiary,
+  setOwnArticle,
 }
 
 interface setProfileName {
@@ -53,6 +56,21 @@ interface afterRegisterSaveName {
   type: ActionType.afterRegisterSaveName;
 }
 
+interface setOwnPets {
+  type: ActionType.setOwnPets;
+  payload: { ownPets: OwnPet[] };
+}
+
+interface setOwnPetDiary {
+  type: ActionType.setOwnPetDiary;
+  payload: { petDiary: PetDiaryType[] };
+}
+
+interface setOwnArticle {
+  type: ActionType.setOwnArticle;
+  payload: { ownArticles: OwnArticle[] };
+}
+
 export type ProfileActions =
   | setProfileName
   | setProfileEmail
@@ -62,7 +80,51 @@ export type ProfileActions =
   | checkIsLogged
   | setProfileUid
   | clickLoginOrRegister
-  | afterRegisterSaveName;
+  | afterRegisterSaveName
+  | setOwnPets
+  | setOwnPetDiary
+  | setOwnArticle;
+
+export type OwnPet = {
+  name: string;
+  img: string;
+  birthYear: number;
+  kind: string;
+  sex: string;
+  shelterName: string | boolean;
+};
+
+export type OwnArticle = {
+  title: string;
+  context: string;
+  authorUid: string;
+  postTime: number;
+  likedBy: string[];
+  img: string;
+  commentCount: number;
+  author: {
+    name: string;
+    img: string;
+  };
+  id: string;
+};
+
+export type PetDiaryType = {
+  petName: string;
+  takePhotoTime: number;
+  context: string;
+  author: {
+    name: string;
+    img: string;
+  };
+  commentCount: number;
+  likedBy: string[];
+  img: string;
+  postTime: number;
+  authorUid: string;
+  id: string;
+  birthYear: number;
+};
 
 export type Profile = {
   name: string;
@@ -72,6 +134,9 @@ export type Profile = {
   isLogged: boolean;
   clickLoginOrRegister: string;
   uid: string;
+  ownPets: OwnPet[];
+  petDiary: PetDiaryType[];
+  ownArticles: OwnArticle[];
 };
 
 const initialState: Profile = {
@@ -82,6 +147,9 @@ const initialState: Profile = {
   isLogged: false,
   clickLoginOrRegister: "",
   uid: "",
+  ownPets: [],
+  petDiary: [],
+  ownArticles: [],
 };
 
 const ProfileReducer = (
@@ -120,6 +188,15 @@ const ProfileReducer = (
     }
     case ActionType.clickLoginOrRegister: {
       return { ...state, clickLoginOrRegister: action.payload.target };
+    }
+    case ActionType.setOwnPets: {
+      return { ...state, ownPets: action.payload.ownPets };
+    }
+    case ActionType.setOwnPetDiary: {
+      return { ...state, petDiary: action.payload.petDiary };
+    }
+    case ActionType.setOwnArticle: {
+      return { ...state, ownArticles: action.payload.ownArticles };
     }
     default:
       return state;

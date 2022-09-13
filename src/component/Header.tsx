@@ -6,15 +6,29 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { setName, setImage } from "../functions/profileReducerFunction";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import {
+  setName,
+  setImage,
+  setOwnPetDiary,
+  setOwnArticle,
+} from "../functions/profileReducerFunction";
 
 import {
   checkIfLogged,
   targetRegisterOrLogin,
   setProfileUid,
+  setOwnPets,
 } from "../functions/profileReducerFunction";
-import { Profile } from "../reducers/profile";
+import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 
 const Wrapper = styled.div`
   display: flex;
@@ -57,11 +71,45 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  async function getAuthorPetDiary(authorUid: string) {
+    const authorPetDiary: PetDiaryType[] = [];
+    const q = query(
+      collection(db, "petDiaries"),
+      where("authorUid", "==", authorUid),
+      orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+    });
+    dispatch(setOwnPetDiary(authorPetDiary));
+  }
+
+  async function getAuthorArticles(authorUid: string) {
+    const authorPetDiary: OwnArticle[] = [];
+    const q = query(
+      collection(db, "petArticles"),
+      where("authorUid", "==", authorUid)
+      // orderBy("postTime")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      authorPetDiary.push({
+        id: info.id,
+        ...info.data(),
+      } as OwnArticle);
+    });
+    dispatch(setOwnArticle(authorPetDiary));
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        getOwnPetList(user.uid);
         dispatch(setProfileUid(user.uid));
         dispatch(checkIfLogged(true));
+        getAuthorPetDiary(user.uid);
+        getAuthorArticles(user.uid);
         const docRef = doc(db, "memberProfiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -75,6 +123,16 @@ const Header = () => {
       }
     });
   }, []);
+
+  async function getOwnPetList(id: string) {
+    const allOwnPet: OwnPet[] = [];
+    const q = collection(db, `memberProfiles/${id}/ownPets`);
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      allOwnPet.push(info.data() as OwnPet);
+    });
+    dispatch(setOwnPets(allOwnPet));
+  }
 
   return (
     <Wrapper>
@@ -96,7 +154,20 @@ const Header = () => {
         >
           配對專區
         </NavBar>
-        <NavBar>寵物日記</NavBar>
+        <NavBar
+          onClick={() => {
+            navigate("/petdiary");
+          }}
+        >
+          寵物日記
+        </NavBar>
+        <NavBar
+          onClick={() => {
+            navigate("/articles");
+          }}
+        >
+          寵物文章補給
+        </NavBar>
         <NavBar
           onClick={() => {
             navigate("/clinic");
@@ -104,11 +175,20 @@ const Header = () => {
         >
           24 小時動物醫院
         </NavBar>
-        <NavBar>寵物走失協尋</NavBar>
       </NavBarContainer>
 
       {profile.isLogged ? (
-        <p onClick={() => navigate("/profile")}>{profile.name} 您好！</p>
+        <NavBarContainer style={{ marginRight: "5px" }}>
+          <NavBar
+            style={{ marginRight: "20px" }}
+            onClick={() => navigate(`/profile/${profile.uid}`)}
+          >
+            會員專區
+          </NavBar>
+          <NavBar onClick={() => navigate("/profile")}>
+            {profile.name} 您好！
+          </NavBar>
+        </NavBarContainer>
       ) : (
         <LoginRegisterBtnWrapper>
           <LoginRegisterBtn

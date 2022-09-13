@@ -9,21 +9,14 @@ import {
 import { Card, Dating, petCardInfo, InviteDating } from "../../reducers/dating";
 import api from "../../utils/api";
 import { db } from "../../utils/firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  deleteDoc,
-  doc,
-  addDoc,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
 import { SettingPreference } from "./PairingFeature";
 import ConsiderPetDetail from "./ConsiderPet";
 import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
 import { ConsiderEverySinglePetCard } from "./ConsiderPet";
+import { Profile } from "../../reducers/profile";
 
 const Cards = styled.div`
   position: relative;
@@ -70,6 +63,9 @@ const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
   const dispatch = useDispatch();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
   const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
@@ -89,12 +85,7 @@ const Pairing: React.FC = () => {
   async function getListsData() {
     let userChosenId: number[] = [];
     let consider: Card[] = [];
-    const q = collection(
-      db,
-      "memberProfiles",
-      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-      "considerLists"
-    );
+    const q = collection(db, "memberProfiles", profile.uid, "considerLists");
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       userChosenId.push(info.data().id);
@@ -102,12 +93,7 @@ const Pairing: React.FC = () => {
     });
     dispatch(setConsiderList(consider));
 
-    const p = collection(
-      db,
-      "memberProfiles",
-      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-      "notConsiderLists"
-    );
+    const p = collection(db, "memberProfiles", profile.uid, "notConsiderLists");
     const querySecond = await getDocs(p);
     querySecond.forEach((info) => {
       userChosenId.push(info.data().id);
@@ -175,12 +161,7 @@ const Pairing: React.FC = () => {
 
   async function getUpcomingListData() {
     let upcomingDate: InviteDating[] = [];
-    const q = collection(
-      db,
-      "memberProfiles",
-      "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-      "upcomingDates"
-    );
+    const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       upcomingDate.push(info.data() as InviteDating);
@@ -188,38 +169,6 @@ const Pairing: React.FC = () => {
     dispatch(setUpcomingDateList(upcomingDate));
   }
 
-  async function deleteConsiderAndUpdateList(id: number) {
-    const q = query(
-      collection(
-        db,
-        "memberProfiles",
-        "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-        "considerLists"
-      ),
-      where("id", "==", id)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(async (info) => {
-      await deleteDoc(
-        doc(
-          db,
-          "memberProfiles",
-          "FUQqyfQNAeMUvFyZgLlATEGTg6V2",
-          "considerLists",
-          info.id
-        )
-      );
-      getListsData();
-
-      await addDoc(
-        collection(
-          db,
-          "/memberProfiles/FUQqyfQNAeMUvFyZgLlATEGTg6V2/notConsiderLists"
-        ),
-        { id: id }
-      );
-    });
-  }
   if (!dating.allCards) return null;
   return (
     <>
@@ -266,7 +215,6 @@ const Pairing: React.FC = () => {
           <ConsiderEverySinglePetCard
             setNowChosenPetIndex={setNowChosenPetIndex}
             setConsiderDetail={setConsiderDetail}
-            deleteConsiderAndUpdateList={deleteConsiderAndUpdateList}
           />
         </ConsiderList>
       ) : (

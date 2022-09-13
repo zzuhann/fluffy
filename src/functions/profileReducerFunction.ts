@@ -1,4 +1,9 @@
-import { ActionType } from "../reducers/profile";
+import {
+  ActionType,
+  OwnArticle,
+  OwnPet,
+  PetDiaryType,
+} from "../reducers/profile";
 
 export function setName(name: string) {
   return {
@@ -58,5 +63,26 @@ export function targetRegisterOrLogin(target: string) {
 export function afterRegisterSaveName() {
   return {
     type: ActionType.afterRegisterSaveName,
+  };
+}
+
+export function setOwnPets(ownPets: OwnPet[]) {
+  return {
+    type: ActionType.setOwnPets,
+    payload: { ownPets },
+  };
+}
+
+export function setOwnPetDiary(petDiary: PetDiaryType[]) {
+  return {
+    type: ActionType.setOwnPetDiary,
+    payload: { petDiary },
+  };
+}
+
+export function setOwnArticle(ownArticles: OwnArticle[]) {
+  return {
+    type: ActionType.setOwnArticle,
+    payload: { ownArticles },
   };
 }
