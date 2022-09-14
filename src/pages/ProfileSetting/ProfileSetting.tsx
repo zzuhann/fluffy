@@ -8,7 +8,12 @@ import { db, storage } from "../../utils/firebase";
 import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
+import {
+  SimpleSinglePetCard,
+  EditAddedPetInfo,
+  AddPet,
+  DetailPetSingleInfo,
+} from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
 
 const RegisterLoginBtn = styled.div`
@@ -135,6 +140,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
   const [newName, setNewName] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState<string>("info");
   const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
+  const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false);
   const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
   const [addPet, setAddPet] = useState<boolean>(false);
   const [petImg, setPetImg] = useState<UploadImgType>(uploadImgInitialState);
@@ -160,13 +166,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     context: "",
   });
   const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
-
-  // useEffect(() => {
-  //   if (profile.img) {
-  //     setImg({ ...img, url: profile.img as string });
-  //     // setNewName(profile.name);
-  //   }
-  // }, [profile]);
 
   async function getOwnPetList() {
     const allOwnPet: OwnPet[] = [];
@@ -241,7 +240,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ) : (
             ""
           )}
-          {selectedTab === tabs[1] && ownPetDetail ? (
+          {selectedTab === tabs[1] && ownPetDetail && ownPetEdit ? (
             <EditAddedPetInfo
               setOwnPetDetail={setOwnPetDetail}
               petNewImg={petNewImg}
@@ -249,6 +248,18 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
               setPetNewInfo={setPetNewInfo}
               petNewInfo={petNewInfo}
               ownPetIndex={ownPetIndex}
+              getOwnPetList={getOwnPetList}
+              ownPetEdit={ownPetEdit}
+              setOwnPetEdit={setOwnPetEdit}
+            />
+          ) : selectedTab === tabs[1] && ownPetDetail && !ownPetEdit ? (
+            <DetailPetSingleInfo
+              petNewImg={petNewImg}
+              petNewInfo={petNewInfo}
+              ownPetIndex={ownPetIndex}
+              ownPetEdit={ownPetEdit}
+              setOwnPetEdit={setOwnPetEdit}
+              setOwnPetDetail={setOwnPetDetail}
               getOwnPetList={getOwnPetList}
             />
           ) : (

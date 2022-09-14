@@ -69,7 +69,7 @@ const UserImage = styled.img`
   object-fit: cover;
   border-radius: 40px;
 `;
-const UpdateBtn = styled(Btn)`
+export const UpdateBtn = styled(Btn)`
   bottom: 15px;
   right: 15px;
 `;
@@ -79,18 +79,19 @@ const EditBtn = styled(Btn)`
   right: 15px;
 `;
 
-const EditContainer = styled.div`
+export const EditContainer = styled.div`
   display: flex;
+  margin-bottom: 15px;
 `;
 
-const EditInfoLabel = styled.label`
-  font-size: 25px;
+export const EditInfoLabel = styled.label`
+  font-size: 22px;
   margin-left: 20px;
   display: flex;
   align-items: center;
 `;
-const EditInfoInput = styled.input`
-  font-size: 25px;
+export const EditInfoInput = styled.input`
+  font-size: 22px;
   margin-left: 10px;
   padding: 5px;
   width: 150px;
@@ -130,7 +131,7 @@ const PreviewCancelBtn = styled.div`
   }
 `;
 
-const CancelIcon = styled.img`
+export const CancelIcon = styled.img`
   position: relative;
   width: 35px;
   height: 35px;
@@ -139,36 +140,35 @@ const CancelIcon = styled.img`
   transform: translate(-50%, -50%);
 `;
 
-const EditModeContainer = styled.div`
+export const EditModeContainer = styled.div`
   display: flex;
 `;
 
-const EditModeUserInfoContainer = styled.div`
+export const EditModeUserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const ImageUploadLabel = styled.label`
+export const ImageUploadLabel = styled.label`
   width: 200px;
   height: 200px;
   border-radius: 40px;
   position: relative;
 `;
 
-const ProfileImg = styled.img`
+export const ProfileImg = styled.img`
   width: 200px;
   height: 200px;
   object-fit: cover;
   border-radius: 40px;
-  object-fit: cover;
   position: relative;
 `;
 
-const ImageUploadInput = styled.input`
+export const ImageUploadInput = styled.input`
   display: none;
 `;
 
-const CancelUpdateBtn = styled(Btn)`
+export const CancelUpdateBtn = styled(Btn)`
   bottom: 15px;
   right: 200px;
 `;
