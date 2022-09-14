@@ -24,12 +24,25 @@ import { EditContainer, EditInfoLabel, EditInfoInput } from "./ProfileSetting";
 const PetInfo = styled.div`
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  margin-top: 30px;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  padding: 15px;
   position: relative;
+  justify-content: space-between;
 `;
 
 const PetSimpleCard = styled.div`
   flex-basis: 300px;
+  border-radius: 10px;
+  overflow: hidden;
   position: relative;
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const PetSimpleImage = styled.img`
@@ -42,13 +55,15 @@ const PetSimpleInfos = styled.div`
   display: flex;
   justify-content: space-between;
   position: absolute;
-  bottom: 0;
+  bottom: 1px;
   left: 0;
   width: 100%;
+  padding: 10px 15px;
 `;
 const PetSimpleInfo = styled.div`
   font-size: 25px;
   color: #fff;
+  letter-spacing: 1.5px;
 `;
 
 const PetDetailCard = styled.div`

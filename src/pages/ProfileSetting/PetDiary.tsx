@@ -23,16 +23,30 @@ import {
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { EditContainer, EditInfoLabel, EditInfoInput } from "./ProfileSetting";
 import { setOwnPetDiary } from "../../functions/profileReducerFunction";
+import { Title } from "./UserInfos";
 
 const PetInfo = styled.div`
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  margin-top: 30px;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  padding: 15px;
   position: relative;
+  justify-content: space-between;
 `;
 
 const PetSimpleCard = styled.div`
   flex-basis: 300px;
+  border-radius: 10px;
+  overflow: hidden;
   position: relative;
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const PetSimpleImage = styled.img`
@@ -45,9 +59,11 @@ const PetSimpleInfos = styled.div`
   display: flex;
   justify-content: space-between;
   position: absolute;
+  bottom: 1px;
   bottom: 0;
   left: 0;
   width: 100%;
+  padding: 10px 15px;
 `;
 const PetSimpleInfo = styled.div`
   font-size: 25px;

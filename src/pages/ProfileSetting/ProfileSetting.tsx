@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Profile, OwnPet } from "../../reducers/profile";
-import { RegisterLoginBtn } from "./ProfileLoginRegister";
 import UserInfos from "./UserInfos";
 import { PetDiary } from "./PetDiary";
 import { db, storage } from "../../utils/firebase";
@@ -12,48 +11,87 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { SimpleSinglePetCard, EditAddedPetInfo, AddPet } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
 
+const RegisterLoginBtn = styled.div`
+  width: 200px;
+  cursor: pointer;
+  align-self: center;
+  text-align: center;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
+  flex-direction: column;
   position: relative;
+`;
+
+const SideBarWrapper = styled.div`
+  width: 100%;
+  background-color: #f8f6f6;
+  height: 80px;
 `;
 
 const SidebarProfileTab = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 200px;
+  justify-content: space-between;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-top: 10px;
 `;
 
 const UserProfileContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
 
 export const ProfileImg = styled.img`
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
   object-fit: cover;
 `;
 
 const ProfileName = styled.div`
   text-align: center;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  margin-left: 15px;
+  margin-right: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SettingTabContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  margin-top: 20px;
 `;
 
 const SettingTab = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  font-size: 25px;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  margin-right: 30px;
   cursor: pointer;
+  position: relative;
   &:hover {
-    background-color: #000;
-    color: #fff;
+    color: #000;
+  }
+  &:hover:after {
+    content: "";
+    width: 100%;
+    height: 4px;
+    background-color: #b7b0a8;
+    position: absolute;
+    top: 40px;
+  }
+  &:last-child {
+    margin-right: 0;
   }
 `;
 
@@ -69,6 +107,8 @@ const MainInfo = styled.div`
   position: relative;
   min-height: 100vh;
   width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
 `;
 
 type profileSettingType = {
@@ -119,14 +159,14 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     title: "",
     context: "",
   });
-  const tabs = ["info", "ownpet", "diary", "articles"];
+  const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
 
-  useEffect(() => {
-    if (profile.img) {
-      setImg({ ...img, url: profile.img as string });
-      setNewName(profile.name);
-    }
-  }, [profile]);
+  // useEffect(() => {
+  //   if (profile.img) {
+  //     setImg({ ...img, url: profile.img as string });
+  //     // setNewName(profile.name);
+  //   }
+  // }, [profile]);
 
   async function getOwnPetList() {
     const allOwnPet: OwnPet[] = [];
@@ -148,97 +188,101 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
   }
 
   return (
-    <Wrapper>
-      <SidebarProfileTab>
-        <UserProfileContainer>
-          <ProfileImg src={profile.img as string} alt="" />
-          <ProfileName>{profile.name}</ProfileName>
-          <RegisterLoginBtn onClick={() => props.signOutProfile()}>
-            登出
-          </RegisterLoginBtn>
-        </UserProfileContainer>
-        <SettingTabContainer>
-          {tabs.map((tab, index) => (
-            <SettingTab
-              key={index}
-              onClick={(e) => {
-                const target = e.target as HTMLElement;
-                setSelectedTab(target.innerText);
-                if (index === 1) {
-                  onclick = () => getOwnPetList();
-                }
-              }}
-            >
-              {tab}
-            </SettingTab>
-          ))}
-        </SettingTabContainer>
-      </SidebarProfileTab>
-      <MainInfo>
-        {selectedTab === tabs[0] ? (
-          <UserInfos
-            newName={newName}
-            setNewName={setNewName}
-            setImg={setImg}
-            img={img}
-          />
-        ) : (
-          ""
-        )}
-        {selectedTab === tabs[1] && !ownPetDetail ? (
-          <SimpleSinglePetCard
-            setOwnPetDetail={setOwnPetDetail}
-            setOwnPetIndex={setOwnPetIndex}
-            petNewImg={petNewImg}
-            setPetNewImg={setPetNewImg}
-            setPetNewInfo={setPetNewInfo}
-            getOwnPetList={getOwnPetList}
-            setAddPet={setAddPet}
-          />
-        ) : (
-          ""
-        )}
-        {selectedTab === tabs[1] && ownPetDetail ? (
-          <EditAddedPetInfo
-            setOwnPetDetail={setOwnPetDetail}
-            petNewImg={petNewImg}
-            setPetNewImg={setPetNewImg}
-            setPetNewInfo={setPetNewInfo}
-            petNewInfo={petNewInfo}
-            ownPetIndex={ownPetIndex}
-            getOwnPetList={getOwnPetList}
-          />
-        ) : (
-          ""
-        )}
-        {selectedTab === tabs[1] && addPet ? (
-          <AddPet
-            setAddPet={setAddPet}
-            petNewImg={petNewImg}
-            petImg={petImg}
-            setPetImg={setPetImg}
-            addPetInfo={addPetInfo}
-            setAddPetInfo={setAddPetInfo}
-            setOwnPetDetail={setOwnPetDetail}
-            addDocOwnPets={addDocOwnPets}
-            setPetNewImg={setPetNewImg}
-          />
-        ) : (
-          ""
-        )}
-        {selectedTab === tabs[2] ? <PetDiary /> : ""}
-        {selectedTab === tabs[3] ? (
-          <WritePetArticle
-            addArticleInfo={addArticleInfo}
-            setAddArticleInfo={setAddArticleInfo}
-            articleCover={articleCover}
-            setArticleCover={setArticleCover}
-          />
-        ) : (
-          ""
-        )}
-      </MainInfo>
-    </Wrapper>
+    <>
+      <SideBarWrapper>
+        <SidebarProfileTab>
+          <UserProfileContainer>
+            <ProfileImg src={profile.img as string} alt="" />
+            <ProfileName>{profile.name}</ProfileName>
+            <RegisterLoginBtn onClick={() => props.signOutProfile()}>
+              登出
+            </RegisterLoginBtn>
+          </UserProfileContainer>
+          <SettingTabContainer>
+            {tabs.map((tab, index) => (
+              <SettingTab
+                key={index}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  setSelectedTab(target.innerText);
+                  if (index === 1) {
+                    onclick = () => getOwnPetList();
+                  }
+                }}
+              >
+                {tab}
+              </SettingTab>
+            ))}
+          </SettingTabContainer>
+        </SidebarProfileTab>
+      </SideBarWrapper>
+      <Wrapper>
+        <MainInfo>
+          {selectedTab === tabs[0] ? (
+            <UserInfos
+              newName={newName}
+              setNewName={setNewName}
+              setImg={setImg}
+              img={img}
+            />
+          ) : (
+            ""
+          )}
+          {selectedTab === tabs[1] && !ownPetDetail ? (
+            <SimpleSinglePetCard
+              setOwnPetDetail={setOwnPetDetail}
+              setOwnPetIndex={setOwnPetIndex}
+              petNewImg={petNewImg}
+              setPetNewImg={setPetNewImg}
+              setPetNewInfo={setPetNewInfo}
+              getOwnPetList={getOwnPetList}
+              setAddPet={setAddPet}
+            />
+          ) : (
+            ""
+          )}
+          {selectedTab === tabs[1] && ownPetDetail ? (
+            <EditAddedPetInfo
+              setOwnPetDetail={setOwnPetDetail}
+              petNewImg={petNewImg}
+              setPetNewImg={setPetNewImg}
+              setPetNewInfo={setPetNewInfo}
+              petNewInfo={petNewInfo}
+              ownPetIndex={ownPetIndex}
+              getOwnPetList={getOwnPetList}
+            />
+          ) : (
+            ""
+          )}
+          {selectedTab === tabs[1] && addPet ? (
+            <AddPet
+              setAddPet={setAddPet}
+              petNewImg={petNewImg}
+              petImg={petImg}
+              setPetImg={setPetImg}
+              addPetInfo={addPetInfo}
+              setAddPetInfo={setAddPetInfo}
+              setOwnPetDetail={setOwnPetDetail}
+              addDocOwnPets={addDocOwnPets}
+              setPetNewImg={setPetNewImg}
+            />
+          ) : (
+            ""
+          )}
+          {selectedTab === tabs[2] ? <PetDiary /> : ""}
+          {selectedTab === tabs[3] ? (
+            <WritePetArticle
+              addArticleInfo={addArticleInfo}
+              setAddArticleInfo={setAddArticleInfo}
+              articleCover={articleCover}
+              setArticleCover={setArticleCover}
+            />
+          ) : (
+            ""
+          )}
+        </MainInfo>
+      </Wrapper>
+    </>
   );
 };
 
