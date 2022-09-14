@@ -4,6 +4,16 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import "./petArticle.css";
 import parse from "html-react-parser";
+import {
+  FaHeading,
+  FaBold,
+  FaStrikethrough,
+  FaRedo,
+  FaUndo,
+} from "react-icons/fa";
+import { TbHeading, TbBlockquote } from "react-icons/tb";
+import { MdFormatListBulleted, MdHorizontalRule } from "react-icons/md";
+import { AiOutlineOrderedList } from "react-icons/ai";
 
 const EditorInput = styled.div`
   position: absolute;
@@ -23,52 +33,53 @@ const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive("bold") ? "is-active" : ""}
       >
-        bold
+        <FaBold />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={editor.isActive("strike") ? "is-active" : ""}
       >
-        strike
-      </button>
-      <button onClick={() => editor.chain().focus().unsetAllMarks().run()}>
-        clear marks
+        <FaStrikethrough />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
       >
-        h1
+        <FaHeading />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
       >
-        h2
+        <TbHeading />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
-        bullet list
+        <MdFormatListBulleted />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive("orderedList") ? "is-active" : ""}
       >
-        ordered list
+        <AiOutlineOrderedList />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={editor.isActive("blockquote") ? "is-active" : ""}
       >
-        blockquote
+        <TbBlockquote />
       </button>
       <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        horizontal rule
+        <MdHorizontalRule />
       </button>
-      <button onClick={() => editor.chain().focus().undo().run()}>undo</button>
-      <button onClick={() => editor.chain().focus().redo().run()}>redo</button>
+      <button onClick={() => editor.chain().focus().undo().run()}>
+        <FaUndo />
+      </button>
+      <button onClick={() => editor.chain().focus().redo().run()}>
+        <FaRedo />
+      </button>
     </div>
   );
 };

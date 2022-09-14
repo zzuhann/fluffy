@@ -38,7 +38,7 @@ import {
   EditInfoInput,
 } from "./UserInfos";
 
-const InfoContainer = styled.div`
+export const InfoContainer = styled.div`
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
@@ -460,7 +460,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
             <ImageUploadLabel htmlFor="image">
               <ProfileImg src={defaultProfile} alt="上傳" />
               <PreviewCancelBtn>
-                <CancelIcon src={pet} />
+                <CancelIcon src={upload} />
               </PreviewCancelBtn>
             </ImageUploadLabel>
             <ImageUploadInput

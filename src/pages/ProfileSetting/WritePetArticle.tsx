@@ -27,25 +27,34 @@ import {
   EditPetArticle,
   PetArticle,
 } from "./PetArticle";
-import upload from "./plus.png";
+import {
+  Btn,
+  Title,
+  EditContainer,
+  EditInfoLabel,
+  EditInfoInput,
+  CancelIcon,
+} from "./UserInfos";
+import parse from "html-react-parser";
+import trash from "./bin.png";
+import upload from "./upload.png";
 
-export const EditContainer = styled.div`
-  display: flex;
+const FinishAddArticleBtn = styled(Btn)`
+  top: 15px;
+  right: 100px;
 `;
-export const EditInfoLabel = styled.label`
-  flex-shrink: 0;
+
+const CancelBtn = styled(Btn)`
+  top: 15px;
+  right: 15px;
 `;
-export const EditInfoInput = styled.input``;
-const CloseBtn = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 30px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #000;
-  z-index: 99;
+
+const EditTitleInput = styled(EditInfoInput)`
+  width: 300px;
+`;
+
+const EditArticleLabel = styled(EditInfoLabel)`
+  width: 100px;
 `;
 
 const SaveBtn = styled.div`
@@ -59,10 +68,25 @@ const SaveBtn = styled.div`
   }
 `;
 
+const HintUploadImg = styled.div`
+  font-size: 18px;
+  color: #3c3c3c;
+  font-weight: bold;
+  position: absolute;
+  border: 2px solid #d1cfcf;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const PreviewContainer = styled.div`
   position: relative;
   width: 350px;
   height: 200px;
+  padding-left: 15px;
 `;
 
 const PreviewImg = styled.img`
@@ -74,11 +98,16 @@ const PreviewImg = styled.img`
 
 const PreviewCancelBtn = styled.div`
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: -10px;
+  right: -25px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: #d0470c;
+  transition: 0.3s;
   cursor: pointer;
   &:hover {
-    background-color: #000;
+    background-color: #952f04;
     color: #fff;
   }
 `;
@@ -87,7 +116,8 @@ const PetDetailImg = styled.label`
   width: 350px;
   height: 200px;
   object-fit: cover;
-  background-color: transparent;
+  position: relative;
+  padding-left: 15px;
 `;
 const PetDetailInput = styled.input`
   display: none;
@@ -126,6 +156,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   });
   const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1);
   const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>();
+  const [detailArticleOpen, setDetailArticleOpen] = useState<boolean>(false);
 
   async function addPetArticleDoc(imgURL: string) {
     await addDoc(collection(db, `/petArticles`), {
@@ -257,57 +288,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   return (
     <>
       {addArticleMode ? (
-        <div className="editContainer">
-          <CloseBtn onClick={() => setAddArticleMode(false)}>X</CloseBtn>
-          <EditContainer>
-            <EditInfoLabel htmlFor="title">Title: </EditInfoLabel>
-            <EditInfoInput
-              id="title"
-              value={props.addArticleInfo.title}
-              onChange={(e) => {
-                props.setAddArticleInfo({
-                  ...props.addArticleInfo,
-                  title: e.target.value,
-                });
-              }}
-            />
-          </EditContainer>
-          <EditContainer>
-            <EditInfoLabel htmlFor="cover">文章封面: </EditInfoLabel>
-            {props.articleCover.url ? (
-              <PreviewContainer>
-                <PreviewImg src={props.articleCover.url} alt="" />
-                <PreviewCancelBtn
-                  onClick={() => {
-                    props.setArticleCover({ file: "", url: "" });
-                  }}
-                >
-                  取消
-                </PreviewCancelBtn>
-              </PreviewContainer>
-            ) : (
-              ""
-            )}
-            <PetDetailImg htmlFor="cover"></PetDetailImg>
-            <PetDetailInput
-              id="cover"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                updateUseStateInputImage(
-                  e.target.files as FileList,
-                  props.setArticleCover
-                );
-              }}
-            />
-          </EditContainer>
-
-          <PetArticle
-            setAddArticleInfo={props.setAddArticleInfo}
-            addArticleInfo={props.addArticleInfo}
-          />
-          <ContextDetails addArticleInfo={props.addArticleInfo} />
-          <SaveBtn
+        <InfoContainer>
+          <FinishAddArticleBtn
             onClick={() => {
               if (
                 !props.addArticleInfo.title ||
@@ -330,13 +312,69 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             }}
           >
             上傳文章
-          </SaveBtn>
-        </div>
-      ) : editArticleMode ? (
-        <div className="editContainer">
+          </FinishAddArticleBtn>
+          <CancelBtn onClick={() => setAddArticleMode(false)}>取消</CancelBtn>
           <EditContainer>
-            <EditInfoLabel htmlFor="title">Title: </EditInfoLabel>
-            <EditInfoInput
+            <EditArticleLabel htmlFor="title">文章標題: </EditArticleLabel>
+            <EditTitleInput
+              id="title"
+              value={props.addArticleInfo.title}
+              onChange={(e) => {
+                props.setAddArticleInfo({
+                  ...props.addArticleInfo,
+                  title: e.target.value,
+                });
+              }}
+            />
+          </EditContainer>
+          <EditContainer>
+            <EditArticleLabel htmlFor="cover">文章封面: </EditArticleLabel>
+            {props.articleCover.url ? (
+              <PreviewContainer>
+                <PreviewImg src={props.articleCover.url} alt="" />
+                <PreviewCancelBtn
+                  onClick={() => {
+                    props.setArticleCover({ file: "", url: "" });
+                  }}
+                >
+                  <CancelIcon src={trash} />
+                </PreviewCancelBtn>
+              </PreviewContainer>
+            ) : (
+              <>
+                <PetDetailImg htmlFor="cover">
+                  <HintUploadImg>請在此上傳封面</HintUploadImg>
+                  <PreviewCancelBtn>
+                    <CancelIcon src={upload} />
+                  </PreviewCancelBtn>
+                </PetDetailImg>
+
+                <PetDetailInput
+                  id="cover"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    updateUseStateInputImage(
+                      e.target.files as FileList,
+                      props.setArticleCover
+                    );
+                  }}
+                />
+              </>
+            )}
+          </EditContainer>
+
+          <PetArticle
+            setAddArticleInfo={props.setAddArticleInfo}
+            addArticleInfo={props.addArticleInfo}
+          />
+          <ContextDetails addArticleInfo={props.addArticleInfo} />
+        </InfoContainer>
+      ) : editArticleMode ? (
+        <InfoContainer>
+          <EditContainer>
+            <EditArticleLabel htmlFor="title">文章標題: </EditArticleLabel>
+            <EditTitleInput
               id="title"
               value={editArticleContext.title}
               onChange={(e) => {
@@ -357,24 +395,30 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                     setEditArticleCover({ file: null, url: "" });
                   }}
                 >
-                  取消
+                  <CancelIcon src={trash} />
                 </PreviewCancelBtn>
               </PreviewContainer>
             ) : (
-              ""
+              <>
+                <PetDetailImg htmlFor="cover">
+                  <HintUploadImg>請在此上傳封面</HintUploadImg>
+                  <PreviewCancelBtn>
+                    <CancelIcon src={upload} />
+                  </PreviewCancelBtn>
+                </PetDetailImg>
+                <PetDetailInput
+                  id="cover"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    updateUseStateInputImage(
+                      e.target.files as FileList,
+                      setEditArticleCover
+                    );
+                  }}
+                />
+              </>
             )}
-            <PetDetailImg htmlFor="cover"></PetDetailImg>
-            <PetDetailInput
-              id="cover"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                updateUseStateInputImage(
-                  e.target.files as FileList,
-                  setEditArticleCover
-                );
-              }}
-            />
           </EditContainer>
 
           <EditPetArticle
@@ -382,100 +426,205 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             setEditArticleContext={setEditArticleContext}
           />
           <EditContextDetails editArticleContext={editArticleContext} />
-          <SaveBtn
+          <FinishAddArticleBtn
             onClick={() => {
               updateArticleInfoCondition();
             }}
           >
             更新文章
-          </SaveBtn>
-        </div>
+          </FinishAddArticleBtn>
+          <CancelBtn onClick={() => setEditArticleMode(false)}>取消</CancelBtn>
+        </InfoContainer>
+      ) : detailArticleOpen ? (
+        <InfoContainer>
+          <EditArticleBtn
+            onClick={() => {
+              setEditArticleMode(true);
+            }}
+          >
+            編輯
+          </EditArticleBtn>
+          <DeteleArticleBtn
+            onClick={async () => {
+              await deleteFirebaseDataMutipleWhere(
+                `/petArticles`,
+                "postTime",
+                profile.ownArticles[ownArticleIndex].postTime,
+                "authorUid",
+                profile.uid
+              );
+              window.alert("刪除完成！");
+              getAuthorArticles(profile.uid);
+            }}
+          >
+            刪除
+          </DeteleArticleBtn>
+          <CancelDetailBtn onClick={() => setDetailArticleOpen(false)}>
+            取消
+          </CancelDetailBtn>
+          <ArticleCover src={profile.ownArticles[ownArticleIndex].img} />
+          <ArticleTitle>
+            {profile.ownArticles[ownArticleIndex].title}
+          </ArticleTitle>
+          <ArticlePostTime>{`${new Date(
+            profile.ownArticles[ownArticleIndex].postTime
+          ).getFullYear()}-${
+            new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() +
+              1 <
+            10
+              ? `0${
+                  new Date(
+                    profile.ownArticles[ownArticleIndex].postTime
+                  ).getMonth() + 1
+                }`
+              : `${
+                  new Date(
+                    profile.ownArticles[ownArticleIndex].postTime
+                  ).getMonth() + 1
+                }`
+          }-${
+            new Date(profile.ownArticles[ownArticleIndex].postTime).getDate() <
+            10
+              ? `0${new Date(
+                  profile.ownArticles[ownArticleIndex].postTime
+                ).getDate()}`
+              : `${new Date(
+                  profile.ownArticles[ownArticleIndex].postTime
+                ).getDate()}`
+          }`}</ArticlePostTime>
+          <ArticleContext className="DetailProseMirror">
+            {parse(profile.ownArticles[ownArticleIndex].context)}
+          </ArticleContext>
+        </InfoContainer>
       ) : (
-        <UserArticleContainer>
-          {profile.ownArticles.map((article, index) => (
-            <UserArticle key={index}>
-              <UserArticleImg src={article.img} />
-              <UserArticleTitle>{article.title}</UserArticleTitle>
-              <ArticleEditBtnContainer>
-                <ArticleBtnEditandDel
-                  onClick={() => {
-                    setEditArticleMode(true);
-                    setInitialDiaryTimeStamp(article.postTime);
-                    setOwnArticleIndex(index);
-                    setEditArticleCover({
-                      ...editArticleCover,
-                      url: profile.ownArticles[index].img,
-                    });
-                    setEditArticleContext({
-                      ...editArticleContext,
-                      title: profile.ownArticles[index].title,
-                      context: profile.ownArticles[index].context,
-                    });
-                  }}
-                >
-                  編輯
-                </ArticleBtnEditandDel>
-                <ArticleBtnEditandDel
-                  onClick={async () => {
-                    await deleteFirebaseDataMutipleWhere(
-                      `/petArticles`,
-                      "postTime",
-                      article.postTime,
-                      "authorUid",
-                      profile.uid
-                    );
-                    window.alert("刪除完成！");
-                    getAuthorArticles(profile.uid);
-                  }}
-                >
-                  刪除
-                </ArticleBtnEditandDel>
-              </ArticleEditBtnContainer>
-            </UserArticle>
-          ))}
-          <UserArticle onClick={() => setAddArticleMode(true)}>
-            <UserArticleImg src={upload} />
-            <UserArticleTitle>新增日記</UserArticleTitle>
-          </UserArticle>
-        </UserArticleContainer>
+        <InfoContainer>
+          <Title>寵物文章</Title>
+          <AddArticleBtn onClick={() => setAddArticleMode(true)}>
+            新增文章
+          </AddArticleBtn>
+          <UserArticleContainer>
+            {profile.ownArticles.map((article, index) => (
+              <UserArticle
+                key={index}
+                onClick={() => {
+                  setDetailArticleOpen(true);
+                  setInitialDiaryTimeStamp(article.postTime);
+                  setOwnArticleIndex(index);
+                  setEditArticleCover({
+                    ...editArticleCover,
+                    url: profile.ownArticles[index].img,
+                  });
+                  setEditArticleContext({
+                    ...editArticleContext,
+                    title: profile.ownArticles[index].title,
+                    context: profile.ownArticles[index].context,
+                  });
+                }}
+              >
+                <UserArticleImg src={article.img} />
+                <UserArticleTitle>{article.title}</UserArticleTitle>
+              </UserArticle>
+            ))}
+          </UserArticleContainer>
+        </InfoContainer>
       )}
     </>
   );
 };
 
+const AddArticleBtn = styled(Btn)`
+  top: 20px;
+  right: 20px;
+`;
+
+const InfoContainer = styled.div`
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  margin-top: 30px;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  padding: 20px;
+  position: relative;
+  margin-bottom: 50px;
+`;
+
 const UserArticleContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  justify-content: space-between;
+  margin-top: 30px;
 `;
 
 const UserArticle = styled.div`
-  width: 900px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-direction: column;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  padding: 15px;
+  position: relative;
+  margin-bottom: 30px;
+  transition: 0.3s;
+  bottom: 0;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
+    bottom: 5px;
+  }
 `;
 
 const UserArticleImg = styled.img`
   width: 350px;
   height: 200px;
+  border-radius: 8px;
 `;
 
 const UserArticleTitle = styled.div`
-  width: 300px;
-  text-align: center;
+  font-size: 24px;
+  width: 350px;
+  margin-top: 10px;
+  font-weight: bold;
 `;
 
-const ArticleEditBtnContainer = styled.div`
-  display: flex;
-  flex-direction: column;
+const ArticleCover = styled.img`
+  width: 100%;
+  height: 400px;
 `;
-const ArticleBtnEditandDel = styled.div`
-  width: 150px;
-  text-align: center;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
+
+const ArticleTitle = styled.div`
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+`;
+
+const ArticleContext = styled.div`
+  margin-top: 25px;
+`;
+
+const ArticlePostTime = styled.div`
+  padding-bottom: 20px;
+  border-bottom: 2px solid #d1cfcf;
+  color: #d1cfcf;
+  font-weight: bold;
+`;
+
+const EditArticleBtn = styled(Btn)`
+  right: 185px;
+  top: 430px;
+`;
+
+const DeteleArticleBtn = styled(Btn)`
+  right: 105px;
+  top: 430px;
+`;
+
+const CancelDetailBtn = styled(Btn)`
+  right: 20px;
+  top: 430px;
 `;
