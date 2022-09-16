@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Profile, OwnArticle } from "../../reducers/profile";
@@ -128,7 +128,10 @@ type PetArticleType = {
     title: string;
     context: string;
   };
-  setAddArticleInfo: (value: { title: string; context: string }) => void;
+  // setAddArticleInfo: (value: { title: string; context: string }) => void;
+  setAddArticleInfo: Dispatch<
+    SetStateAction<{ title: string; context: string }>
+  >;
   articleCover: { file: File | string; url: string };
   setArticleCover: (value: { file: File | string; url: string }) => void;
 };
@@ -173,7 +176,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       context: "",
     });
     props.setArticleCover({ file: "", url: "" });
-    window.alert("成功上傳！");
   }
 
   function updateNewArticleDataFirebase(photoName: string, newPetImg: File) {
@@ -223,7 +225,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       }
     });
     await Promise.all(promises);
-    getAuthorArticles(profile.uid);
+    // getAuthorArticles(profile.uid);
   }
 
   async function updateArticleInfoCondition() {
@@ -241,15 +243,32 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       return;
     }
     if (editArticleCover.url !== profile.ownArticles[ownArticleIndex].img) {
+      const updateOwnPetArticle = profile.ownArticles;
+      updateOwnPetArticle[ownArticleIndex] = {
+        ...updateOwnPetArticle[ownArticleIndex],
+        title: editArticleContext.title,
+        context: editArticleContext.context,
+        img: editArticleCover.url,
+      };
+      dispatch(setOwnArticle(updateOwnPetArticle));
+      window.alert("更新完成！");
+      setEditArticleMode(false);
       if (editArticleCover.file) {
         await updateNewArticleDataFirebase(
           editArticleCover.file.name,
           editArticleCover.file
         );
       }
+    } else {
+      const updateOwnPetArticle = profile.ownArticles;
+      updateOwnPetArticle[ownArticleIndex] = {
+        ...updateOwnPetArticle[ownArticleIndex],
+        title: editArticleContext.title,
+        context: editArticleContext.context,
+      };
+      dispatch(setOwnArticle(updateOwnPetArticle));
       window.alert("更新完成！");
       setEditArticleMode(false);
-    } else {
       await updateFirebaseDataMutipleWhere(
         `/petArticles`,
         "postTime",
@@ -262,9 +281,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           context: editArticleContext.context,
         }
       );
-      getAuthorArticles(profile.uid);
-      window.alert("更新完成！");
-      setEditArticleMode(false);
+      // getAuthorArticles(profile.uid);
     }
   }
 
@@ -284,6 +301,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   useEffect(() => {
     getAuthorArticles(profile.uid);
   }, []);
+  console.log(detailArticleOpen);
 
   return (
     <>
@@ -303,6 +321,20 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                 return;
               }
               if (props.articleCover.file instanceof File) {
+                const newArticleArr = profile.ownArticles;
+                newArticleArr.push({
+                  ...props.addArticleInfo,
+                  img: props.articleCover.url,
+                  postTime: Date.now(),
+                  author: { img: profile.img as string, name: profile.name },
+                  commentCount: 0,
+                  likedBy: [],
+                  authorUid: profile.uid,
+                  id: "",
+                });
+                dispatch(setOwnArticle(newArticleArr));
+                window.alert("成功上傳！");
+                setAddArticleMode(false);
                 addDataWithUploadImage(
                   `petArticles/${props.articleCover.file.name}`,
                   props.articleCover.file,
@@ -313,7 +345,18 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           >
             上傳文章
           </FinishAddArticleBtn>
-          <CancelBtn onClick={() => setAddArticleMode(false)}>取消</CancelBtn>
+          <CancelBtn
+            onClick={() => {
+              setAddArticleMode(false);
+              props.setAddArticleInfo({
+                title: "",
+                context: "",
+              });
+              props.setArticleCover({ file: "", url: "" });
+            }}
+          >
+            取消
+          </CancelBtn>
           <EditContainer>
             <EditArticleLabel htmlFor="title">文章標題: </EditArticleLabel>
             <EditTitleInput
@@ -363,7 +406,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
               </>
             )}
           </EditContainer>
-
           <PetArticle
             setAddArticleInfo={props.setAddArticleInfo}
             addArticleInfo={props.addArticleInfo}
@@ -435,33 +477,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           </FinishAddArticleBtn>
           <CancelBtn onClick={() => setEditArticleMode(false)}>取消</CancelBtn>
         </InfoContainer>
-      ) : detailArticleOpen ? (
+      ) : detailArticleOpen && profile.ownArticles[ownArticleIndex] ? (
         <InfoContainer>
-          <EditArticleBtn
-            onClick={() => {
-              setEditArticleMode(true);
-            }}
-          >
-            編輯
-          </EditArticleBtn>
-          <DeteleArticleBtn
-            onClick={async () => {
-              await deleteFirebaseDataMutipleWhere(
-                `/petArticles`,
-                "postTime",
-                profile.ownArticles[ownArticleIndex].postTime,
-                "authorUid",
-                profile.uid
-              );
-              window.alert("刪除完成！");
-              getAuthorArticles(profile.uid);
-            }}
-          >
-            刪除
-          </DeteleArticleBtn>
-          <CancelDetailBtn onClick={() => setDetailArticleOpen(false)}>
-            取消
-          </CancelDetailBtn>
           <ArticleCover src={profile.ownArticles[ownArticleIndex].img} />
           <ArticleTitle>
             {profile.ownArticles[ownArticleIndex].title}
@@ -495,6 +512,34 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           <ArticleContext className="DetailProseMirror">
             {parse(profile.ownArticles[ownArticleIndex].context)}
           </ArticleContext>
+          <EditArticleBtn
+            onClick={() => {
+              setEditArticleMode(true);
+            }}
+          >
+            編輯
+          </EditArticleBtn>
+          <DeteleArticleBtn
+            onClick={async () => {
+              await deleteFirebaseDataMutipleWhere(
+                `/petArticles`,
+                "postTime",
+                profile.ownArticles[ownArticleIndex].postTime,
+                "authorUid",
+                profile.uid
+              );
+              setDetailArticleOpen(false);
+              const DeleOwnPetArticle = profile.ownArticles;
+              DeleOwnPetArticle.splice(ownArticleIndex, 1);
+              dispatch(setOwnArticle(DeleOwnPetArticle));
+              window.alert("刪除完成！");
+            }}
+          >
+            刪除
+          </DeteleArticleBtn>
+          <CancelDetailBtn onClick={() => setDetailArticleOpen(false)}>
+            取消
+          </CancelDetailBtn>
         </InfoContainer>
       ) : (
         <InfoContainer>

@@ -1,6 +1,6 @@
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import React, { useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import styled from "styled-components";
 import "./petArticle.css";
 import parse from "html-react-parser";
@@ -85,25 +85,27 @@ const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
 };
 
 export const PetArticle: React.FC<{
-  setAddArticleInfo: (value: { title: string; context: string }) => void;
+  setAddArticleInfo: Dispatch<
+    SetStateAction<{ title: string; context: string }>
+  >;
   addArticleInfo: {
     title: string;
     context: string;
   };
 }> = ({ setAddArticleInfo, addArticleInfo }) => {
-  useEffect(() => {
-    setAddArticleInfo({ ...addArticleInfo, context: "" });
-  }, []);
-
+  // useEffect(() => {
+  //   setAddArticleInfo({ ...addArticleInfo, context: "" });
+  // }, []);
   const editor = useEditor({
     extensions: [StarterKit],
     content: `${addArticleInfo.context}`,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setAddArticleInfo({ ...addArticleInfo, context: html });
+      setAddArticleInfo((pre) => {
+        return { ...pre, context: html };
+      });
     },
   });
-
   return (
     <div className="textEditor">
       <MenuBar editor={editor} />
@@ -136,22 +138,22 @@ export const ContextDetails: React.FC<{
 };
 
 export const EditPetArticle: React.FC<{
-  setEditArticleContext: (value: { title: string; context: string }) => void;
+  setEditArticleContext: Dispatch<
+    SetStateAction<{ title: string; context: string }>
+  >;
   editArticleContext: {
     title: string;
     context: string;
   };
 }> = ({ editArticleContext, setEditArticleContext }) => {
-  // useEffect(() => {
-  //   setEditArticleContext({ ...editArticleContext, context: "" });
-  // }, []);
-
   const editor = useEditor({
     extensions: [StarterKit],
     content: `${editArticleContext.context}`,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setEditArticleContext({ ...editArticleContext, context: html });
+      setEditArticleContext((pre) => {
+        return { ...pre, context: html };
+      });
     },
   });
 

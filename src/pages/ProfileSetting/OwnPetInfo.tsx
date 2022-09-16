@@ -94,7 +94,7 @@ const PetSimpleInfos = styled.div`
   padding: 10px 15px;
 `;
 const PetSimpleInfo = styled.div`
-  font-size: 25px;
+  font-size: 22px;
   color: #fff;
   letter-spacing: 1.5px;
 `;
@@ -337,7 +337,6 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
           );
           const newOwnPets = profile.ownPets;
           newOwnPets.splice(props.ownPetIndex, 1);
-          console.log("delete");
           dispatch(setOwnPets(newOwnPets));
           window.alert("刪除完成！");
           props.setOwnPetDetail(false);
@@ -439,7 +438,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
 
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
-      const updateOwnPet = [...profile.ownPets];
+      const updateOwnPet = profile.ownPets;
       updateOwnPet[props.ownPetIndex] = {
         ...updateOwnPet[props.ownPetIndex],
         name: props.petNewInfo.name,
@@ -450,7 +449,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
       await updatePetInfo("");
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
-      const updateOwnPet = [...profile.ownPets];
+      const updateOwnPet = profile.ownPets;
       updateOwnPet[props.ownPetIndex] = {
         ...updateOwnPet[props.ownPetIndex],
         name: props.petNewInfo.name,
