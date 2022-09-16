@@ -1,4 +1,3 @@
-import { tab } from "@testing-library/user-event/dist/tab";
 import {
   collection,
   doc,
@@ -12,11 +11,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import {
-  setOwnArticle,
-  setOwnPetDiary,
-  setOwnPets,
-} from "../../functions/profileReducerFunction";
 import {
   OwnArticle,
   OwnPet,
@@ -104,21 +98,6 @@ const MainSection = styled.div`
   margin-top: 20px;
   padding: 15px;
   position: relative;
-`;
-const AllPetNameContainer = styled.div`
-  display: flex;
-  position: absolute;
-  top: 20px;
-  left: 5px;
-  font-size: 20px;
-`;
-const AllPetBtn = styled.div`
-  margin-right: 15px;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
 `;
 
 // petdiary style
@@ -351,11 +330,9 @@ const UserProfile = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const dispatch = useDispatch();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const tabs = ["日記", "文章", "寵物"];
   const [ownPet, setOwnPet] = useState<string[]>([]);
-  const [choosePetDiary, setChoosePetDiary] = useState<number>(-1);
   const [userInfo, setUserInfo] = useState<{ img: string; name: string }>({
     img: "",
     name: "",
@@ -433,8 +410,6 @@ const UserProfile = () => {
     });
     setOwnPet(pets);
   }, [userPet]);
-
-  console.log(optionBoxOpen);
 
   if (!userDiary) return null;
   if (!userArticle) return null;

@@ -3,25 +3,62 @@ import { db } from "../../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import styled from "styled-components";
 
+const Wrap = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  height: 100%;
+  background-color: #fafafa;
+  position: relative;
+`;
+
 const ClinicListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 600px;
+  max-width: 800px;
   position: relative;
-  left: 50%;
-  top: 50px;
-  transform: translate(-50%);
+  margin: 0 auto;
+  padding-top: 80px;
+  padding-bottom: 80px;
 `;
 
 const ClinicCard = styled.div`
-  width: 180px;
-  height: 180px;
   margin-bottom: 25px;
+  width: calc((100% - 20px) / 2);
+  flex-shrink: 0;
+  border: solid 2px #d1cfcf;
+  border-radius: 5px;
+  margin-right: 15px;
+  padding: 20px;
+  letter-spacing: 1.5px;
+  position: relative;
+  &:nth-child(2n) {
+    margin-right: 0;
+  }
 `;
 
-const ClinicTitle = styled.div``;
-const ClinicInfo = styled.div``;
+const ClinicLoc = styled.div`
+  font-size: 22px;
+  font-weight: bold;
+  color: #d0470c;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+`;
+
+const ClinicTitle = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+const ClinicInfo = styled.div`
+  font-size: 18px;
+  margin-bottom: 15px;
+  line-height: 25px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
 
 const AllArea = styled.div`
   position: absolute;
@@ -30,15 +67,53 @@ const AllArea = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const SingleArea = styled.div`
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
 
 const PhoneLink = styled.a``;
+
+const SelectGroup = styled.div`
+  position: absolute;
+  border: solid 1px black;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-left: 10px;
+  padding: 10px 15px;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  width: 200px;
+  z-index: 1000;
+  top: 80px;
+  left: 80px;
+`;
+const NowChooseOption = styled.div`
+  &:after {
+    content: "ˇ";
+    position: absolute;
+    right: 10px;
+    top: 15px;
+  }
+`;
+const OptionGroup = styled.ul<{ $isActive: boolean }>`
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  position: absolute;
+  background-color: #fff;
+  width: 200px;
+  left: 0;
+  top: 50px;
+`;
+const OptionName = styled.li`
+  display: flex;
+  justify-content: center;
+  padding: 8px 10px;
+  transition: 0.2s;
+  &:hover {
+    background-color: #d1cfcf;
+    color: #3c3c3c;
+  }
+`;
 
 type ClinicType = {
   name: string;
@@ -51,7 +126,9 @@ type ClinicType = {
 const VetClinic = () => {
   const clinicRef = useRef<ClinicType[]>([]);
   const [clinics, setClinics] = useState<ClinicType[]>([]);
-  const areaList = ["all", "北部地區", "中部地區", "南部地區"];
+  const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
+  const [nowCountry, setNowCountry] = useState<string>("全台診所");
+  const areaList = ["全台診所", "北部地區", "中部地區", "南部地區"];
   useEffect(() => {
     getVetClinicData();
   }, []);
@@ -130,7 +207,7 @@ const VetClinic = () => {
         ].indexOf(clinic.country) > -1
       ) {
         displayClinic.push(clinic);
-      } else if (target === "all") {
+      } else if (target === "全台診所") {
         displayClinic.push(clinic);
       }
     });
@@ -138,34 +215,51 @@ const VetClinic = () => {
   }
 
   return (
-    <>
-      <AllArea>
-        {areaList.map((area, index) => (
-          <SingleArea
-            key={index}
-            onClick={(e) => {
-              const target = e.target as HTMLElement;
-              changePreferenceArea(target.innerText);
-            }}
-          >
-            {area}
-          </SingleArea>
-        ))}
-      </AllArea>
+    <Wrap>
+      <SelectGroup>
+        <NowChooseOption
+          onMouseEnter={() => {
+            setOptionBoxOpen(true);
+          }}
+        >
+          {nowCountry}
+        </NowChooseOption>
+        <OptionGroup
+          $isActive={optionBoxOpen === true}
+          onMouseLeave={() => {
+            setOptionBoxOpen(false);
+          }}
+        >
+          {areaList.map((area, index) => (
+            <OptionName
+              key={index}
+              value={area}
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                changePreferenceArea(target.innerText);
+                setNowCountry(target.innerText);
+              }}
+            >
+              {area}
+            </OptionName>
+          ))}
+        </OptionGroup>
+      </SelectGroup>
+      <AllArea></AllArea>
       <ClinicListContainer>
         {clinics.map((clinic, index) => (
           <ClinicCard key={index}>
             <ClinicTitle>{clinic.name}</ClinicTitle>
-            <ClinicInfo>{clinic.country}</ClinicInfo>
+            <ClinicLoc>{clinic.country}</ClinicLoc>
+            <ClinicInfo>{clinic.location}</ClinicInfo>
             <ClinicInfo>
               <PhoneLink href={`tel:${clinic.phone}`}>{clinic.phone}</PhoneLink>
             </ClinicInfo>
-            <ClinicInfo>{clinic.location}</ClinicInfo>
             <ClinicInfo>{clinic.note}</ClinicInfo>
           </ClinicCard>
         ))}
       </ClinicListContainer>
-    </>
+    </Wrap>
   );
 };
 
