@@ -8,8 +8,8 @@ import {
 } from "../../functions/datingReducerFunction";
 import { Card, Dating, petCardInfo, InviteDating } from "../../reducers/dating";
 import api from "../../utils/api";
-import { db } from "../../utils/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { auth, db } from "../../utils/firebase";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
 import { SettingPreference } from "./PairingFeature";
 import ConsiderPetDetail from "./ConsiderPet";
@@ -17,6 +17,12 @@ import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
 import { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
+import { onAuthStateChanged } from "firebase/auth";
+import { setName, setImage } from "../../functions/profileReducerFunction";
+import {
+  checkIfLogged,
+  setProfileUid,
+} from "../../functions/profileReducerFunction";
 
 const Cards = styled.div`
   position: relative;
@@ -83,6 +89,7 @@ const Pairing: React.FC = () => {
   }
 
   async function getListsData() {
+    if (!profile.uid) return;
     let userChosenId: number[] = [];
     let consider: Card[] = [];
     const q = collection(db, "memberProfiles", profile.uid, "considerLists");

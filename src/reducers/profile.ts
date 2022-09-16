@@ -1,16 +1,16 @@
 export enum ActionType {
-  setProfileName,
-  setProfileEmail,
-  setProfilePassword,
-  setProfileImage,
-  clearProfileInfo,
-  checkIfLogged,
-  setProfileUid,
-  clickLoginOrRegister,
-  afterRegisterSaveName,
-  setOwnPets,
-  setOwnPetDiary,
-  setOwnArticle,
+  setProfileName = "setProfileName",
+  setProfileEmail = "setProfileEmail",
+  setProfilePassword = "setProfilePassword",
+  setProfileImage = "setProfileImage",
+  clearProfileInfo = "clearProfileInfo",
+  checkIfLogged = "checkIfLogged",
+  setProfileUid = "setProfileUid",
+  clickLoginOrRegister = "clickLoginOrRegister",
+  afterRegisterSaveName = "afterRegisterSaveName",
+  setOwnPets = "setOwnPets",
+  setOwnPetDiary = "setOwnPetDiary",
+  setOwnArticle = "setOwnArticle",
 }
 
 interface setProfileName {
@@ -180,7 +180,6 @@ const ProfileReducer = (
         ...state,
         password: "",
         email: "",
-        img: "",
       };
     }
     case ActionType.setProfileUid: {

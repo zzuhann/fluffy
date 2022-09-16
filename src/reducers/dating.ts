@@ -1,9 +1,9 @@
 export enum ActionType {
-  toggleDetailInfo,
-  setUserDirection,
-  setAllCardInfrontOfUser,
-  setConsiderList,
-  setUpcomingDateList,
+  toggleDetailInfo = "toggleDetailInfo",
+  setUserDirection = "setUserDirection",
+  setAllCardInfrontOfUser = "setAllCardInfrontOfUser",
+  setConsiderList = "setConsiderList",
+  setUpcomingDateList = "setUpcomingDateList",
 }
 
 interface toggleDetailInfo {

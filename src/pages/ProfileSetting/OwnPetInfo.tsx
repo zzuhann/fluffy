@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import {
@@ -37,6 +37,7 @@ import {
   EditInfoLabel,
   EditInfoInput,
 } from "./UserInfos";
+import { setOwnPets } from "../../functions/profileReducerFunction";
 
 export const InfoContainer = styled.div`
   width: 100%;
@@ -121,7 +122,6 @@ const PreviewImg = styled.img`
   height: 200px;
   object-fit: cover;
   border-radius: 40px;
-  object-fit: cover;
   position: relative;
 `;
 
@@ -226,6 +226,7 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
             key={index}
             onClick={() => {
               props.setOwnPetDetail(true);
+              props.setAddPet(false);
               props.setOwnPetIndex(index);
               props.setPetNewImg({
                 ...props.petNewImg,
@@ -291,6 +292,8 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const dispatch = useDispatch();
+
   return (
     <PetDeatilContainer>
       <Title>寵物資訊</Title>
@@ -332,9 +335,12 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
             "name",
             profile.ownPets[props.ownPetIndex].name
           );
+          const newOwnPets = profile.ownPets;
+          newOwnPets.splice(props.ownPetIndex, 1);
+          console.log("delete");
+          dispatch(setOwnPets(newOwnPets));
           window.alert("刪除完成！");
           props.setOwnPetDetail(false);
-          props.getOwnPetList();
         }}
       >
         刪除
@@ -411,7 +417,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
       }
     });
     await Promise.all(promises);
-    props.getOwnPetList();
+    // props.getOwnPetList();
   }
 
   async function updatePetInfoCondition() {
@@ -433,10 +439,23 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
 
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
+      const updateOwnPet = [...profile.ownPets];
+      updateOwnPet[props.ownPetIndex] = {
+        ...updateOwnPet[props.ownPetIndex],
+        name: props.petNewInfo.name,
+        birthYear: props.petNewInfo.birthYear,
+        img: props.petNewImg.url,
+      };
     } else {
       await updatePetInfo("");
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
+      const updateOwnPet = [...profile.ownPets];
+      updateOwnPet[props.ownPetIndex] = {
+        ...updateOwnPet[props.ownPetIndex],
+        name: props.petNewInfo.name,
+        birthYear: props.petNewInfo.birthYear,
+      };
     }
   }
 
@@ -512,7 +531,19 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
             性別: {profile.ownPets[props.ownPetIndex].sex === "M" ? "公" : "母"}
           </PetSingleName>
         </EditModeUserInfoContainer>
-        <CancelUpdateBtn onClick={() => props.setOwnPetEdit(false)}>
+        <CancelUpdateBtn
+          onClick={() => {
+            props.setOwnPetEdit(false);
+            props.setPetNewImg({
+              ...props.petNewImg,
+              url: profile.ownPets[props.ownPetIndex].img,
+            });
+            props.setPetNewInfo({
+              name: profile.ownPets[props.ownPetIndex].name,
+              birthYear: profile.ownPets[props.ownPetIndex].birthYear,
+            });
+          }}
+        >
           取消
         </CancelUpdateBtn>
         <UpdateBtn
@@ -558,6 +589,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const dispatch = useDispatch();
 
   return (
     <PetDetailCard>
@@ -610,7 +642,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
             />
           </EditContainer>
           <EditContainer>
-            <EditInfoLabel htmlFor="kind">kind: </EditInfoLabel>
+            <EditInfoLabel htmlFor="kind">種類: </EditInfoLabel>
             <EditInfoInput
               id="kind"
               type="text"
@@ -670,6 +702,10 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               props.petImg.file as File,
               props.addDocOwnPets
             );
+            const addNewPet = profile.ownPets;
+            addNewPet.push({ ...props.addPetInfo, img: props.petImg.url });
+            dispatch(setOwnPets(addNewPet));
+            window.alert("上傳成功！");
             props.setPetImg({ file: "", url: "" });
           }}
         >

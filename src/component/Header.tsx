@@ -20,7 +20,9 @@ import {
   setImage,
   setOwnPetDiary,
   setOwnArticle,
+  setEmail,
 } from "../functions/profileReducerFunction";
+import defaultProfile from "./defaultprofile.png";
 
 import {
   checkIfLogged,
@@ -114,7 +116,12 @@ const Header = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           dispatch(setName(docSnap.data().name));
-          dispatch(setImage(docSnap.data().img));
+          dispatch(setEmail(user.email as string));
+          if (docSnap.data().img) {
+            dispatch(setImage(docSnap.data().img));
+          } else {
+            dispatch(setImage(defaultProfile));
+          }
         } else {
           console.log("No such document!");
         }

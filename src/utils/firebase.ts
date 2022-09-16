@@ -142,3 +142,24 @@ export async function updateFirebaseDataMutipleWhere(
   });
   await Promise.all(promises);
 }
+
+export async function updateFirebaseDataWhere(
+  collectionUrl: string,
+  field1: string,
+  target1: number | string,
+  imgURL: string,
+  data: any
+) {
+  const q = query(collection(db, collectionUrl), where(field1, "==", target1));
+  const querySnapshot = await getDocs(q);
+  const promises: any[] = [];
+  querySnapshot.forEach(async (d) => {
+    const targetRef = doc(db, collectionUrl, d.id);
+    if (imgURL) {
+      promises.push(updateDoc(targetRef, data));
+    } else {
+      promises.push(updateDoc(targetRef, data));
+    }
+  });
+  await Promise.all(promises);
+}

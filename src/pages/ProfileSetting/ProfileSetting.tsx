@@ -74,6 +74,11 @@ const SettingTabContainer = styled.div`
   display: flex;
 `;
 
+// const UnderLine = styled.div`
+// width:0%;
+// height:4px;
+// `
+
 const SettingTab = styled.div`
   display: flex;
   justify-content: center;
@@ -84,9 +89,12 @@ const SettingTab = styled.div`
   margin-right: 30px;
   cursor: pointer;
   position: relative;
-  &:hover {
+  /* &:hover {
     color: #000;
-  }
+    $(UnderLine) {
+
+    }
+  } */
   &:hover:after {
     content: "";
     width: 100%;
@@ -182,8 +190,8 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
       ...addPetInfo,
       img: downloadURL,
     });
-    window.alert("上傳成功！");
-    getOwnPetList();
+
+    // getOwnPetList();
   }
 
   return (
@@ -205,7 +213,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
                   const target = e.target as HTMLElement;
                   setSelectedTab(target.innerText);
                   if (index === 1) {
-                    onclick = () => getOwnPetList();
+                    getOwnPetList();
                   }
                 }}
               >

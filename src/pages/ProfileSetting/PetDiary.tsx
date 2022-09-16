@@ -43,6 +43,10 @@ import trash from "./bin.png";
 import upload from "./upload.png";
 import defaultProfile from "./defaultprofile.png";
 
+const DiaryLabel = styled(EditInfoLabel)`
+  width: 180px;
+`;
+
 const PetInfo = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -104,10 +108,11 @@ const PetDetailCard = styled.div`
 `;
 
 const PetDetailImg = styled.label`
-  width: 350px;
-  height: 350px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
-  background-color: transparent;
+  border-radius: 40px;
+  position: relative;
 `;
 
 const PreviewContainer = styled.div`
@@ -122,7 +127,6 @@ const PreviewImg = styled.img`
   height: 200px;
   object-fit: cover;
   border-radius: 40px;
-  object-fit: cover;
   position: relative;
 `;
 
@@ -152,11 +156,6 @@ const CheckBtn = styled.div`
     color: #fff;
   }
 `;
-const PetDetailUploadImg = styled.img`
-  width: 350px;
-  height: 350px;
-  object-fit: cover;
-`;
 
 const CloseBtn = styled.div`
   position: absolute;
@@ -170,11 +169,52 @@ const CloseBtn = styled.div`
   z-index: 99;
 `;
 
-const SelectPetName = styled.select``;
-const OptionPetName = styled.option``;
+const SelectGroup = styled.div`
+  position: relative;
+  border: solid 1px black;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-left: 10px;
+  padding: 10px 15px;
+  border: solid 3px #d1cfcf;
+  border-radius: 5px;
+  width: 200px;
+`;
+const NowChooseOption = styled.div`
+  &:after {
+    content: "ˇ";
+    position: absolute;
+    right: 10px;
+    top: 15px;
+  }
+`;
+const OptionGroup = styled.ul<{ $isActive: boolean }>`
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  position: absolute;
+  background-color: #fff;
+  width: 200px;
+  top: 50px;
+  left: 0;
+`;
+const OptionName = styled.li`
+  display: flex;
+  justify-content: center;
+  padding: 8px 10px;
+  transition: 0.2s;
+  &:hover {
+    background-color: #d1cfcf;
+    color: #3c3c3c;
+  }
+`;
 
 const DiaryTextArea = styled.textarea`
   width: 350px;
+  min-height: 100px;
+  max-height: 300px;
   resize: vertical;
   font-size: 22px;
   margin-left: 10px;
@@ -271,14 +311,18 @@ export const PetDiary = () => {
     uploadImgInitialState
   );
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
+  const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
+  const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
 
   useEffect(() => {
     getAuthorPetDiary(profile.uid);
-    setUploadDiaryInfo({
-      ...uploadDiaryInfo,
-      petName: profile.ownPets[0].name,
-      birthYear: profile.ownPets[0].birthYear,
-    });
+    if (profile.ownPets.length > 0) {
+      setUploadDiaryInfo({
+        ...uploadDiaryInfo,
+        petName: profile.ownPets[0].name,
+        birthYear: profile.ownPets[0].birthYear,
+      });
+    }
   }, []);
 
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
@@ -299,7 +343,6 @@ export const PetDiary = () => {
       }
     );
   }
-
   async function addPetDiaryDoc(imgURL: string) {
     await addDoc(collection(db, `/petDiaries`), {
       ...uploadDiaryInfo,
@@ -317,9 +360,6 @@ export const PetDiary = () => {
       birthYear: 0,
     });
     setDiaryImg({ file: null, url: "" });
-    setWriteDiaryBoxOpen(false);
-    window.alert("上傳成功！");
-    getAuthorPetDiary(profile.uid);
     setEditDiaryBoxOpen(false);
   }
 
@@ -351,7 +391,6 @@ export const PetDiary = () => {
       }
     });
     await Promise.all(promises);
-    getAuthorPetDiary(profile.uid);
   }
 
   async function updatePetInfoCondition() {
@@ -369,15 +408,30 @@ export const PetDiary = () => {
       return;
     }
     if (newDiaryImg.url !== profile.petDiary[ownPetDiaryIndex].img) {
+      const updateOwnPetDiary = profile.petDiary;
+      updateOwnPetDiary[ownPetDiaryIndex] = {
+        ...updateOwnPetDiary[ownPetDiaryIndex],
+        takePhotoTime: newDiaryContext.takePhotoTime,
+        context: newDiaryContext.context,
+        img: newDiaryImg.url,
+      };
+      window.alert("更新完成！");
+      setEditDiaryBoxOpen(false);
       if (newDiaryImg.file) {
         await updateNewPetDiaryDataFirebase(
           newDiaryImg.file.name,
           newDiaryImg.file
         );
       }
+    } else {
+      const updateOwnPetDiary = profile.petDiary;
+      updateOwnPetDiary[ownPetDiaryIndex] = {
+        ...updateOwnPetDiary[ownPetDiaryIndex],
+        takePhotoTime: newDiaryContext.takePhotoTime,
+        context: newDiaryContext.context,
+      };
       window.alert("更新完成！");
       setEditDiaryBoxOpen(false);
-    } else {
       await updateFirebaseDataMutipleWhere(
         `/petDiaries`,
         "postTime",
@@ -390,9 +444,6 @@ export const PetDiary = () => {
           context: newDiaryContext.context,
         }
       );
-      getAuthorPetDiary(profile.uid);
-      window.alert("更新完成！");
-      setEditDiaryBoxOpen(false);
     }
   }
 
@@ -413,115 +464,191 @@ export const PetDiary = () => {
     <>
       {writeDiaryBoxOpen ? (
         <PetDetailCard>
-          <CloseBtn onClick={() => setWriteDiaryBoxOpen(false)}>X</CloseBtn>
-          {diaryImg.url ? (
-            <PreviewContainer>
-              <PreviewImg src={diaryImg.url} />
-              <PreviewCancelBtn
-                onClick={() => {
-                  setDiaryImg({ file: null, url: "" });
-                }}
-              >
-                取消
-              </PreviewCancelBtn>
-            </PreviewContainer>
-          ) : (
-            ""
-          )}
-
-          <PetDetailImg htmlFor="image">
-            <PetDetailUploadImg src={upload} alt="" />
-          </PetDetailImg>
-          <PetDetailInput
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
-            }}
-          />
-
-          <EditContainer>
-            <EditInfoLabel htmlFor="petName">寵物姓名: </EditInfoLabel>
-            <SelectPetName
-              id="petName"
-              onChange={(e) => {
-                const index = profile.ownPets.findIndex(
-                  (pet) => pet.name === e.target.value
-                );
+          <Title>新增寵物日記</Title>
+          <EditModeContainer>
+            <CloseDetailBtn
+              onClick={() => {
+                setWriteDiaryBoxOpen(false);
                 setUploadDiaryInfo({
                   ...uploadDiaryInfo,
-                  petName: e.target.value,
-                  birthYear: profile.ownPets[index].birthYear,
+                  petName: "",
+                  birthYear: 0,
                 });
+                setNowChoosePetName("");
               }}
             >
-              {profile.ownPets.map((pet, index) => (
-                <OptionPetName key={index} value={pet.name}>
-                  {pet.name}
-                </OptionPetName>
-              ))}
-            </SelectPetName>
-          </EditContainer>
+              取消
+            </CloseDetailBtn>
+            {diaryImg.url ? (
+              <PreviewContainer>
+                <PreviewImg src={diaryImg.url} />
+                <PreviewCancelBtn
+                  onClick={() => {
+                    setDiaryImg({ file: null, url: "" });
+                  }}
+                >
+                  <CancelIcon src={trash} />
+                </PreviewCancelBtn>
+              </PreviewContainer>
+            ) : (
+              <>
+                <PetDetailImg htmlFor="image">
+                  <ProfileImg src={defaultProfile} alt="上傳" />
+                  <PreviewCancelBtn>
+                    <CancelIcon src={upload} />
+                  </PreviewCancelBtn>
+                </PetDetailImg>
+                <PetDetailInput
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    updateUseStateInputImage(
+                      e.target.files as FileList,
+                      setDiaryImg
+                    );
+                  }}
+                />
+              </>
+            )}
+            <EditModeUserInfoContainer>
+              <EditContainer>
+                <DiaryLabel htmlFor="petName">寵物姓名: </DiaryLabel>
+                <SelectGroup>
+                  {nowChoosePetName ? (
+                    <NowChooseOption
+                      onMouseEnter={() => {
+                        setOptionBoxOpen(true);
+                      }}
+                    >
+                      {nowChoosePetName}
+                    </NowChooseOption>
+                  ) : (
+                    <NowChooseOption
+                      onMouseEnter={() => {
+                        setOptionBoxOpen(true);
+                      }}
+                    >
+                      選擇寵物
+                    </NowChooseOption>
+                  )}
 
-          <EditContainer>
-            <EditInfoLabel htmlFor="takePhotoTime">
-              拍攝此照片時間:{" "}
-            </EditInfoLabel>
-            <EditInfoInput
-              id="takePhotoTime"
-              type="datetime-local"
-              max={`${new Date().getFullYear()}-${
-                new Date().getMonth() + 1 < 10
-                  ? `0${new Date().getMonth() + 1}`
-                  : `${new Date().getMonth() + 1}`
-              }-${
-                new Date().getDate() < 10
-                  ? `0${new Date().getDate()}`
-                  : `${new Date().getDate()}`
-              }T${
-                new Date().getHours() < 10
-                  ? `0${new Date().getHours()}`
-                  : `${new Date().getHours()}`
-              }:${
-                new Date().getMinutes() < 10
-                  ? `0${new Date().getMinutes()}`
-                  : `${new Date().getMinutes()}`
-              }`}
-              onChange={(e) => {
-                setUploadDiaryInfo({
-                  ...uploadDiaryInfo,
-                  takePhotoTime: Date.parse(e.target.value),
-                });
-              }}
-            />
-          </EditContainer>
+                  <OptionGroup
+                    $isActive={optionBoxOpen === true}
+                    onMouseLeave={() => {
+                      setOptionBoxOpen(false);
+                    }}
+                  >
+                    {profile.ownPets.map((pet, index) => (
+                      <OptionName
+                        key={index}
+                        value={pet.name}
+                        onClick={(e) => {
+                          const index = profile.ownPets.findIndex(
+                            (pet) =>
+                              pet.name ===
+                              (e.target as HTMLInputElement).innerText
+                          );
+                          setUploadDiaryInfo({
+                            ...uploadDiaryInfo,
+                            petName: (e.target as HTMLInputElement).innerText,
+                            birthYear: profile.ownPets[index].birthYear,
+                          });
+                          setNowChoosePetName(
+                            (e.target as HTMLInputElement).innerText
+                          );
+                        }}
+                      >
+                        {pet.name}
+                      </OptionName>
+                    ))}
+                  </OptionGroup>
+                </SelectGroup>
+              </EditContainer>
 
-          <EditContainer>
-            <EditInfoLabel htmlFor="context">description: </EditInfoLabel>
-            <DiaryTextArea
-              id="context"
-              onChange={(e) => {
-                setUploadDiaryInfo({
+              <EditContainer>
+                <DiaryLabel htmlFor="takePhotoTime">
+                  拍攝此照片時間:{" "}
+                </DiaryLabel>
+                <EditInfoInput
+                  id="takePhotoTime"
+                  type="datetime-local"
+                  max={`${new Date().getFullYear()}-${
+                    new Date().getMonth() + 1 < 10
+                      ? `0${new Date().getMonth() + 1}`
+                      : `${new Date().getMonth() + 1}`
+                  }-${
+                    new Date().getDate() < 10
+                      ? `0${new Date().getDate()}`
+                      : `${new Date().getDate()}`
+                  }T${
+                    new Date().getHours() < 10
+                      ? `0${new Date().getHours()}`
+                      : `${new Date().getHours()}`
+                  }:${
+                    new Date().getMinutes() < 10
+                      ? `0${new Date().getMinutes()}`
+                      : `${new Date().getMinutes()}`
+                  }`}
+                  onChange={(e) => {
+                    setUploadDiaryInfo({
+                      ...uploadDiaryInfo,
+                      takePhotoTime: Date.parse(e.target.value),
+                    });
+                  }}
+                />
+              </EditContainer>
+
+              <EditContainer>
+                <DiaryLabel htmlFor="context">日記內文: </DiaryLabel>
+                <DiaryTextArea
+                  id="context"
+                  onChange={(e) => {
+                    setUploadDiaryInfo({
+                      ...uploadDiaryInfo,
+                      context: e.target.value,
+                    });
+                  }}
+                ></DiaryTextArea>
+              </EditContainer>
+            </EditModeUserInfoContainer>
+            <DeleteBtn
+              onClick={() => {
+                if (
+                  !uploadDiaryInfo.petName ||
+                  !uploadDiaryInfo.context ||
+                  !uploadDiaryInfo.takePhotoTime ||
+                  Object.values(diaryImg).some((info) => !info)
+                ) {
+                  window.alert("請填寫完整寵物日記資訊");
+                  return;
+                }
+                const addNewPet = profile.petDiary;
+                addNewPet.push({
                   ...uploadDiaryInfo,
-                  context: e.target.value,
+                  img: diaryImg.url,
+                  postTime: Date.now(),
+                  author: { img: profile.img as string, name: profile.name },
+                  commentCount: 0,
+                  likedBy: [],
+                  authorUid: profile.uid,
+                  id: "",
                 });
+                dispatch(setOwnPetDiary(addNewPet));
+                window.alert("上傳成功！");
+                setWriteDiaryBoxOpen(false);
+                if (diaryImg.file) {
+                  addDataWithUploadImage(
+                    `petDiary/${diaryImg.file.name}`,
+                    diaryImg.file as File,
+                    addPetDiaryDoc
+                  );
+                }
               }}
-            ></DiaryTextArea>
-          </EditContainer>
-          <CheckBtn
-            onClick={() => {
-              if (diaryImg.file) {
-                addDataWithUploadImage(
-                  `petDiary/${diaryImg.file.name}`,
-                  diaryImg.file as File,
-                  addPetDiaryDoc
-                );
-              }
-            }}
-          >
-            上傳日記
-          </CheckBtn>
+            >
+              上傳日記
+            </DeleteBtn>
+          </EditModeContainer>
         </PetDetailCard>
       ) : editDiaryBoxOpen && detailDiaryBoxOpen ? (
         <PetDeatilContainer>
@@ -582,8 +709,12 @@ export const PetDiary = () => {
                 "authorUid",
                 profile.uid
               );
+              const newDiary = profile.petDiary;
+              newDiary.splice(ownPetDiaryIndex, 1);
+              dispatch(setOwnPetDiary(newDiary));
               window.alert("刪除完成！");
-              getAuthorPetDiary(profile.uid);
+              setEditDiaryBoxOpen(false);
+              setDetailDiaryBoxOpen(false);
             }}
           >
             刪除

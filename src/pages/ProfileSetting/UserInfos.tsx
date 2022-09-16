@@ -2,8 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage, updateUseStateInputImage } from "../../utils/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  db,
+  storage,
+  updateFirebaseDataWhere,
+  updateUseStateInputImage,
+} from "../../utils/firebase";
+import {
+  collectionGroup,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
 import trash from "./bin.png";
@@ -190,35 +202,142 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     file: "",
     url: "",
   });
+  const [defaultUrl, setDefaultUrl] = useState<string>("");
+  useEffect(() => {
+    setDefaultUrl(profile.img as string);
+  }, []);
 
   useEffect(() => {
     props.setNewName(profile.name);
     setNewImg({ ...newImg, url: profile.img as string });
   }, []);
 
-  function uploadProfileData() {
-    const storageRef = ref(storage, `images/${profile.uid}`);
-    const uploadTask = uploadBytesResumable(storageRef, newImg.file as File);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("upload");
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          dispatch(setName(props.newName));
-          dispatch(setImage(downloadURL));
-          const userProfileRef = doc(db, "memberProfiles", profile.uid);
-          await updateDoc(userProfileRef, {
-            name: props.newName,
-            img: downloadURL,
+  async function uploadProfileData() {
+    if (newImg.file) {
+      const storageRef = ref(storage, `images/${profile.uid}`);
+      const uploadTask = uploadBytesResumable(storageRef, newImg.file as File);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("upload");
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            dispatch(setName(props.newName));
+            dispatch(setImage(downloadURL));
+            const userProfileRef = doc(db, "memberProfiles", profile.uid);
+            await updateDoc(userProfileRef, {
+              name: props.newName,
+              img: downloadURL,
+            });
+            await updateFirebaseDataWhere(
+              `/petDiaries`,
+              "authorUid",
+              profile.uid,
+              "",
+              {
+                author: {
+                  name: props.newName,
+                  img: profile.img,
+                },
+              }
+            );
+            await updateFirebaseDataWhere(
+              `/petArticles`,
+              "authorUid",
+              profile.uid,
+              "",
+              {
+                author: {
+                  name: props.newName,
+                  img: profile.img,
+                },
+              }
+            );
+            await updateFirebaseDataWhere(
+              `/petDiaries`,
+              "authorUid",
+              profile.uid,
+              "",
+              {
+                author: {
+                  name: props.newName,
+                  img: profile.img,
+                },
+              }
+            );
+            updateAllCommentsUserData();
+            window.alert("更新成功！");
           });
-        });
-      }
+        }
+      );
+    } else {
+      dispatch(setName(props.newName));
+      const userProfileRef = doc(db, "memberProfiles", profile.uid);
+      await updateDoc(userProfileRef, {
+        name: props.newName,
+        img: profile.img,
+      });
+      await updateFirebaseDataWhere(
+        `/petDiaries`,
+        "authorUid",
+        profile.uid,
+        "",
+        {
+          author: {
+            name: props.newName,
+            img: profile.img,
+          },
+        }
+      );
+      await updateFirebaseDataWhere(
+        `/petArticles`,
+        "authorUid",
+        profile.uid,
+        "",
+        {
+          author: {
+            name: props.newName,
+            img: profile.img,
+          },
+        }
+      );
+      await updateFirebaseDataWhere(
+        `/petDiaries`,
+        "authorUid",
+        profile.uid,
+        "",
+        {
+          author: {
+            name: props.newName,
+            img: profile.img,
+          },
+        }
+      );
+      updateAllCommentsUserData();
+      window.alert("更新成功！");
+    }
+  }
+
+  async function updateAllCommentsUserData() {
+    const comments = query(
+      collectionGroup(db, "comments"),
+      where("useruid", "==", profile.uid)
     );
+    const querySnapshot = await getDocs(comments);
+    const promises: any[] = [];
+    querySnapshot.forEach((d) => {
+      const targetRef = doc(db, d.ref.path);
+      promises.push(
+        updateDoc(targetRef, {
+          user: { name: props.newName, img: profile.img },
+        })
+      );
+    });
+    await Promise.all(promises);
   }
 
   return (
@@ -227,12 +346,11 @@ const UserInfos: React.FC<userInfoType> = (props) => {
         <>
           <Title>編輯個人資訊</Title>
           <EditModeContainer>
-            {newImg.url || props.img.url ? (
+            {defaultUrl !== defaultProfile && (newImg.url || props.img.url) ? (
               <PreviewContainer>
                 <PreviewImg src={newImg.url} />
                 <PreviewCancelBtn
                   onClick={() => {
-                    // props.setImg({ file: "", url: "" });
                     setNewImg({ file: "", url: "" });
                   }}
                 >
@@ -256,6 +374,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
                       e.target.files as FileList,
                       setNewImg
                     );
+                    setDefaultUrl("");
                   }}
                 />
               </>
@@ -271,7 +390,13 @@ const UserInfos: React.FC<userInfoType> = (props) => {
                 />
               </EditContainer>
             </EditModeUserInfoContainer>
-            <CancelUpdateBtn onClick={() => setEditProfileMode(false)}>
+            <CancelUpdateBtn
+              onClick={() => {
+                setEditProfileMode(false);
+                props.setNewName(profile.name);
+                setNewImg({ ...newImg, url: profile.img as string });
+              }}
+            >
               取消
             </CancelUpdateBtn>
             <UpdateBtn
