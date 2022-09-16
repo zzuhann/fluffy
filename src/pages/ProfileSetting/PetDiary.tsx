@@ -149,13 +149,6 @@ const PreviewCancelBtn = styled.div`
 const PetDetailInput = styled.input`
   display: none;
 `;
-const CheckBtn = styled.div`
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
 
 const CloseBtn = styled.div`
   position: absolute;

@@ -18,7 +18,7 @@ const ClinicListContainer = styled.div`
   max-width: 800px;
   position: relative;
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 150px;
   padding-bottom: 80px;
 `;
 
@@ -60,15 +60,22 @@ const ClinicInfo = styled.div`
   }
 `;
 
-const AllArea = styled.div`
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  display: flex;
-  flex-direction: column;
-`;
-
 const PhoneLink = styled.a``;
+const AreaTitle = styled.h1`
+  font-size: 32px;
+  font-weight: bold;
+  position: absolute;
+  top: 80px;
+  padding-left: 12px;
+  &:before {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background-color: #d0470c;
+    position: absolute;
+    left: 0;
+  }
+`;
 
 const SelectGroup = styled.div`
   position: absolute;
@@ -245,8 +252,9 @@ const VetClinic = () => {
           ))}
         </OptionGroup>
       </SelectGroup>
-      <AllArea></AllArea>
+
       <ClinicListContainer>
+        <AreaTitle>{nowCountry}</AreaTitle>
         {clinics.map((clinic, index) => (
           <ClinicCard key={index}>
             <ClinicTitle>{clinic.name}</ClinicTitle>
