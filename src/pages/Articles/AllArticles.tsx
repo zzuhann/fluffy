@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
 import notyetLike from "./NotLike.png";
-import alreadyLike from "./AlreadyLike.png";
 import comment from "./chat.png";
 
 const Wrap = styled.div`
