@@ -6,7 +6,7 @@ import { db } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 
-const PageTitle = styled.h1`
+export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: absolute;
@@ -49,7 +49,7 @@ const DiaryCard = styled(Link)`
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: black;
+  color: #3c3c3c;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
