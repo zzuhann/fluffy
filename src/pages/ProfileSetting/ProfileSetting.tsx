@@ -32,6 +32,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  top: 72px;
 `;
 
 const SideBarWrapper = styled.div`
@@ -91,19 +92,20 @@ const SettingTab = styled.div`
   margin-right: 30px;
   cursor: pointer;
   position: relative;
-  /* &:hover {
-    color: #000;
-    $(UnderLine) {
-
-    }
-  } */
-  &:hover:after {
+  &:after {
     content: "";
-    width: 100%;
-    height: 4px;
+    width: 0%;
+    height: 3px;
     background-color: #b7b0a8;
     position: absolute;
-    top: 40px;
+    top: 43px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    transition: 0.3s;
+  }
+  &:hover:after {
+    width: 100%;
   }
   &:last-child {
     margin-right: 0;

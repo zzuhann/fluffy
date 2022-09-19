@@ -61,14 +61,21 @@ const NavBar = styled.li`
   font-size: 18px;
   cursor: pointer;
   position: relative;
-  &:hover:after {
+
+  &:after {
+    transition: 0.3s;
     content: "";
-    width: 100%;
+    width: 0%;
     height: 3px;
     background-color: #b7b0a8;
     position: absolute;
-    top: 18px;
+    bottom: -8px;
     left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  &:hover:after {
+    width: 100%;
   }
   &:last-child {
     margin-right: 0;
