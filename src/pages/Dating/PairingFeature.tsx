@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { setAllCardInfrontOfUser } from "../../functions/datingReducerFunction";
@@ -124,6 +124,7 @@ const Circle = styled(ChooseIcon)`
 
 interface PetInfos {
   petInfo: Card[];
+  setMatchSuccessQty: Dispatch<SetStateAction<number>>;
 }
 
 const PetCardDetail: React.FC<PetInfos> = (props) => {
@@ -217,6 +218,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
 
               let cardsInFrontOfUser = dating.allCards;
               setOpenAnimation(true);
+              props.setMatchSuccessQty((prev) => prev + 1);
               setClickIndex(index);
               setPressBtn("consider");
               setTimeout(() => {

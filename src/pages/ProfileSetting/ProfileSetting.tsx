@@ -38,6 +38,8 @@ const SideBarWrapper = styled.div`
   width: 100%;
   background-color: #f8f6f6;
   height: 80px;
+  top: 72px;
+  position: relative;
 `;
 
 const SidebarProfileTab = styled.div`

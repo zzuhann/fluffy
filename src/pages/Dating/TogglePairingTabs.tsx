@@ -1,18 +1,18 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import pairing from "./img/disguise.png";
 import consideradopt from "./img/cat.png";
 import upcomingdate from "./img/house.png";
 
 const TogglePairingTab = styled.div`
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 250px;
   position: fixed;
-  top: 43px;
-  /* border: solid 1px black; */
+  top: 72px;
   background-color: #fff;
   min-height: 100vh;
   box-shadow: 1px 9px 5px 2px rgba(0, 0, 0, 0.2);
@@ -43,12 +43,28 @@ const PairingTab = styled.div`
   margin-left: 15px;
 `;
 
+const AlertMatchQty = styled.div`
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: #ff5106;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  right: 10px;
+  letter-spacing: 1px;
+`;
+
 type Props = {
   tab: string;
   setTab: (value: string) => void;
   getListsData: () => void;
   setConsiderDetail: (value: Boolean) => void;
   getUpcomingListData: () => void;
+  matchSuccessQty: number;
+  setMatchSuccessQty: Dispatch<SetStateAction<number>>;
 };
 
 const TogglePairingTabs: React.FC<Props> = (props) => {
@@ -66,11 +82,17 @@ const TogglePairingTabs: React.FC<Props> = (props) => {
           props.setTab("considerAdopt");
           props.getListsData();
           props.setConsiderDetail(false);
+          props.setMatchSuccessQty(0);
         }}
         $isActive={props.tab === "considerAdopt"}
       >
         <PairingTabIcon src={consideradopt} />
         <PairingTab>考慮領養清單</PairingTab>
+        {props.matchSuccessQty > 0 ? (
+          <AlertMatchQty>+{props.matchSuccessQty}</AlertMatchQty>
+        ) : (
+          ""
+        )}
       </PairingTabContainer>
       <PairingTabContainer
         onClick={() => {

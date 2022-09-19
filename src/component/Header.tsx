@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
@@ -32,9 +32,21 @@ import {
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: space-between;
+  position: fixed;
+  z-index: 1002;
+  background-color: ${(props) => (props.$isActive ? "#fff" : "transparent")};
+  width: 100%;
+  padding: 15px 20px;
+  letter-spacing: 1.5px;
+  transition: 0.1s;
+`;
+
+const Logo = styled(Link)``;
+const LogoImg = styled.img`
+  width: 150px;
 `;
 
 const NavBarContainer = styled.ul`
@@ -45,11 +57,21 @@ const NavBarContainer = styled.ul`
 `;
 
 const NavBar = styled.li`
-  margin-right: 10px;
+  margin-right: 20px;
+  font-size: 18px;
   cursor: pointer;
-  &:hover {
-    background-color: black;
-    color: white;
+  position: relative;
+  &:hover:after {
+    content: "";
+    width: 100%;
+    height: 3px;
+    background-color: #b7b0a8;
+    position: absolute;
+    top: 18px;
+    left: 0;
+  }
+  &:last-child {
+    margin-right: 0;
   }
 `;
 
@@ -72,6 +94,17 @@ const Header = () => {
   ) as Profile;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [scroll, setScroll] = useState<number>(0);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
 
   async function getAuthorPetDiary(authorUid: string) {
     const authorPetDiary: PetDiaryType[] = [];
@@ -142,10 +175,10 @@ const Header = () => {
   }
 
   return (
-    <Wrapper>
-      <a href="/">
-        <img src={logo} alt="" style={{ width: "150px" }} />
-      </a>
+    <Wrapper $isActive={scroll > 0}>
+      <Logo to="/">
+        <LogoImg src={logo} alt="" />
+      </Logo>
       <NavBarContainer>
         <NavBar
           onClick={() => {

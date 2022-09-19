@@ -26,6 +26,14 @@ const ConsiderTitle = styled(Title)`
   top: -35px;
 `;
 
+const UpcomingTitle = styled(Title)`
+  position: absolute;
+  top: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1080px;
+`;
+
 const Wrap = styled.div`
   width: 100%;
   height: auto;
@@ -174,11 +182,13 @@ const ConsiderList = styled.div`
 const UpcomingListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 800px;
+  max-width: 1120px;
+  height: 650px;
   left: 50%;
   transform: translateX(-50%);
   position: relative;
-  border: solid 1px black;
+  padding: 20px;
+  overflow-y: auto;
 `;
 
 const Pairing: React.FC = () => {
@@ -197,6 +207,7 @@ const Pairing: React.FC = () => {
   const [kindTabIndex, setKindTabIndex] = useState<number>(-1);
   const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
   const chosenIdRef = useRef<number[]>([]);
+  const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
 
   useEffect(() => {
     checkChosenAndAppendNewPet(100);
@@ -294,128 +305,138 @@ const Pairing: React.FC = () => {
 
   if (!dating.allCards) return null;
   return (
-    <Wrap>
+    <>
       <TogglePairingTabs
+        matchSuccessQty={matchSuccessQty}
+        setMatchSuccessQty={setMatchSuccessQty}
         tab={tab}
         setTab={setTab}
         getListsData={getListsData}
         setConsiderDetail={setConsiderDetail}
         getUpcomingListData={getUpcomingListData}
       />
-      {tab === "pairing" ? (
-        <>
-          {dating.allCards.length <= 0 ? (
-            <>
-              <NoCardsTitle>
-                有發現喜歡的寵物嗎？接下來您可以選擇 ...
-              </NoCardsTitle>
-              <RequestMoreCardsBtn
-                onClick={() => checkChosenAndAppendNewPet(200)}
-              >
-                配對更多狗狗貓貓
-              </RequestMoreCardsBtn>
-              <LookConsiderListBtn
-                onClick={() => {
-                  setTab("considerAdopt");
-                  getListsData();
-                  setConsiderDetail(false);
-                }}
-              >
-                看目前考慮領養清單
-              </LookConsiderListBtn>
-            </>
-          ) : (
-            <Cards>
-              <FilterContainer onClick={() => setOpenFilterBox(true)}>
-                <FilterImg src={preferenceSet} />
-                <FilterTitle>偏好設定</FilterTitle>
-              </FilterContainer>
-              {openFilterBox ? (
-                <FilterInsideContainer>
-                  <CloseFilterBtn
-                    src={close}
-                    onClick={() => setOpenFilterBox(false)}
-                  />
-                  <FilterInfoContainer>
-                    <FilterInfoTitle>偏好種類</FilterInfoTitle>
-                    <FilterOptionGroup>
-                      <KindOption
-                        onClick={() => {
-                          setPreference({ ...preference, kind: "%E7%8B%97" });
-                          setKindTabIndex(0);
-                        }}
-                        $isActive={kindTabIndex === 0}
-                      >
-                        狗
-                      </KindOption>
-                      <KindOption
-                        onClick={() => {
-                          setPreference({ ...preference, kind: "%E8%B2%93" });
-                          setKindTabIndex(1);
-                        }}
-                        $isActive={kindTabIndex === 1}
-                      >
-                        貓
-                      </KindOption>
-                    </FilterOptionGroup>
-                  </FilterInfoContainer>
-                  <FilterInfoContainer>
-                    <FilterInfoTitle>偏好地區</FilterInfoTitle>
-                    <FilterOptionGroup>
-                      {area.map((loc, index) => (
-                        <AreaOption
-                          id={`${index + 2}`}
-                          key={index}
-                          onClick={(e) => {
-                            setPreference({
-                              ...preference,
-                              location: (e.target as HTMLElement).id,
-                            });
-                            setAreaTabIndex(index);
+      <Wrap>
+        {tab === "pairing" ? (
+          <>
+            {dating.allCards.length <= 0 ? (
+              <>
+                <NoCardsTitle>
+                  有發現喜歡的寵物嗎？接下來您可以選擇 ...
+                </NoCardsTitle>
+                <RequestMoreCardsBtn
+                  onClick={() => checkChosenAndAppendNewPet(200)}
+                >
+                  配對更多狗狗貓貓
+                </RequestMoreCardsBtn>
+                <LookConsiderListBtn
+                  onClick={() => {
+                    setTab("considerAdopt");
+                    getListsData();
+                    setConsiderDetail(false);
+                  }}
+                >
+                  看目前考慮領養清單
+                </LookConsiderListBtn>
+              </>
+            ) : (
+              <Cards>
+                <FilterContainer onClick={() => setOpenFilterBox(true)}>
+                  <FilterImg src={preferenceSet} />
+                  <FilterTitle>偏好設定</FilterTitle>
+                </FilterContainer>
+                {openFilterBox ? (
+                  <FilterInsideContainer>
+                    <CloseFilterBtn
+                      src={close}
+                      onClick={() => setOpenFilterBox(false)}
+                    />
+                    <FilterInfoContainer>
+                      <FilterInfoTitle>偏好種類</FilterInfoTitle>
+                      <FilterOptionGroup>
+                        <KindOption
+                          onClick={() => {
+                            setPreference({ ...preference, kind: "%E7%8B%97" });
+                            setKindTabIndex(0);
                           }}
-                          $isActive={index === areaTabIndex}
+                          $isActive={kindTabIndex === 0}
                         >
-                          {loc}
-                        </AreaOption>
-                      ))}
-                    </FilterOptionGroup>
-                  </FilterInfoContainer>
-                </FilterInsideContainer>
-              ) : (
-                ""
-              )}
+                          狗
+                        </KindOption>
+                        <KindOption
+                          onClick={() => {
+                            setPreference({ ...preference, kind: "%E8%B2%93" });
+                            setKindTabIndex(1);
+                          }}
+                          $isActive={kindTabIndex === 1}
+                        >
+                          貓
+                        </KindOption>
+                      </FilterOptionGroup>
+                    </FilterInfoContainer>
+                    <FilterInfoContainer>
+                      <FilterInfoTitle>偏好地區</FilterInfoTitle>
+                      <FilterOptionGroup>
+                        {area.map((loc, index) => (
+                          <AreaOption
+                            id={`${index + 2}`}
+                            key={index}
+                            onClick={(e) => {
+                              setPreference({
+                                ...preference,
+                                location: (e.target as HTMLElement).id,
+                              });
+                              setAreaTabIndex(index);
+                            }}
+                            $isActive={index === areaTabIndex}
+                          >
+                            {loc}
+                          </AreaOption>
+                        ))}
+                      </FilterOptionGroup>
+                    </FilterInfoContainer>
+                  </FilterInsideContainer>
+                ) : (
+                  ""
+                )}
 
-              <PetCardDetail petInfo={dating.allCards} />
-            </Cards>
-          )}
-        </>
-      ) : (
-        ""
-      )}
-      {tab === "considerAdopt" ? (
-        <>
-          <ConsiderList>
-            <ConsiderTitle>考慮領養清單</ConsiderTitle>
-            <ConsiderEverySinglePetCard
-              setNowChosenPetIndex={setNowChosenPetIndex}
-              setConsiderDetail={setConsiderDetail}
-              tab={tab}
-              considerDetail={considerDetail}
-              nowChosenPetIndex={nowChosenPetIndex}
-            />
-          </ConsiderList>
-        </>
-      ) : (
-        ""
-      )}
-      {tab === "upcomingDate" ? (
-        <UpcomingListContainer>
-          <UpcomingList getUpcomingListData={getUpcomingListData} />
-        </UpcomingListContainer>
-      ) : (
-        ""
-      )}
-    </Wrap>
+                <PetCardDetail
+                  setMatchSuccessQty={setMatchSuccessQty}
+                  petInfo={dating.allCards}
+                />
+              </Cards>
+            )}
+          </>
+        ) : (
+          ""
+        )}
+        {tab === "considerAdopt" ? (
+          <>
+            <ConsiderList>
+              <ConsiderTitle>考慮領養清單</ConsiderTitle>
+              <ConsiderEverySinglePetCard
+                setNowChosenPetIndex={setNowChosenPetIndex}
+                setConsiderDetail={setConsiderDetail}
+                tab={tab}
+                considerDetail={considerDetail}
+                nowChosenPetIndex={nowChosenPetIndex}
+              />
+            </ConsiderList>
+          </>
+        ) : (
+          ""
+        )}
+        {tab === "upcomingDate" ? (
+          <>
+            <UpcomingTitle>即將到來的約會</UpcomingTitle>
+            <UpcomingListContainer>
+              <UpcomingList getUpcomingListData={getUpcomingListData} />
+            </UpcomingListContainer>
+          </>
+        ) : (
+          ""
+        )}
+      </Wrap>
+    </>
   );
 };
 export default Pairing;

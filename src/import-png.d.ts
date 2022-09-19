@@ -8,6 +8,11 @@ declare module "*.JPG" {
   export default value;
 }
 
+declare module "*.jpg" {
+  const value: any;
+  export default value;
+}
+
 declare module "*.otf" {
   const value: import("expo-font").FontSource;
   export default value;
