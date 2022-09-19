@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import pairing from "./disguise.png";
-import consideradopt from "./cat.png";
-import upcomingdate from "./house.png";
+import pairing from "./img/disguise.png";
+import consideradopt from "./img/cat.png";
+import upcomingdate from "./img/house.png";
 
 const TogglePairingTab = styled.div`
   display: flex;
@@ -11,6 +11,7 @@ const TogglePairingTab = styled.div`
   align-items: center;
   width: 250px;
   position: fixed;
+  top: 43px;
   /* border: solid 1px black; */
   background-color: #fff;
   min-height: 100vh;

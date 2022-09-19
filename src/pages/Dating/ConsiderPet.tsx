@@ -9,44 +9,86 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
 import { setUpcomingDateList } from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
+import cutEgg from "./img/scissors.png";
+import findplace from "./img/loupe.png";
+import shelter from "./img/animal-shelter.png";
+import googlemap from "./img/placeholder.png";
+import tel from "./img/telephone.png";
+import { Btn } from "../ProfileSetting/UserInfos";
+import close from "./img/close.png";
 
 const PetCard = styled.div`
-  width: 400px;
+  width: 450px;
+  height: 750px;
+  border-radius: 10px;
+  overflow: hidden;
   position: absolute;
   display: flex;
   flex-direction: column;
-  align-items: center;
   background-color: #fff;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
 `;
 
 const PetImg = styled.img`
-  width: 400px;
-  height: 400px;
+  width: 450px;
+  height: 450px;
   object-fit: cover;
 `;
-const PetInfo = styled.div``;
-
-const CloseBtn = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 30px;
+const PetInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  letter-spacing: 1.5px;
+`;
+const InfoTitle = styled.div`
+  font-size: 22px;
   font-weight: bold;
-  color: #fff;
-  background-color: #000;
+  margin-bottom: 15px;
 `;
 
-const InviteDatingBtn = styled.div`
-  text-align: center;
-  cursor: pointer;
+const PetInfoImgContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const PetInfoImg = styled.img`
+  width: 20px;
+  height: 20px;
+`;
+const PetInfo = styled.div`
+  font-size: 16px;
+  margin-left: 10px;
+  line-height: 20px;
+`;
+
+const PetShelterAddress = styled.a`
+  color: #952f04;
+`;
+
+const CloseBtn = styled(Btn)`
+  top: 15px;
+  right: 15px;
+  color: #fff;
+  border: solid 3px #fff;
   &:hover {
-    background-color: #000;
-    color: #fff;
+    border: solid 3px #d1cfcf;
   }
+`;
+
+const InviteDatingBtn = styled(Btn)`
+  bottom: 18px;
+  left: 30px;
+  font-size: 16px;
+`;
+
+const NotCondiserBtn = styled(Btn)`
+  bottom: 18px;
+  right: 30px;
+  font-size: 16px;
 `;
 
 const InviteDatingBox = styled.div`
@@ -54,45 +96,103 @@ const InviteDatingBox = styled.div`
   position: absolute;
   right: 20px;
   top: 80px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  letter-spacing: 1.5px;
 `;
 
 const InviteDatingTitle = styled.div`
   text-align: center;
   font-weight: bold;
+  margin-bottom: 10px;
 `;
-const InviteInfoContainer = styled.div``;
-const InviteInfoLabel = styled.label``;
-const InviteInfoInput = styled.input``;
+const InviteInfoContainer = styled.div`
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+const InviteInfoLabel = styled.label`
+  margin-bottom: 5px;
+`;
+const InviteInfoInput = styled.input`
+  border: 2px solid #d1cfcf;
+  border-radius: 5px;
+  padding: 10px 15px;
+`;
+
+const CloseInviteBoxBtn = styled.img`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+`;
 
 const ConsiderPetCard = styled.div`
   position: relative;
   width: 250px;
+  height: 250px;
   flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  cursor: pointer;
+  bottom: 0;
+  transition: 0.3s;
+  &:hover {
+    bottom: 3px;
+    box-shadow: 2px 2px 3px 4px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const ConsiderImgMask = styled.div`
+  position: absolute;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 69%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  width: 100%;
+  height: 100%;
 `;
 
 const ConsiderImg = styled.img`
-  width: 250px;
-  height: 250px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
 `;
 
-const ConsiderTitle = styled.div``;
-
-const NotConsiderBtn = styled.div`
+const ConsiderTitle = styled.div`
   position: absolute;
-  right: 5px;
-  bottom: 0;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
+  color: #fff;
+  letter-spacing: 1.5px;
+  left: 10px;
+  bottom: 10px;
+`;
+
+const SendInviteBtn = styled(Btn)`
+  font-size: 16px;
+  position: relative;
+  width: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -5px;
 `;
 
 type ConsiderSingleCard = {
   setNowChosenPetIndex: (value: number) => void;
   setConsiderDetail: (value: Boolean) => void;
+  tab: string;
+  considerDetail: Boolean;
+  nowChosenPetIndex: number;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -108,20 +208,21 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   return (
     <>
       {dating.considerList.map((pet, index) => (
-        <ConsiderPetCard key={index}>
-          <ConsiderImg
-            src={pet.image}
-            onClick={() => {
-              props.setNowChosenPetIndex(index);
-              props.setConsiderDetail(true);
-            }}
-          />
+        <ConsiderPetCard
+          key={index}
+          onClick={() => {
+            props.setNowChosenPetIndex(index);
+            props.setConsiderDetail(true);
+          }}
+        >
+          <ConsiderImgMask></ConsiderImgMask>
+          <ConsiderImg src={pet.image} />
           <ConsiderTitle>
             {area[Number(pet.area) - 2]}
             {pet.color}
             {pet.kind}
           </ConsiderTitle>
-          <NotConsiderBtn
+          {/* <NotConsiderBtn
             onClick={async () => {
               deleteFirebaseData(
                 `/memberProfiles/${profile.uid}/considerLists`,
@@ -136,9 +237,17 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
             }}
           >
             不考慮領養
-          </NotConsiderBtn>
+          </NotConsiderBtn> */}
         </ConsiderPetCard>
       ))}
+      {props.considerDetail ? (
+        <ConsiderPetDetail
+          nowChosenPetIndex={props.nowChosenPetIndex}
+          setConsiderDetail={props.setConsiderDetail}
+        />
+      ) : (
+        ""
+      )}
     </>
   );
 };
@@ -224,62 +333,99 @@ const ConsiderPetDetail = (props: {
           src={dating.considerList[props.nowChosenPetIndex].image}
           alt=""
         />
-        <PetInfo>{dating.considerList[props.nowChosenPetIndex].id}</PetInfo>
-        <PetInfo>
-          {area[dating.considerList[props.nowChosenPetIndex].area - 2]}
-        </PetInfo>
-        <PetInfo>
-          {dating.considerList[props.nowChosenPetIndex].color}
-          {dating.considerList[props.nowChosenPetIndex].kind}
-        </PetInfo>
-        <PetInfo>
-          {dating.considerList[props.nowChosenPetIndex].sex === "M" ? "♂" : "♀"}
-        </PetInfo>
-        <PetInfo>
-          {dating.considerList[props.nowChosenPetIndex].sterilization === "F"
-            ? "尚未結紮"
-            : "已結紮"}
-        </PetInfo>
-        <PetInfo>
-          發現地點：{dating.considerList[props.nowChosenPetIndex].foundPlace}
-        </PetInfo>
-        <PetInfo>
-          目前位於：{dating.considerList[props.nowChosenPetIndex].shelterName}
-        </PetInfo>
-        <PetInfo>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${
-              shelterInfo.find(
-                (shelter) =>
-                  shelter.pkid ===
-                  dating.considerList[props.nowChosenPetIndex].shleterPkid
-              )?.latAndLng
-            }&query_place_id=${
-              shelterInfo.find(
-                (shelter) =>
-                  shelter.pkid ===
-                  dating.considerList[props.nowChosenPetIndex].shleterPkid
-              )?.placeid
-            }`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {dating.considerList[props.nowChosenPetIndex].shelterAddress}
-          </a>
-        </PetInfo>
-        <PetInfo>
-          聯絡收容所：{dating.considerList[props.nowChosenPetIndex].shelterTel}
-        </PetInfo>
+        <PetInfoContainer>
+          <InfoTitle>
+            {dating.considerList[props.nowChosenPetIndex].id} /{" "}
+            {dating.considerList[props.nowChosenPetIndex].color}
+            {dating.considerList[props.nowChosenPetIndex].kind}
+            {dating.considerList[props.nowChosenPetIndex].sex === "M"
+              ? "♂"
+              : "♀"}
+          </InfoTitle>
+          <PetInfoImgContainer>
+            <PetInfoImg src={cutEgg} />
+            <PetInfo>
+              結紮狀態：
+              {dating.considerList[props.nowChosenPetIndex].sterilization ===
+              "F"
+                ? "尚未結紮"
+                : "已結紮"}
+            </PetInfo>
+          </PetInfoImgContainer>
+          <PetInfoImgContainer>
+            <PetInfoImg src={findplace} />
+            <PetInfo>
+              發現地點：
+              {dating.considerList[props.nowChosenPetIndex].foundPlace}
+            </PetInfo>
+          </PetInfoImgContainer>
+          <PetInfoImgContainer>
+            <PetInfoImg src={shelter} />
+            <PetInfo>
+              目前位於：
+              {dating.considerList[props.nowChosenPetIndex].shelterName}
+            </PetInfo>
+          </PetInfoImgContainer>
+          <PetInfoImgContainer>
+            <PetInfoImg src={googlemap} />
+            <PetInfo>
+              <PetShelterAddress
+                href={`https://www.google.com/maps/search/?api=1&query=${
+                  shelterInfo.find(
+                    (shelter) =>
+                      shelter.pkid ===
+                      dating.considerList[props.nowChosenPetIndex].shleterPkid
+                  )?.latAndLng
+                }&query_place_id=${
+                  shelterInfo.find(
+                    (shelter) =>
+                      shelter.pkid ===
+                      dating.considerList[props.nowChosenPetIndex].shleterPkid
+                  )?.placeid
+                }`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {dating.considerList[props.nowChosenPetIndex].shelterAddress}
+              </PetShelterAddress>
+            </PetInfo>
+          </PetInfoImgContainer>
+          <PetInfoImgContainer>
+            <PetInfoImg src={tel} />
+            <PetInfo>
+              聯絡收容所：
+              {dating.considerList[props.nowChosenPetIndex].shelterTel}
+            </PetInfo>
+          </PetInfoImgContainer>
+        </PetInfoContainer>
+
         <CloseBtn
           onClick={() => {
             props.setConsiderDetail(false);
           }}
         >
-          X
+          關閉
         </CloseBtn>
         <InviteDatingBtn onClick={() => setInviteBoxOpen(true)}>
           申請與他約會：相處體驗
         </InviteDatingBtn>
+        <NotCondiserBtn
+          onClick={async () => {
+            deleteFirebaseData(
+              `/memberProfiles/${profile.uid}/considerLists`,
+              "id",
+              dating.considerList[props.nowChosenPetIndex].id
+            );
+            getListsData();
+            await addDoc(
+              collection(db, `/memberProfiles/${profile.uid}/considerLists`),
+              { id: dating.considerList[props.nowChosenPetIndex].id }
+            );
+            props.setConsiderDetail(false);
+          }}
+        >
+          不考慮領養
+        </NotCondiserBtn>
       </PetCard>
       {inviteBoxOpen ? (
         <InviteDatingBox>
@@ -344,7 +490,7 @@ const ConsiderPetDetail = (props: {
               }}
             />
           </InviteInfoContainer>
-          <InviteDatingBtn
+          <SendInviteBtn
             onClick={async () => {
               if (
                 Object.values(inviteDatingInfo).some((item) => item === "") ||
@@ -359,17 +505,17 @@ const ConsiderPetDetail = (props: {
               );
               getUpcomingListData();
               window.alert("申請成功！可至「即將到來的約會」查看");
-            }}
-          >
-            送出邀請
-          </InviteDatingBtn>
-          <CloseBtn
-            onClick={() => {
               setInviteBoxOpen(false);
             }}
           >
-            X
-          </CloseBtn>
+            送出邀請
+          </SendInviteBtn>
+          <CloseInviteBoxBtn
+            onClick={() => {
+              setInviteBoxOpen(false);
+            }}
+            src={close}
+          />
         </InviteDatingBox>
       ) : (
         ""

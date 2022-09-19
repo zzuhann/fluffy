@@ -16,17 +16,23 @@ import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
 import { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
-import { Btn } from "../ProfileSetting/UserInfos";
-import preferenceSet from "./preference.png";
+import { Btn, Title } from "../ProfileSetting/UserInfos";
+import preferenceSet from "./img/preference.png";
 import { area } from "./constantInfo";
-import close from "./close.png";
+import close from "./img/close.png";
+
+const ConsiderTitle = styled(Title)`
+  position: absolute;
+  top: -35px;
+`;
 
 const Wrap = styled.div`
   width: 100%;
+  height: auto;
   min-height: 100vh;
-  height: 100%;
   background-color: #fafafa;
   position: relative;
+  padding-top: 250px;
 `;
 
 const Cards = styled.div`
@@ -155,21 +161,24 @@ const LookConsiderListBtn = styled(NoCardsBtn)`
 `;
 
 const ConsiderList = styled.div`
-  position: absolute;
+  position: relative;
   display: flex;
   flex-wrap: wrap;
-  width: 750px;
-  right: 80px;
-  top: 120px;
+  max-width: 1120px;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: space-between;
+  padding: 20px;
 `;
 
 const UpcomingListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 600px;
-  left: 30%;
-  top: 50%;
+  max-width: 800px;
+  left: 50%;
+  transform: translateX(-50%);
   position: relative;
+  border: solid 1px black;
 `;
 
 const Pairing: React.FC = () => {
@@ -383,21 +392,19 @@ const Pairing: React.FC = () => {
       ) : (
         ""
       )}
-      {tab === "considerAdopt" && !considerDetail ? (
-        <ConsiderList>
-          <ConsiderEverySinglePetCard
-            setNowChosenPetIndex={setNowChosenPetIndex}
-            setConsiderDetail={setConsiderDetail}
-          />
-        </ConsiderList>
-      ) : (
-        ""
-      )}
-      {tab === "considerAdopt" && considerDetail ? (
-        <ConsiderPetDetail
-          nowChosenPetIndex={nowChosenPetIndex}
-          setConsiderDetail={setConsiderDetail}
-        />
+      {tab === "considerAdopt" ? (
+        <>
+          <ConsiderList>
+            <ConsiderTitle>考慮領養清單</ConsiderTitle>
+            <ConsiderEverySinglePetCard
+              setNowChosenPetIndex={setNowChosenPetIndex}
+              setConsiderDetail={setConsiderDetail}
+              tab={tab}
+              considerDetail={considerDetail}
+              nowChosenPetIndex={nowChosenPetIndex}
+            />
+          </ConsiderList>
+        </>
       ) : (
         ""
       )}
