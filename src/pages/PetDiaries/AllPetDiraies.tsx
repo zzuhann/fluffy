@@ -10,7 +10,7 @@ export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: absolute;
-  top: 70px;
+  top: 90px;
   padding-left: 12px;
   &:before {
     content: "";
@@ -32,6 +32,7 @@ const Wrap = styled.div`
 
 const AllDiariesContainer = styled.div`
   max-width: 1120px;
+  width: 100%;
   margin: 0 auto;
   padding: 150px 0 46px;
   display: flex;
@@ -39,6 +40,13 @@ const AllDiariesContainer = styled.div`
   transition: 0.3s;
   position: relative;
   justify-content: space-between;
+  @media (max-width: 1120px) {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  @media (max-width: 699.5px) {
+    justify-content: center;
+  }
 `;
 const DiaryCard = styled(Link)`
   width: 300px;

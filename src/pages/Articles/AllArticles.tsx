@@ -18,17 +18,25 @@ const Wrap = styled.div`
 const AllArticlesContainer = styled.div`
   max-width: 1120px;
   margin: 0 auto;
+  width: 100%;
   padding: 150px 0 46px;
   display: flex;
   flex-wrap: wrap;
   transition: 0.3s;
   position: relative;
   justify-content: space-between;
+  @media (max-width: 1120px) {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  @media (max-width: 860px) {
+    justify-content: center;
+  }
 `;
 
 const ArticleCard = styled(Link)`
-  width: calc((100% - 120px) / 3);
-  margin: 0 20px 50px;
+  width: calc((100% - 120px) / 2);
+  /* margin: 0 20px 50px; */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -47,6 +55,14 @@ const ArticleCard = styled(Link)`
   &:hover {
     box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
     bottom: 5px;
+  }
+  @media (max-width: 860px) {
+    width: calc((100% - 100px));
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  @media (max-width: 556px) {
+    width: 100%;
   }
 `;
 
