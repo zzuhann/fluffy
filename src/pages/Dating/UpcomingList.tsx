@@ -32,9 +32,8 @@ const UpcomingInfoContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 20px;
+  padding: 10px 20px;
   letter-spacing: 1.5px;
-  height: 200px;
   justify-content: center;
 `;
 
@@ -153,6 +152,20 @@ const DatingDoneBtn = styled(Btn)`
   right: 15px;
   bottom: 15px;
   font-size: 16px;
+  @media (max-width: 740px) {
+    right: 15px;
+    bottom: 160px;
+    padding: 5px 10px;
+  }
+  @media (max-width: 630px) {
+    bottom: 10px;
+    left: 5px;
+    right: auto;
+    background-color: #aca8a8;
+    color: #fff;
+    font-size: 12px;
+    padding: 5px;
+  }
 `;
 
 type Props = {

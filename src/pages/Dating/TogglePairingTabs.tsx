@@ -4,24 +4,25 @@ import pairing from "./img/disguise.png";
 import consideradopt from "./img/cat.png";
 import upcomingdate from "./img/house.png";
 
-const TogglePairingTab = styled.div`
+const TogglePairingTab = styled.div<{ $isActive: boolean }>`
+  position: fixed;
+  width: 200px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 250px;
-  position: fixed;
-  top: 72px;
-  background-color: #fff;
-  min-height: 100vh;
-  box-shadow: 1px 9px 5px 2px rgba(0, 0, 0, 0.2);
+  bottom: 75px;
+  left: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: 0.3s;
+  height: ${(props) => (props.$isActive ? "auto" : "0")};
 `;
 
 const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
+  position: relative;
   align-items: center;
-  padding: 10px 30px;
+  padding: 10px;
   width: 100%;
   cursor: pointer;
   transition: 0.3s;
@@ -31,21 +32,39 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
     background-color: #b7b0a8;
     opacity: 1;
   }
+  @media (max-width: 688px) {
+    padding: 5px 15px;
+  }
+  @media (max-width: 574px) {
+    padding: 5px;
+  }
 `;
 
 const PairingTabIcon = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
+  @media (max-width: 725px) {
+    width: 30px;
+    height: 30px;
+  }
+  @media (max-width: 574px) {
+    display: none;
+  }
 `;
 
 const PairingTab = styled.div`
   letter-spacing: 1.5px;
   margin-left: 15px;
+  position: relative;
+  @media (max-width: 688px) {
+    letter-spacing: 1px;
+    margin-left: 10px;
+  }
 `;
 
 const AlertMatchQty = styled.div`
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   position: absolute;
   background-color: #ff5106;
@@ -53,11 +72,12 @@ const AlertMatchQty = styled.div`
   justify-content: center;
   align-items: center;
   color: #fff;
-  right: 10px;
+  left: -55px;
+  bottom: -10px;
   letter-spacing: 1px;
 `;
 
-type Props = {
+export type TogglePairingTabsProps = {
   tab: string;
   setTab: (value: string) => void;
   getListsData: () => void;
@@ -65,11 +85,16 @@ type Props = {
   getUpcomingListData: () => void;
   matchSuccessQty: number;
   setMatchSuccessQty: Dispatch<SetStateAction<number>>;
+  setOpenDatingFeatureMenu: Dispatch<SetStateAction<boolean>>;
+  openDatingFeatureMenu: boolean;
 };
 
-const TogglePairingTabs: React.FC<Props> = (props) => {
+const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
   return (
-    <TogglePairingTab>
+    <TogglePairingTab
+      onMouseLeave={() => props.setOpenDatingFeatureMenu(false)}
+      $isActive={props.openDatingFeatureMenu === true}
+    >
       <PairingTabContainer
         onClick={() => props.setTab("pairing")}
         $isActive={props.tab === "pairing"}
@@ -86,13 +111,12 @@ const TogglePairingTabs: React.FC<Props> = (props) => {
         }}
         $isActive={props.tab === "considerAdopt"}
       >
-        <PairingTabIcon src={consideradopt} />
-        <PairingTab>考慮領養清單</PairingTab>
         {props.matchSuccessQty > 0 ? (
           <AlertMatchQty>+{props.matchSuccessQty}</AlertMatchQty>
         ) : (
-          ""
+          <PairingTabIcon src={consideradopt} />
         )}
+        <PairingTab>考慮領養清單</PairingTab>
       </PairingTabContainer>
       <PairingTabContainer
         onClick={() => {

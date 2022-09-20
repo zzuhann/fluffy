@@ -31,6 +31,7 @@ import {
   setOwnPets,
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
+import TogglePairingTabs from "../pages/Dating/TogglePairingTabs";
 
 const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;

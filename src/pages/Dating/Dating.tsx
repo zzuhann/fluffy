@@ -20,6 +20,7 @@ import { Btn, Title } from "../ProfileSetting/UserInfos";
 import preferenceSet from "./img/preference.png";
 import { area } from "./constantInfo";
 import close from "./img/close.png";
+import menuburger from "./img/menuburger.png";
 
 const ConsiderTitle = styled(Title)`
   position: absolute;
@@ -28,10 +29,7 @@ const ConsiderTitle = styled(Title)`
 
 const UpcomingTitle = styled(Title)`
   position: absolute;
-  top: 200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1080px;
+  top: -35px;
 `;
 
 const Wrap = styled.div`
@@ -40,21 +38,35 @@ const Wrap = styled.div`
   min-height: 100vh;
   background-color: #fafafa;
   position: relative;
-  padding-top: 250px;
+  padding-top: 120px;
+  padding-bottom: 50px;
 `;
 
 const Cards = styled.div`
   position: relative;
   width: 450px;
+  height: 500px;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  /* top: 50%; */
+  transform: translateX(-50%);
+  @media (max-width: 574px) {
+    width: 400px;
+    height: 500px;
+  }
+  @media (max-width: 460px) {
+    width: 350px;
+    height: 500px;
+  }
+  @media (max-width: 385px) {
+    width: 300px;
+    height: 450px;
+  }
 `;
 
 const FilterContainer = styled.div`
   display: flex;
   position: absolute;
-  top: 115px;
+  top: -30px;
   left: 20px;
   opacity: 0.85;
   cursor: pointer;
@@ -69,6 +81,7 @@ const FilterImg = styled.img`
   height: 20px;
   margin-right: 10px;
 `;
+
 const FilterTitle = styled.div`
   font-size: 15px;
   position: relative;
@@ -91,7 +104,7 @@ const CloseFilterBtn = styled.img`
 
 const FilterInsideContainer = styled.div`
   position: absolute;
-  top: 90px;
+  top: 0px;
   left: 20px;
   border-radius: 8px;
   z-index: 999;
@@ -101,6 +114,12 @@ const FilterInsideContainer = styled.div`
   letter-spacing: 1.5px;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
   width: 350px;
+  @media (max-width: 460px) {
+    width: 310px;
+  }
+  @media (max-width: 385px) {
+    width: 280px;
+  }
 `;
 const FilterInfoContainer = styled.div`
   display: flex;
@@ -132,6 +151,9 @@ const FilterInfoOption = styled(Btn)`
   }
   &:hover {
     background-color: #b7b0a8;
+  }
+  @media (max-width: 385px) {
+    padding: 5px 10px;
   }
 `;
 
@@ -177,18 +199,44 @@ const ConsiderList = styled.div`
   transform: translateX(-50%);
   justify-content: space-between;
   padding: 20px;
+  @media (max-width: 539px) {
+    justify-content: center;
+  }
 `;
 
 const UpcomingListContainer = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 1120px;
-  height: 650px;
   left: 50%;
   transform: translateX(-50%);
   position: relative;
   padding: 20px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
+`;
+
+const OpenToggleTabs = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #b7b0a8;
+  z-index: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover {
+    background-color: #928c86;
+  }
+`;
+const OpenToggleTabsIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Pairing: React.FC = () => {
@@ -208,6 +256,8 @@ const Pairing: React.FC = () => {
   const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
   const chosenIdRef = useRef<number[]>([]);
   const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
+  const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
+    useState<boolean>(false);
 
   useEffect(() => {
     checkChosenAndAppendNewPet(100);
@@ -306,6 +356,16 @@ const Pairing: React.FC = () => {
   if (!dating.allCards) return null;
   return (
     <>
+      <OpenToggleTabs
+        onMouseEnter={() => setOpenDatingFeatureMenu(true)}
+        onClick={() => {
+          openDatingFeatureMenu
+            ? setOpenDatingFeatureMenu(false)
+            : setOpenDatingFeatureMenu(true);
+        }}
+      >
+        <OpenToggleTabsIcon src={menuburger} />
+      </OpenToggleTabs>
       <TogglePairingTabs
         matchSuccessQty={matchSuccessQty}
         setMatchSuccessQty={setMatchSuccessQty}
@@ -314,6 +374,8 @@ const Pairing: React.FC = () => {
         getListsData={getListsData}
         setConsiderDetail={setConsiderDetail}
         getUpcomingListData={getUpcomingListData}
+        setOpenDatingFeatureMenu={setOpenDatingFeatureMenu}
+        openDatingFeatureMenu={openDatingFeatureMenu}
       />
       <Wrap>
         {tab === "pairing" ? (
@@ -427,8 +489,8 @@ const Pairing: React.FC = () => {
         )}
         {tab === "upcomingDate" ? (
           <>
-            <UpcomingTitle>即將到來的約會</UpcomingTitle>
             <UpcomingListContainer>
+              <UpcomingTitle>即將到來的約會</UpcomingTitle>
               <UpcomingList getUpcomingListData={getUpcomingListData} />
             </UpcomingListContainer>
           </>

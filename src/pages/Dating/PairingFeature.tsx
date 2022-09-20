@@ -42,6 +42,7 @@ const AnimationChooseBtn = styled.img`
 
 const PetCard = styled.div`
   width: 100%;
+  height: 100%;
   position: absolute;
   margin: 0 auto;
   display: flex;
@@ -50,35 +51,40 @@ const PetCard = styled.div`
   background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
-  height: 600px;
+
+  padding: 7.5px;
   &:last-child {
     box-shadow: 2px 2px 4px 4px rgba(0, 0, 0, 0.2);
+  }
+  @media (max-width: 574px) {
+    width: 100%;
   }
 `;
 
 const PetImg = styled.img`
-  width: 420px;
-  height: 570px;
+  width: calc(100% - 15px);
+  height: calc(100% - 15px);
   object-fit: cover;
   position: absolute;
   border-radius: 10px;
   overflow: hidden;
-  top: 15px;
-  left: 15px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const ImgMask = styled.div`
-  width: 420px;
-  height: 570px;
-  top: 15px;
+  width: calc(100% - 15px);
+  height: calc(100% - 15px);
   position: absolute;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0) 69%,
     rgba(0, 0, 0, 0.8) 100%
   );
-  top: 15px;
-  left: 15px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 10px;
 `;
 
@@ -91,6 +97,9 @@ const PetTextInfoContainer = styled.div`
   bottom: 20px;
   font-size: 18px;
   letter-spacing: 1.5px;
+  @media (max-width: 385px) {
+    font-size: 16px;
+  }
 `;
 const PetText = styled.div`
   margin-bottom: 8px;
@@ -111,15 +120,25 @@ const ChooseIcon = styled.img`
     bottom: 34px;
     box-shadow: 2px 2px 2px 2px rgba(255, 255, 255, 0.2);
   }
+  @media (max-width: 385px) {
+    width: 50px;
+    height: 50px;
+  }
 `;
 
 const Cross = styled(ChooseIcon)`
   left: 40px;
+  @media (max-width: 385px) {
+    left: 30px;
+  }
 `;
 
 const Circle = styled(ChooseIcon)`
   right: 40px;
   padding: 10px;
+  @media (max-width: 385px) {
+    right: 30px;
+  }
 `;
 
 interface PetInfos {
