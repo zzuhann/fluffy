@@ -156,6 +156,9 @@ const PetDetailCard = styled.div`
   border-radius: 5px;
   padding: 15px;
   position: relative;
+  @media (max-width: 882px) {
+    padding-bottom: 70px;
+  }
 `;
 
 const PreviewContainer = styled.div`
@@ -188,19 +191,33 @@ const PreviewCancelBtn = styled.div`
     color: #fff;
   }
 `;
-const PetDetailSexBtn = styled(Btn)`
+const PetDetailSexBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   margin-left: 10px;
+  background-color: ${(props) => (props.$isActive ? "#d1cfcf" : "#fff")};
 `;
 
 const AddPetBtn = styled(Btn)`
   bottom: 15px;
   right: 15px;
+  @media (max-width: 614px) {
+    right: 30px;
+  }
+  @media (max-width: 401px) {
+    right: 10px;
+  }
 `;
 
 const AddPetCancelBtn = styled(Btn)`
   bottom: 15px;
   right: 180px;
+  @media (max-width: 614px) {
+    right: auto;
+    left: 30px;
+  }
+  @media (max-width: 401px) {
+    left: 10px;
+  }
 `;
 
 const PetDeatilContainer = styled.div`
@@ -209,15 +226,25 @@ const PetDeatilContainer = styled.div`
   margin-top: 30px;
   padding: 15px;
   position: relative;
+  @media (max-width: 725px) {
+    padding-bottom: 80px;
+  }
 `;
 
 const PetSingleContainer = styled.div`
   display: flex;
   align-items: center;
+  @media (max-width: 725px) {
+    flex-direction: column;
+    margin-top: 80px;
+  }
 `;
 const PetSingleDetailTextContainer = styled.div`
   display: flex;
   flex-direction: column;
+  @media (max-width: 725px) {
+    margin-top: 20px;
+  }
 `;
 
 const PetSingleName = styled.div`
@@ -236,16 +263,35 @@ const PetSingleImage = styled.img`
 const EditBtn = styled(Btn)`
   top: 15px;
   right: 185px;
+  @media (max-width: 605px) {
+    bottom: 15px;
+    top: auto;
+    left: 20px;
+    width: 69px;
+  }
 `;
 
 const CloseDetailBtn = styled(Btn)`
   top: 15px;
   right: 15px;
+  @media (max-width: 605px) {
+    bottom: 15px;
+    top: auto;
+    width: 69px;
+    right: 20px;
+  }
 `;
 
 const DeleteBtn = styled(Btn)`
   top: 15px;
   right: 100px;
+  @media (max-width: 605px) {
+    bottom: 15px;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 69px;
+  }
 `;
 
 type SimplePetCardType = {
@@ -341,7 +387,7 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
 
   return (
     <PetDeatilContainer>
-      <Title>寵物資訊</Title>
+      <PetTitle>寵物資訊</PetTitle>
       <PetSingleContainer>
         <PetSingleImage src={props.petNewImg.url} />
         <PetSingleDetailTextContainer>
@@ -719,6 +765,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               onClick={() => {
                 props.setAddPetInfo({ ...props.addPetInfo, sex: "F" });
               }}
+              $isActive={props.addPetInfo.sex === "F"}
             >
               女
             </PetDetailSexBtn>
@@ -726,6 +773,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               onClick={() => {
                 props.setAddPetInfo({ ...props.addPetInfo, sex: "M" });
               }}
+              $isActive={props.addPetInfo.sex === "M"}
             >
               男
             </PetDetailSexBtn>

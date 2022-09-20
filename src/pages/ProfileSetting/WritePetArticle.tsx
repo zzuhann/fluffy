@@ -543,7 +543,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         </InfoContainer>
       ) : (
         <InfoContainer>
-          <Title>寵物文章</Title>
+          <ArticleSectionTitle>寵物文章</ArticleSectionTitle>
           <AddArticleBtn onClick={() => setAddArticleMode(true)}>
             新增文章
           </AddArticleBtn>
@@ -577,21 +577,47 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   );
 };
 
+const ArticleSectionTitle = styled(Title)`
+  @media (max-width: 470px) {
+    font-size: 22px;
+  }
+  @media (max-width: 403px) {
+    left: 0;
+    top: 10px;
+  }
+`;
+
 const AddArticleBtn = styled(Btn)`
   top: 20px;
-  right: 20px;
+  right: 40px;
+  @media (max-width: 960px) {
+    right: 20px;
+  }
+  @media (max-width: 470px) {
+    padding: 5px;
+    top: 15px;
+  }
+  @media (max-width: 403px) {
+    right: 10px;
+  }
 `;
 
 const InfoContainer = styled.div`
   width: 100%;
-  max-width: 850px;
+  max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
   border: solid 3px #d1cfcf;
   border-radius: 5px;
-  padding: 20px;
+  padding: 20px 40px;
   position: relative;
   margin-bottom: 50px;
+  @media (max-width: 960px) {
+    padding: 20px;
+  }
+  @media (max-width: 403px) {
+    padding: 10px;
+  }
 `;
 
 const UserArticleContainer = styled.div`
@@ -602,11 +628,14 @@ const UserArticleContainer = styled.div`
   position: relative;
   justify-content: space-between;
   margin-top: 30px;
+  @media (max-width: 742px) {
+    flex-direction: column;
+  }
 `;
 
 const UserArticle = styled.div`
   display: flex;
-  justify-content: space-between;
+  width: calc((100% - 100px) / 2);
   align-items: center;
   flex-direction: column;
   border: solid 3px #d1cfcf;
@@ -621,19 +650,67 @@ const UserArticle = styled.div`
     box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
     bottom: 5px;
   }
+  @media (max-width: 1170px) {
+    width: calc((100% - 30px) / 2);
+  }
+  @media (max-width: 960px) {
+    padding: 10px;
+  }
+  @media (max-width: 742px) {
+    width: 100%;
+  }
+  @media (max-width: 742px) {
+    padding: 15px;
+  }
+  @media (max-width: 470px) {
+    padding: 10px;
+  }
 `;
 
 const UserArticleImg = styled.img`
-  width: 350px;
-  height: 200px;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
   border-radius: 8px;
+  @media (max-width: 1170px) {
+    width: 90%;
+    height: 200px;
+  }
+  @media (max-width: 960px) {
+    width: 100%;
+    height: 150px;
+  }
+  @media (max-width: 742px) {
+    height: 250px;
+  }
+  @media (max-width: 558px) {
+    height: 200px;
+  }
+  @media (max-width: 470px) {
+    height: 150px;
+  }
 `;
 
 const UserArticleTitle = styled.div`
-  font-size: 24px;
-  width: 350px;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  line-height: 30px;
   margin-top: 10px;
   font-weight: bold;
+  align-self: flex-start;
+  @media (max-width: 1170px) {
+    width: 90%;
+    align-self: center;
+  }
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+  @media (max-width: 742px) {
+    font-size: 28px;
+  }
+  @media (max-width: 558px) {
+    font-size: 22px;
+  }
 `;
 
 const ArticleCover = styled.img`

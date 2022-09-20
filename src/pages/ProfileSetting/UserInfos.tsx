@@ -49,6 +49,10 @@ const UserInfo = styled.div`
   padding: 15px;
   position: relative;
 `;
+
+const EditUserInfoContainer = styled(UserInfo)`
+  padding-bottom: 80px;
+`;
 export const Title = styled.div`
   font-size: 30px;
   font-weight: bold;
@@ -63,16 +67,28 @@ export const Title = styled.div`
     position: absolute;
     left: 0;
   }
+  @media (max-width: 403px) {
+    font-size: 24px;
+    padding-left: 10px;
+    left: 15px;
+  }
 `;
 
 const UserContainer = styled.div`
   display: flex;
   align-items: center;
+  @media (max-width: 617px) {
+    flex-direction: column;
+  }
 `;
 
 const UserName = styled.div`
   font-size: 25px;
   margin-left: 20px;
+  @media (max-width: 617px) {
+    margin-left: 0;
+    margin-top: 30px;
+  }
 `;
 
 const UserImage = styled.img`
@@ -84,11 +100,24 @@ const UserImage = styled.img`
 export const UpdateBtn = styled(Btn)`
   bottom: 15px;
   right: 15px;
+  @media (max-width: 614px) {
+    right: 50px;
+  }
+  @media (max-width: 435px) {
+    right: 20px;
+  }
+  @media (max-width: 383px) {
+    padding: 5px 10px;
+    right: 10px;
+  }
 `;
 
 const EditBtn = styled(Btn)`
-  top: 15px;
+  top: 10px;
   right: 15px;
+  @media (max-width: 403px) {
+    padding: 5px 10px;
+  }
 `;
 
 export const EditContainer = styled.div`
@@ -101,14 +130,21 @@ export const EditInfoLabel = styled.label`
   margin-left: 20px;
   display: flex;
   align-items: center;
+  width: 80px;
+  @media (max-width: 614px) {
+    margin-left: 0;
+  }
 `;
 export const EditInfoInput = styled.input`
   font-size: 22px;
   margin-left: 10px;
   padding: 5px;
-  width: 150px;
+  width: 200px;
   border: solid 3px #d1cfcf;
   border-radius: 5px;
+  @media (max-width: 614px) {
+    width: 150px;
+  }
 `;
 
 const PreviewContainer = styled.div`
@@ -116,6 +152,9 @@ const PreviewContainer = styled.div`
   height: 200px;
   border-radius: 40px;
   position: relative;
+  @media (max-width: 614px) {
+    margin-bottom: 30px;
+  }
 `;
 
 const PreviewImg = styled.img`
@@ -154,11 +193,18 @@ export const CancelIcon = styled.img`
 
 export const EditModeContainer = styled.div`
   display: flex;
+  @media (max-width: 614px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 export const EditModeUserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
+  @media (max-width: 614px) {
+    margin-top: 30px;
+  }
 `;
 
 export const ImageUploadLabel = styled.label`
@@ -183,6 +229,17 @@ export const ImageUploadInput = styled.input`
 export const CancelUpdateBtn = styled(Btn)`
   bottom: 15px;
   right: 200px;
+  @media (max-width: 614px) {
+    right: auto;
+    left: 50px;
+  }
+  @media (max-width: 435px) {
+    left: 20px;
+  }
+  @media (max-width: 383px) {
+    padding: 5px 10px;
+    left: 10px;
+  }
 `;
 
 type userInfoType = {
@@ -341,9 +398,9 @@ const UserInfos: React.FC<userInfoType> = (props) => {
   }
 
   return (
-    <UserInfo>
+    <>
       {editProfileMode ? (
-        <>
+        <EditUserInfoContainer>
           <Title>編輯個人資訊</Title>
           <EditModeContainer>
             {defaultUrl !== defaultProfile && (newImg.url || props.img.url) ? (
@@ -415,18 +472,18 @@ const UserInfos: React.FC<userInfoType> = (props) => {
               更新個人資料
             </UpdateBtn>
           </EditModeContainer>
-        </>
+        </EditUserInfoContainer>
       ) : (
-        <>
+        <UserInfo>
           <Title>個人資訊</Title>
           <UserContainer>
             <UserImage src={profile.img as string} />
             <UserName>姓名: {profile.name}</UserName>
           </UserContainer>
           <EditBtn onClick={() => setEditProfileMode(true)}>編輯</EditBtn>
-        </>
+        </UserInfo>
       )}
-    </UserInfo>
+    </>
   );
 };
 
