@@ -16,10 +16,14 @@ const ClinicListContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   max-width: 800px;
+  width: 100%;
   position: relative;
   margin: 0 auto;
   padding-top: 150px;
   padding-bottom: 80px;
+  @media (max-width: 778px) {
+    padding: 150px 30px 80px 30px;
+  }
 `;
 
 const ClinicCard = styled.div`
@@ -35,6 +39,12 @@ const ClinicCard = styled.div`
   &:nth-child(2n) {
     margin-right: 0;
   }
+  @media (max-width: 778px) {
+    width: 100%;
+  }
+  @media (max-width: 376px) {
+    padding: 10px;
+  }
 `;
 
 const ClinicLoc = styled.div`
@@ -44,12 +54,22 @@ const ClinicLoc = styled.div`
   position: absolute;
   top: 20px;
   right: 20px;
+  @media (max-width: 472px) {
+    font-size: 18px;
+  }
+  @media (max-width: 376px) {
+    top: 10px;
+    right: 10px;
+  }
 `;
 
 const ClinicTitle = styled.div`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
+  @media (max-width: 472px) {
+    font-size: 18px;
+  }
 `;
 const ClinicInfo = styled.div`
   font-size: 18px;
@@ -90,7 +110,21 @@ const SelectGroup = styled.div`
   width: 200px;
   z-index: 1000;
   top: 80px;
-  left: 80px;
+  left: -250px;
+  @media (max-width: 1435px) {
+    right: 0;
+    left: auto;
+  }
+  @media (max-width: 778px) {
+    right: 30px;
+  }
+  @media (max-width: 506px) {
+    width: 150px;
+  }
+  @media (max-width: 400px) {
+    width: 120px;
+    font-size: 18px;
+  }
 `;
 const NowChooseOption = styled.div`
   &:after {
@@ -110,6 +144,13 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
   width: 200px;
   left: 0;
   top: 50px;
+  @media (max-width: 506px) {
+    width: 150px;
+  }
+  @media (max-width: 400px) {
+    width: 120px;
+    font-size: 18px;
+  }
 `;
 const OptionName = styled.li`
   display: flex;
@@ -223,37 +264,36 @@ const VetClinic = () => {
 
   return (
     <Wrap>
-      <SelectGroup>
-        <NowChooseOption
-          onMouseEnter={() => {
-            setOptionBoxOpen(true);
-          }}
-        >
-          {nowCountry}
-        </NowChooseOption>
-        <OptionGroup
-          $isActive={optionBoxOpen === true}
-          onMouseLeave={() => {
-            setOptionBoxOpen(false);
-          }}
-        >
-          {areaList.map((area, index) => (
-            <OptionName
-              key={index}
-              value={area}
-              onClick={(e) => {
-                const target = e.target as HTMLElement;
-                changePreferenceArea(target.innerText);
-                setNowCountry(target.innerText);
-              }}
-            >
-              {area}
-            </OptionName>
-          ))}
-        </OptionGroup>
-      </SelectGroup>
-
       <ClinicListContainer>
+        <SelectGroup>
+          <NowChooseOption
+            onMouseEnter={() => {
+              setOptionBoxOpen(true);
+            }}
+          >
+            {nowCountry}
+          </NowChooseOption>
+          <OptionGroup
+            $isActive={optionBoxOpen === true}
+            onMouseLeave={() => {
+              setOptionBoxOpen(false);
+            }}
+          >
+            {areaList.map((area, index) => (
+              <OptionName
+                key={index}
+                value={area}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  changePreferenceArea(target.innerText);
+                  setNowCountry(target.innerText);
+                }}
+              >
+                {area}
+              </OptionName>
+            ))}
+          </OptionGroup>
+        </SelectGroup>
         <AreaTitle>{nowCountry}</AreaTitle>
         {clinics.map((clinic, index) => (
           <ClinicCard key={index}>
