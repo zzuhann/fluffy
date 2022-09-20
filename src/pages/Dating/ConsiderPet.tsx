@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -17,9 +17,9 @@ import tel from "./img/telephone.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import close from "./img/close.png";
 
-const PetCard = styled.div`
-  width: 450px;
-  height: 750px;
+const PetCard = styled.div<{ $Top: number }>`
+  width: 350px;
+  height: 620px;
   border-radius: 10px;
   overflow: hidden;
   position: absolute;
@@ -27,21 +27,22 @@ const PetCard = styled.div`
   flex-direction: column;
   background-color: #fff;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: ${(props) => props.$Top - 40}px;
+  transform: translateX(-50%);
   box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
+  z-index: 1200;
 `;
 
 const PetImg = styled.img`
-  width: 450px;
-  height: 450px;
+  width: 350px;
+  height: 350px;
   object-fit: cover;
 `;
 const PetInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 `;
 const InfoTitle = styled.div`
   font-size: 22px;
@@ -61,7 +62,7 @@ const PetInfoImg = styled.img`
 `;
 const PetInfo = styled.div`
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 5px;
   line-height: 20px;
 `;
 
@@ -81,13 +82,20 @@ const CloseBtn = styled(Btn)`
 
 const InviteDatingBtn = styled(Btn)`
   bottom: 18px;
-  left: 30px;
+  /* left: 50%;
+  transform: translateX(-50%); */
+  left: 10px;
+  padding: 5px 5px;
+  width: 220px;
   font-size: 16px;
 `;
 
 const NotCondiserBtn = styled(Btn)`
   bottom: 18px;
-  right: 30px;
+  /* left: 50%;
+  transform: translateX(-50%); */
+  right: 10px;
+  padding: 5px 5px;
   font-size: 16px;
 `;
 
@@ -204,6 +212,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+
   if (!dating.considerList) return null;
   return (
     <>
@@ -244,6 +253,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
         <ConsiderPetDetail
           nowChosenPetIndex={props.nowChosenPetIndex}
           setConsiderDetail={props.setConsiderDetail}
+          considerDetail={props.considerDetail}
         />
       ) : (
         ""
@@ -255,6 +265,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
 const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;
+  considerDetail: Boolean;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -269,6 +280,17 @@ const ConsiderPetDetail = (props: {
     date: number;
   }>({ name: "", email: "", date: 0 });
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
+  const [scroll, setScroll] = useState<number>(0);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll((prev) => scrollTop);
+  }
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
@@ -328,7 +350,7 @@ const ConsiderPetDetail = (props: {
 
   return (
     <>
-      <PetCard>
+      <PetCard $Top={scroll}>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}
           alt=""
@@ -345,7 +367,7 @@ const ConsiderPetDetail = (props: {
           <PetInfoImgContainer>
             <PetInfoImg src={cutEgg} />
             <PetInfo>
-              結紮狀態：
+              結紮狀態:
               {dating.considerList[props.nowChosenPetIndex].sterilization ===
               "F"
                 ? "尚未結紮"
@@ -355,14 +377,14 @@ const ConsiderPetDetail = (props: {
           <PetInfoImgContainer>
             <PetInfoImg src={findplace} />
             <PetInfo>
-              發現地點：
+              發現地點:
               {dating.considerList[props.nowChosenPetIndex].foundPlace}
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
             <PetInfoImg src={shelter} />
             <PetInfo>
-              目前位於：
+              目前位於:
               {dating.considerList[props.nowChosenPetIndex].shelterName}
             </PetInfo>
           </PetInfoImgContainer>
@@ -393,7 +415,7 @@ const ConsiderPetDetail = (props: {
           <PetInfoImgContainer>
             <PetInfoImg src={tel} />
             <PetInfo>
-              聯絡收容所：
+              聯絡收容所:
               {dating.considerList[props.nowChosenPetIndex].shelterTel}
             </PetInfo>
           </PetInfoImgContainer>
@@ -407,7 +429,7 @@ const ConsiderPetDetail = (props: {
           關閉
         </CloseBtn>
         <InviteDatingBtn onClick={() => setInviteBoxOpen(true)}>
-          申請與他約會：相處體驗
+          申請與他約會: 相處體驗
         </InviteDatingBtn>
         <NotCondiserBtn
           onClick={async () => {

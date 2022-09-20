@@ -653,7 +653,11 @@ export const PetDiary = () => {
                 {new Date().getFullYear() -
                   profile.petDiary[ownPetDiaryIndex].birthYear}
                 歲時的{profile.petDiary[ownPetDiaryIndex].petName} (
-                {profile.ownPets[ownPetDiaryIndex].sex === "F" ? "♀" : "♂"})
+                {profile.petDiary[ownPetDiaryIndex].hasOwnProperty("sex") &&
+                profile.ownPets[ownPetDiaryIndex].sex === "F"
+                  ? "♀"
+                  : "♂"}
+                )
               </PetSingleName>
               <PetSingleName>
                 內容: {profile.petDiary[ownPetDiaryIndex].context}

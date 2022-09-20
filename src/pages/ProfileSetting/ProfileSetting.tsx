@@ -150,7 +150,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
   const dispatch = useDispatch();
   const [img, setImg] = useState<UploadImgType>(uploadImgInitialState);
   const [newName, setNewName] = useState<string>("");
-  const [selectedTab, setSelectedTab] = useState<string>("info");
+  const [selectedTab, setSelectedTab] = useState<string>("個人資訊");
   const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
   const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false);
   const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
