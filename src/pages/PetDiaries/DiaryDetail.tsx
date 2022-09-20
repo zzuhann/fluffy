@@ -28,6 +28,16 @@ const Wrap = styled.div`
   min-height: 100vh;
   background-color: #fafafa;
   position: relative;
+  padding-top: 120px;
+  padding-bottom: 120px;
+  @media (max-width: 1120px) {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  @media (max-width: 514px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 `;
 
 const DiaryContainer = styled.div`
@@ -35,17 +45,30 @@ const DiaryContainer = styled.div`
   max-width: 1120px;
   margin: 0 auto;
   position: relative;
-  top: 80px;
+  /* top: 120px; */
   border: solid 1px #dbdbdb;
   border-radius: 10px;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 16px;
+  @media (max-width: 889px) {
+    flex-direction: column;
+  }
 `;
 
 const DiaryImage = styled.img`
   width: 500px;
   height: 500px;
   object-fit: cover;
+  @media (max-width: 1060px) {
+    width: 400px;
+  }
+  @media (max-width: 889px) {
+    width: 100%;
+    height: 400px;
+  }
+  @media (max-width: 558px) {
+    height: 300px;
+  }
 `;
 
 const DiaryTextInfo = styled.div`
@@ -53,6 +76,9 @@ const DiaryTextInfo = styled.div`
   flex-direction: column;
   flex: 1;
   background-color: #fff;
+  @media (max-width: 889px) {
+    padding-bottom: 20px;
+  }
 `;
 
 const DiaryAuthorContainer = styled(Link)`
@@ -79,7 +105,7 @@ const AuthorName = styled.div`
   display: flex;
   align-items: center;
   margin-left: 15px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
   color: #3c3c3c;
 `;
@@ -92,14 +118,14 @@ const MainSection = styled.div`
 `;
 
 const DiaryContext = styled.div`
-  font-size: 15px;
+  font-size: 16px;
   margin-left: 55px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 `;
 const TimeContainer = styled.div`
   display: flex;
   margin-left: 55px;
-  font-size: 12px;
+  font-size: 16px;
   color: #7d7d7d;
 `;
 
@@ -114,14 +140,14 @@ const CommentContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
-  padding-bottom: 20px;
+  padding-bottom: 30px;
   border-bottom: 1px solid #efefef;
   word-break: break-all;
 `;
 
 const CommentCard = styled.div`
   position: relative;
-  margin-top: 15px;
+  margin-top: 25px;
 `;
 const RecordContainer = styled.div`
   display: flex;
@@ -138,7 +164,7 @@ const RecordImg = styled.img`
 const Record = styled.div`
   margin-right: 15px;
   margin-left: 5px;
-  font-size: 15px;
+  font-size: 16px;
   position: relative;
   bottom: 3px;
 `;
@@ -164,11 +190,23 @@ const CommentTime = styled.div`
   position: absolute;
   right: 5px;
   top: 5px;
+  @media (max-width: 889px) {
+    top: 13px;
+  }
+  @media (max-width: 409px) {
+    top: auto;
+    bottom: -22px;
+    color: #7d7d7d;
+  }
 `;
 const CommentContext = styled.div`
   margin-left: 55px;
   padding-right: 10px;
   line-height: 20px;
+  @media (max-width: 478px) {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
 `;
 const AddComment = styled.div`
   display: flex;
@@ -186,8 +224,12 @@ const AddCommentTextArea = styled.textarea`
   font-size: 18px;
 `;
 const AddCommentBtn = styled(Btn)`
-  bottom: 100px;
+  bottom: 95px;
   right: 20px;
+  padding: 5px 10px;
+  @media (max-width: 889px) {
+    bottom: 100px;
+  }
 `;
 
 const DiaryDetail = () => {

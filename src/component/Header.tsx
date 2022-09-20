@@ -89,10 +89,28 @@ const LoginRegisterBtnWrapper = styled.div`
 `;
 
 const LoginRegisterBtn = styled.div`
+  margin-right: 20px;
+  font-size: 18px;
   cursor: pointer;
-  &:hover {
-    background-color: black;
-    color: white;
+  position: relative;
+
+  &:after {
+    transition: 0.3s;
+    content: "";
+    width: 0%;
+    height: 3px;
+    background-color: #b7b0a8;
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  &:hover:after {
+    width: 100%;
+  }
+  &:last-child {
+    margin-right: 0;
   }
 `;
 
