@@ -32,6 +32,10 @@ const AllArticlesContainer = styled.div`
   @media (max-width: 860px) {
     justify-content: center;
   }
+  @media (max-width: 643px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 `;
 
 const ArticleCard = styled(Link)`
@@ -49,6 +53,7 @@ const ArticleCard = styled(Link)`
   position: relative;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.1);
   border: solid 1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
   &:last-child {
     margin-right: 0;
   }

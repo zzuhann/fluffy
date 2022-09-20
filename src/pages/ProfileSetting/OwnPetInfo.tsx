@@ -40,7 +40,7 @@ import {
 import { setOwnPets } from "../../functions/profileReducerFunction";
 
 export const InfoContainer = styled.div`
-  width: 100%;
+  /* width: 100%; */
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
@@ -48,40 +48,88 @@ export const InfoContainer = styled.div`
   border-radius: 5px;
   padding: 15px;
   position: relative;
+  @media (max-width: 925px) {
+    padding: 50px;
+  }
+  @media (max-width: 725px) {
+    padding: 50px 25px;
+  }
+  @media (max-width: 432px) {
+    padding: 50px 15px;
+  }
+`;
+
+const PetTitle = styled(Title)`
+  @media (max-width: 725px) {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+  }
+  @media (max-width: 403px) {
+    font-size: 24px;
+    top: 28px;
+    padding-left: 10px;
+    left: 15px;
+  }
 `;
 
 const PetInfo = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  /* display: flex;
+  flex-wrap: wrap; */
   width: 100%;
   margin: 0 auto;
   position: relative;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 250px;
+  @media (max-width: 725px) {
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, 300px);
+  }
+  @media (max-width: 432px) {
+    grid-template-columns: repeat(auto-fill, 250px);
+  }
 `;
 
 const PetSimpleCard = styled.div`
-  flex-basis: 300px;
+  /* flex-basis: 250px; */
   border-radius: 10px;
   overflow: hidden;
   position: relative;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   transition: 0.3s;
   bottom: 0;
   cursor: pointer;
-  &:last-child {
-    margin-right: 0;
-  }
   &:hover {
     box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
     bottom: 5px;
   }
 `;
 
+const AddBtnSimple = styled(Btn)`
+  top: 15px;
+  right: 15px;
+  @media (max-width: 432px) {
+    padding: 5px 10px;
+    font-size: 16px;
+    top: 25px;
+  }
+`;
+
 const PetSimpleImage = styled.img`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
+  @media (max-width: 725px) {
+    width: 300px;
+  }
+  @media (max-width: 432px) {
+    width: 250px;
+  }
 `;
 const PetSimpleInfos = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
@@ -219,7 +267,7 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
   ) as Profile;
   return (
     <InfoContainer>
-      <Title>寵物資料</Title>
+      <PetTitle>寵物資料</PetTitle>
       <PetInfo>
         {profile.ownPets.map((pet, index) => (
           <PetSimpleCard
@@ -247,13 +295,10 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
             </PetSimpleInfos>
           </PetSimpleCard>
         ))}
-        <PetSimpleCard onClick={() => props.setAddPet(true)}>
-          <PetSimpleImage src={pet} />
-          <PetSimpleInfos>
-            <PetSimpleInfo>新增寵物</PetSimpleInfo>
-          </PetSimpleInfos>
-        </PetSimpleCard>
       </PetInfo>
+      <AddBtnSimple onClick={() => props.setAddPet(true)}>
+        新增寵物 +
+      </AddBtnSimple>
     </InfoContainer>
   );
 };

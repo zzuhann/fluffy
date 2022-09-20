@@ -39,11 +39,23 @@ const ArticleContainer = styled.div`
   max-width: 800px;
   position: relative;
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 120px;
   padding-bottom: 30px;
   border-radius: 5px;
   overflow: hidden;
   letter-spacing: 1px;
+  @media (max-width: 800px) {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  @media (max-width: 650px) {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  @media (max-width: 400px) {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 `;
 
 const CoverAuthorContainer = styled.div`
@@ -58,6 +70,9 @@ const ArticleCover = styled.img`
   width: 100%;
   height: 300px;
   object-fit: cover;
+  @media (max-width: 440px) {
+    height: 200px;
+  }
 `;
 const TitleContainer = styled.div`
   position: relative;
@@ -67,6 +82,10 @@ const Title = styled.div`
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 20px;
+  line-height: 38px;
+  @media (max-width: 650px) {
+    font-size: 28px;
+  }
 `;
 const Author = styled(Link)`
   font-size: 18px;
@@ -79,6 +98,14 @@ const ArticleDate = styled.div`
 `;
 const ArticleContext = styled.div`
   padding: 20px;
+  font-size: 22px;
+  line-height: 26px;
+  @media (max-width: 650px) {
+    font-size: 16px;
+  }
+  @media (max-width: 400px) {
+    line-height: 20px;
+  }
 `;
 const RecordContainer = styled.div`
   display: flex;
@@ -160,6 +187,10 @@ const CommentContext = styled.div`
   margin-left: 55px;
   padding-right: 10px;
   line-height: 20px;
+  @media (max-width: 440px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;
 
 export type CommentType = {

@@ -32,15 +32,22 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  top: 72px;
+  padding-top: 72px;
+  padding-bottom: 72px;
+  @media (max-width: 1120px) {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
 `;
 
 const SideBarWrapper = styled.div`
   width: 100%;
   background-color: #f8f6f6;
   height: 80px;
+  position: fixed;
   top: 72px;
   position: relative;
+  z-index: 100;
 `;
 
 const SidebarProfileTab = styled.div`
@@ -239,7 +246,19 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ) : (
             ""
           )}
-          {selectedTab === tabs[1] && !ownPetDetail ? (
+          {selectedTab === tabs[1] && addPet ? (
+            <AddPet
+              setAddPet={setAddPet}
+              petNewImg={petNewImg}
+              petImg={petImg}
+              setPetImg={setPetImg}
+              addPetInfo={addPetInfo}
+              setAddPetInfo={setAddPetInfo}
+              setOwnPetDetail={setOwnPetDetail}
+              addDocOwnPets={addDocOwnPets}
+              setPetNewImg={setPetNewImg}
+            />
+          ) : selectedTab === tabs[1] && !ownPetDetail ? (
             <SimpleSinglePetCard
               setOwnPetDetail={setOwnPetDetail}
               setOwnPetIndex={setOwnPetIndex}
@@ -277,7 +296,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ) : (
             ""
           )}
-          {selectedTab === tabs[1] && addPet ? (
+          {/* {selectedTab === tabs[1] && addPet ? (
             <AddPet
               setAddPet={setAddPet}
               petNewImg={petNewImg}
@@ -291,7 +310,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
             />
           ) : (
             ""
-          )}
+          )} */}
           {selectedTab === tabs[2] ? <PetDiary /> : ""}
           {selectedTab === tabs[3] ? (
             <WritePetArticle
