@@ -59,7 +59,7 @@ export const InfoContainer = styled.div`
   }
 `;
 
-const PetTitle = styled(Title)`
+export const PetTitle = styled(Title)`
   @media (max-width: 725px) {
     position: absolute;
     top: 25px;
@@ -110,7 +110,7 @@ const PetSimpleCard = styled.div`
   }
 `;
 
-const AddBtnSimple = styled(Btn)`
+export const AddBtnSimple = styled(Btn)`
   top: 15px;
   right: 15px;
   @media (max-width: 432px) {

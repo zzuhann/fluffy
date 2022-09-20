@@ -36,7 +36,7 @@ import {
   UpdateBtn,
   CancelUpdateBtn,
 } from "./UserInfos";
-import { InfoContainer } from "./OwnPetInfo";
+import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
 import pet from "./pet.png";
 import trash from "./bin.png";
@@ -48,17 +48,29 @@ const DiaryLabel = styled(EditInfoLabel)`
 `;
 
 const PetInfo = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  /* display: flex;
+  flex-wrap: wrap; */
   width: 100%;
   margin: 0 auto;
   position: relative;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 250px;
+  @media (max-width: 725px) {
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, 300px);
+  }
+  @media (max-width: 432px) {
+    grid-template-columns: repeat(auto-fill, 250px);
+  }
 `;
 
 const PetSimpleCard = styled.div`
-  flex-basis: 300px;
+  /* flex-basis: 300px; */
   border-radius: 10px;
   overflow: hidden;
   position: relative;
@@ -76,9 +88,15 @@ const PetSimpleCard = styled.div`
 `;
 
 const PetSimpleImage = styled.img`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
+  @media (max-width: 725px) {
+    width: 300px;
+  }
+  @media (max-width: 432px) {
+    width: 250px;
+  }
 `;
 const PetSimpleInfos = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
@@ -861,7 +879,7 @@ export const PetDiary = () => {
         </PetDetailCard>
       ) : (
         <InfoContainer>
-          <Title>寵物日記</Title>
+          <PetTitle>寵物日記</PetTitle>
           <PetInfo>
             {profile.petDiary.map((diary, index) => (
               <PetSimpleCard
@@ -889,13 +907,10 @@ export const PetDiary = () => {
                 </PetSimpleInfos>
               </PetSimpleCard>
             ))}
-            <PetSimpleCard onClick={() => setWriteDiaryBoxOpen(true)}>
-              <PetSimpleImage src={pet} />
-              <PetSimpleInfos>
-                <PetSimpleInfo>新增日記</PetSimpleInfo>
-              </PetSimpleInfos>
-            </PetSimpleCard>
           </PetInfo>
+          <AddBtnSimple onClick={() => setWriteDiaryBoxOpen(true)}>
+            新增日記 +
+          </AddBtnSimple>
         </InfoContainer>
       )}
     </>
