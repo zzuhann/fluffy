@@ -31,7 +31,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   max-width: 800px;
   margin: 0 auto;
-  padding-top: 50px;
+  padding-top: 100px;
 `;
 const UserInfo = styled.div`
   display: flex;
@@ -49,10 +49,18 @@ const UserImage = styled.img`
   height: 100px;
   border-radius: 50px;
   object-fit: cover;
+  @media (max-width: 529px) {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+  }
 `;
 const UserName = styled.div`
   font-size: 22px;
   margin-top: 10px;
+  @media (max-width: 529px) {
+    font-size: 18px;
+  }
 `;
 const OutputCountContainer = styled.div`
   display: flex;
@@ -212,27 +220,31 @@ const PetAge = styled.div`
 
 // article style
 const AllArticlesContainer = styled.div`
-  padding: 70px 0 46px;
+  padding: 0px 0 46px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
-  padding: 15px;
+  /* padding: 15px; */
   position: relative;
+  @media (max-width: 529px) {
+    justify-content: center;
+  }
 `;
 
 const ArticleCard = styled(Link)`
   width: 250px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   text-decoration: none;
   color: black;
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   border-radius: 10px;
   overflow: hidden;
   transition: 0.3s;
@@ -254,15 +266,17 @@ const ArticleCardBottom = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 10px 15px;
-  background-color: #b7b0a8;
+  background-color: #fff;
   color: #3c3c3c;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  border-radius: 0 0 10px 10px;
 `;
 
 const ArticleTitle = styled.div`
   font-weight: bold;
   flex: 1;
   font-size: 22px;
+  line-height: 30px;
   margin-bottom: 10px;
 `;
 
@@ -280,19 +294,23 @@ const PetInfo = styled.div`
   padding: 70px 0 46px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
   padding: 15px;
   position: relative;
+  @media (max-width: 559px) {
+    justify-content: center;
+  }
 `;
 
 const PetSimpleCard = styled.div`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   position: relative;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 30px;
@@ -305,8 +323,8 @@ const PetSimpleCard = styled.div`
 `;
 
 const PetSimpleImage = styled.img`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
 `;
 const PetSimpleInfos = styled.div`

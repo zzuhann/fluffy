@@ -47,6 +47,45 @@ const DiaryLabel = styled(EditInfoLabel)`
   width: 180px;
 `;
 
+const AddDiaryLabel = styled(DiaryLabel)`
+  @media (max-width: 653px) {
+    font-size: 18px;
+    width: 140px;
+  }
+`;
+
+const EditDiaryContainer = styled(EditModeContainer)`
+  @media (max-width: 958px) {
+    flex-direction: column;
+    align-items: center;
+  }
+  @media (max-width: 495px) {
+    padding-bottom: 50px;
+  }
+`;
+
+const EditModeDiaryContainer = styled(EditModeUserInfoContainer)`
+  @media (max-width: 958px) {
+    margin-top: 30px;
+  }
+`;
+const EditModePetDiaryContainer = styled(EditModeDiaryContainer)`
+  @media (max-width: 905px) {
+    margin-top: 30px;
+  }
+  @media (max-width: 688px) {
+    padding-bottom: 50px;
+  }
+`;
+const EditPetDiaryModeContainer = styled(EditModeDiaryContainer)`
+  flex-direction: row;
+  @media (max-width: 905px) {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+  }
+`;
+
 const PetInfo = styled.div`
   /* display: flex;
   flex-wrap: wrap; */
@@ -191,6 +230,14 @@ const SelectGroup = styled.div`
   border: solid 3px #d1cfcf;
   border-radius: 5px;
   width: 200px;
+  @media (max-width: 653px) {
+    font-size: 18px;
+    width: 150px;
+  }
+  @media (max-width: 495px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;
 const NowChooseOption = styled.div`
   &:after {
@@ -210,6 +257,9 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
   width: 200px;
   top: 50px;
   left: 0;
+  @media (max-width: 653px) {
+    width: 150px;
+  }
 `;
 const OptionName = styled.li`
   display: flex;
@@ -219,6 +269,22 @@ const OptionName = styled.li`
   &:hover {
     background-color: #d1cfcf;
     color: #3c3c3c;
+  }
+`;
+
+const InputTimeAddDiary = styled(EditInfoInput)`
+  @media (max-width: 653px) {
+    width: 250px;
+  }
+  @media (max-width: 495px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+`;
+
+const AddDiaryInputContainer = styled(EditContainer)`
+  @media (max-width: 495px) {
+    flex-direction: column;
   }
 `;
 
@@ -232,6 +298,14 @@ const DiaryTextArea = styled.textarea`
   padding: 5px;
   border: solid 3px #d1cfcf;
   border-radius: 5px;
+  @media (max-width: 653px) {
+    width: 250px;
+  }
+  @media (max-width: 495px) {
+    width: 250px;
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;
 
 const PetDeatilContainer = styled.div`
@@ -240,22 +314,47 @@ const PetDeatilContainer = styled.div`
   margin-top: 30px;
   padding: 15px;
   position: relative;
+  @media (max-width: 466px) {
+    padding-bottom: 55px;
+  }
 `;
 
 const PetSingleContainer = styled.div`
   display: flex;
   align-items: center;
+  @media (max-width: 842px) {
+    flex-direction: column;
+    margin-top: 40px;
+  }
+  @media (max-width: 401px) {
+    margin-top: 20px;
+  }
 `;
 
 const PetSingleDetailTextContainer = styled.div`
   display: flex;
   flex-direction: column;
+  @media (max-width: 842px) {
+    margin-top: 30px;
+  }
+  @media (max-width: 401px) {
+    margin-top: 10px;
+  }
 `;
 
 const PetSingleName = styled.div`
   font-size: 22px;
+  letter-spacing: 1px;
+  line-height: 28px;
   margin-left: 20px;
   margin-bottom: 15px;
+  @media (max-width: 842px) {
+    margin-left: 0;
+  }
+  @media (max-width: 401px) {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
 `;
 
 const PetSingleImage = styled.img`
@@ -263,21 +362,122 @@ const PetSingleImage = styled.img`
   height: 400px;
   object-fit: cover;
   border-radius: 40px;
+  @media (max-width: 513px) {
+    width: 100%;
+    aspect-ratio: 1;
+  }
 `;
 
 const EditBtn = styled(Btn)`
-  top: 15px;
+  top: 10px;
   right: 185px;
+  @media (max-width: 513px) {
+    padding: 5px 10px;
+    top: 13px;
+    right: 165px;
+  }
+  @media (max-width: 466px) {
+    bottom: 13px;
+    top: auto;
+    left: 15px;
+    right: auto;
+  }
 `;
 
 const CloseDetailBtn = styled(Btn)`
-  top: 15px;
+  top: 10px;
   right: 15px;
+  @media (max-width: 513px) {
+    padding: 5px 10px;
+    top: 13px;
+  }
+  @media (max-width: 466px) {
+    bottom: 13px;
+    top: auto;
+    right: 15px;
+  }
+`;
+
+const AddCloseDetailBtn = styled(CloseDetailBtn)`
+  top: 10px;
+  right: 15px;
+  @media (max-width: 513px) {
+    padding: 5px 10px;
+    top: 13px;
+  }
+  @media (max-width: 495px) {
+    bottom: 13px;
+    top: auto;
+    right: 15px;
+  }
 `;
 
 const DeleteBtn = styled(Btn)`
+  top: 10px;
+  right: 100px;
+  @media (max-width: 513px) {
+    padding: 5px 10px;
+    top: 13px;
+    right: 90px;
+  }
+  @media (max-width: 466px) {
+    bottom: 13px;
+    top: auto;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+`;
+
+const UploadAddDiaryBtn = styled(Btn)`
+  top: 10px;
+  right: 100px;
+  @media (max-width: 513px) {
+    padding: 5px 10px;
+    top: 13px;
+    right: 90px;
+  }
+  @media (max-width: 495px) {
+    bottom: 13px;
+    top: auto;
+    left: 15px;
+    right: auto;
+  }
+`;
+
+const EditPetDiaryUpdateBtn = styled(Btn)`
   top: 15px;
   right: 100px;
+  @media (max-width: 688px) {
+    top: auto;
+    bottom: 15px;
+    left: 15px;
+    right: auto;
+  }
+`;
+
+const EditPetDiaryCancelUpdateBtn = styled(Btn)`
+  top: 15px;
+  right: 15px;
+  @media (max-width: 688px) {
+    top: auto;
+    bottom: 15px;
+  }
+`;
+
+const EditPetDiaryLabel = styled(EditInfoLabel)`
+  width: 180px;
+  @media (max-width: 495px) {
+  }
+`;
+
+const PetDiaryName = styled.div`
+  font-size: 22px;
+  margin-left: 15px;
+  @media (max-width: 495px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;
 
 type UploadImgType = { file: File | null; url: string };
@@ -476,8 +676,8 @@ export const PetDiary = () => {
       {writeDiaryBoxOpen ? (
         <PetDetailCard>
           <Title>新增寵物日記</Title>
-          <EditModeContainer>
-            <CloseDetailBtn
+          <EditDiaryContainer>
+            <AddCloseDetailBtn
               onClick={() => {
                 setWriteDiaryBoxOpen(false);
                 setUploadDiaryInfo({
@@ -489,7 +689,7 @@ export const PetDiary = () => {
               }}
             >
               取消
-            </CloseDetailBtn>
+            </AddCloseDetailBtn>
             {diaryImg.url ? (
               <PreviewContainer>
                 <PreviewImg src={diaryImg.url} />
@@ -522,9 +722,9 @@ export const PetDiary = () => {
                 />
               </>
             )}
-            <EditModeUserInfoContainer>
-              <EditContainer>
-                <DiaryLabel htmlFor="petName">寵物姓名: </DiaryLabel>
+            <EditModeDiaryContainer>
+              <AddDiaryInputContainer>
+                <AddDiaryLabel htmlFor="petName">寵物姓名: </AddDiaryLabel>
                 <SelectGroup>
                   {nowChoosePetName ? (
                     <NowChooseOption
@@ -575,13 +775,13 @@ export const PetDiary = () => {
                     ))}
                   </OptionGroup>
                 </SelectGroup>
-              </EditContainer>
+              </AddDiaryInputContainer>
 
-              <EditContainer>
-                <DiaryLabel htmlFor="takePhotoTime">
+              <AddDiaryInputContainer>
+                <AddDiaryLabel htmlFor="takePhotoTime">
                   拍攝此照片時間:{" "}
-                </DiaryLabel>
-                <EditInfoInput
+                </AddDiaryLabel>
+                <InputTimeAddDiary
                   id="takePhotoTime"
                   type="datetime-local"
                   max={`${new Date().getFullYear()}-${
@@ -608,10 +808,10 @@ export const PetDiary = () => {
                     });
                   }}
                 />
-              </EditContainer>
+              </AddDiaryInputContainer>
 
-              <EditContainer>
-                <DiaryLabel htmlFor="context">日記內文: </DiaryLabel>
+              <AddDiaryInputContainer>
+                <AddDiaryLabel htmlFor="context">日記內文: </AddDiaryLabel>
                 <DiaryTextArea
                   id="context"
                   onChange={(e) => {
@@ -621,9 +821,9 @@ export const PetDiary = () => {
                     });
                   }}
                 ></DiaryTextArea>
-              </EditContainer>
-            </EditModeUserInfoContainer>
-            <DeleteBtn
+              </AddDiaryInputContainer>
+            </EditModeDiaryContainer>
+            <UploadAddDiaryBtn
               onClick={() => {
                 if (
                   !uploadDiaryInfo.petName ||
@@ -658,8 +858,8 @@ export const PetDiary = () => {
               }}
             >
               上傳日記
-            </DeleteBtn>
-          </EditModeContainer>
+            </UploadAddDiaryBtn>
+          </EditDiaryContainer>
         </PetDetailCard>
       ) : editDiaryBoxOpen && detailDiaryBoxOpen ? (
         <PetDeatilContainer>
@@ -746,8 +946,7 @@ export const PetDiary = () => {
       ) : editDiaryBoxOpen && !detailDiaryBoxOpen ? (
         <PetDetailCard>
           <Title>編輯寵物日記</Title>
-          <CloseBtn onClick={() => setEditDiaryBoxOpen(false)}>X</CloseBtn>
-          <EditModeContainer>
+          <EditPetDiaryModeContainer>
             {newDiaryImg.url ? (
               <PreviewContainer>
                 <PreviewImg src={newDiaryImg.url} />
@@ -780,17 +979,18 @@ export const PetDiary = () => {
                 />
               </>
             )}
-            <EditModeUserInfoContainer>
-              <EditContainer>
-                <EditInfoLabel htmlFor="petName">
-                  寵物主角: {newDiaryContext.petName}
-                </EditInfoLabel>
-              </EditContainer>
-              <EditContainer>
-                <EditInfoLabel htmlFor="takePhotoTime">
+            <EditModePetDiaryContainer>
+              <AddDiaryInputContainer>
+                <EditPetDiaryLabel htmlFor="petName">
+                  寵物主角:{" "}
+                </EditPetDiaryLabel>
+                <PetDiaryName>{newDiaryContext.petName}</PetDiaryName>
+              </AddDiaryInputContainer>
+              <AddDiaryInputContainer>
+                <EditPetDiaryLabel htmlFor="takePhotoTime">
                   拍攝此照片時間:{" "}
-                </EditInfoLabel>
-                <EditInfoInput
+                </EditPetDiaryLabel>
+                <InputTimeAddDiary
                   id="takePhotoTime"
                   type="datetime-local"
                   max={`${new Date().getFullYear()}-${
@@ -844,10 +1044,12 @@ export const PetDiary = () => {
                     });
                   }}
                 />
-              </EditContainer>
+              </AddDiaryInputContainer>
 
-              <EditContainer>
-                <EditInfoLabel htmlFor="context">日記內文: </EditInfoLabel>
+              <AddDiaryInputContainer>
+                <EditPetDiaryLabel htmlFor="context">
+                  日記內文:{" "}
+                </EditPetDiaryLabel>
                 <DiaryTextArea
                   id="context"
                   value={newDiaryContext.context}
@@ -858,24 +1060,24 @@ export const PetDiary = () => {
                     });
                   }}
                 ></DiaryTextArea>
-              </EditContainer>
-            </EditModeUserInfoContainer>
-            <CancelUpdateBtn
+              </AddDiaryInputContainer>
+            </EditModePetDiaryContainer>
+            <EditPetDiaryCancelUpdateBtn
               onClick={() => {
                 setEditDiaryBoxOpen(true);
                 setDetailDiaryBoxOpen(true);
               }}
             >
               取消
-            </CancelUpdateBtn>
-            <UpdateBtn
+            </EditPetDiaryCancelUpdateBtn>
+            <EditPetDiaryUpdateBtn
               onClick={() => {
                 updatePetInfoCondition();
               }}
             >
               更新寵物日記
-            </UpdateBtn>
-          </EditModeContainer>
+            </EditPetDiaryUpdateBtn>
+          </EditPetDiaryModeContainer>
         </PetDetailCard>
       ) : (
         <InfoContainer>

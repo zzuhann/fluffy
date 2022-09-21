@@ -52,6 +52,16 @@ const SideBarWrapper = styled.div`
   top: 72px;
   position: relative;
   z-index: 100;
+  @media (max-width: 1120px) {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  @media (max-width: 953px) {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 `;
 
 const SidebarProfileTab = styled.div`
@@ -60,10 +70,17 @@ const SidebarProfileTab = styled.div`
   max-width: 1120px;
   margin: 0 auto;
   padding-top: 10px;
+  @media (max-width: 953px) {
+    margin: 0;
+    padding-top: 0;
+  }
 `;
 
 const UserProfileContainer = styled.div`
   display: flex;
+  @media (max-width: 953px) {
+    display: none;
+  }
 `;
 
 export const ProfileImg = styled.img`
@@ -86,14 +103,21 @@ const ProfileName = styled.div`
 
 const SettingTabContainer = styled.div`
   display: flex;
+  @media (max-width: 953px) {
+    flex: 1;
+    width: 100vw;
+    flex-shrink: 0;
+    justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  @media (max-width: 540px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 `;
 
-// const UnderLine = styled.div`
-// width:0%;
-// height:4px;
-// `
-
-const SettingTab = styled.div`
+const SettingTab = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -105,7 +129,8 @@ const SettingTab = styled.div`
   position: relative;
   &:after {
     content: "";
-    width: 0%;
+    /* width: 0%; */
+    width: ${(props) => (props.$isActive ? "100%" : "0%")};
     height: 3px;
     background-color: #b7b0a8;
     position: absolute;
@@ -114,12 +139,23 @@ const SettingTab = styled.div`
     right: 0;
     margin: 0 auto;
     transition: 0.3s;
+    @media (max-width: 953px) {
+      top: 52px;
+    }
   }
   &:hover:after {
     width: 100%;
   }
   &:last-child {
     margin-right: 0;
+  }
+  @media (max-width: 540px) {
+    font-size: 18px;
+    letter-spacing: 1px;
+    margin-right: 15px;
+  }
+  @media (max-width: 380px) {
+    font-size: 16px;
   }
 `;
 
@@ -231,6 +267,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
                     getOwnPetList();
                   }
                 }}
+                $isActive={selectedTab === tabs[index]}
               >
                 {tab}
               </SettingTab>
