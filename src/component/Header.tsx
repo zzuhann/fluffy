@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
 import {
   collection,
@@ -21,6 +21,7 @@ import {
   setOwnPetDiary,
   setOwnArticle,
   setEmail,
+  clearProfileInfo,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./defaultprofile.png";
 
@@ -54,6 +55,7 @@ const BurgerMenu = styled.img`
   height: 40px;
   margin-right: 30px;
   display: none;
+  cursor: pointer;
   @media (max-width: 1025px) {
     display: block;
   }
@@ -98,7 +100,7 @@ const BlackMask = styled.div<{
   background-color: rgba(0, 0, 0, 0.8);
   width: 100%;
   height: ${(props) => props.$Height}px;
-  z-index: 2500;
+  z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
 const NavBarContainer = styled.ul`
@@ -114,8 +116,8 @@ const NavBarContainer = styled.ul`
 const ProfileNavBarContainer = styled.ul`
   display: flex;
   align-items: center;
-  margin-right: auto;
-  margin-left: 50px;
+  margin-right: 5px;
+  cursor: pointer;
 `;
 
 const NavBar = styled.li`
@@ -151,7 +153,7 @@ const NavBar = styled.li`
 `;
 
 const ProfileNavBar = styled.li`
-  margin-right: 20px;
+  /* margin-right: 20px; */
   font-size: 18px;
   cursor: pointer;
   position: relative;
@@ -173,6 +175,9 @@ const ProfileNavBar = styled.li`
   }
   &:last-child {
     margin-right: 0;
+  }
+  @media (max-width: 564px) {
+    display: none;
   }
 `;
 
@@ -207,6 +212,71 @@ const LoginRegisterBtn = styled.div`
   }
 `;
 
+const ProfileImg = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 25px;
+  margin-right: 20px;
+  @media (max-width: 564px) {
+    margin-right: 0;
+  }
+`;
+
+const ProfileHoverBox = styled.ul<{ $isActive: boolean }>`
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border: ${(props) => (props.$isActive ? "solid 1px #d1cfcf" : "none")};
+  position: absolute;
+  top: 70px;
+  transition: 0.3s;
+  height: ${(props) => (props.$isActive ? "auto" : "0")};
+  overflow: hidden;
+  border-radius: 5px;
+  right: 20px;
+  padding: ${(props) => (props.$isActive ? "20px" : "0")};
+  @media (max-width: 564px) {
+    width: 120px;
+    top: 70px;
+    padding: ${(props) => (props.$isActive ? "10px" : "0")};
+  }
+`;
+
+const ProfileHoverUnit = styled.li`
+  font-size: 22px;
+  margin-bottom: 20px;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  &:last-child {
+    margin-bottom: 0;
+    &:hover:after {
+      width: 50%;
+    }
+  }
+  @media (max-width: 564px) {
+    font-size: 18px;
+    margin-bottom: 25px;
+  }
+  &:after {
+    transition: 0.3s;
+    content: "";
+    width: 0%;
+    height: 3px;
+    background-color: #b7b0a8;
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  &:hover:after {
+    width: 100%;
+  }
+`;
+
 const Header = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -216,10 +286,9 @@ const Header = () => {
   const [scroll, setScroll] = useState<number>(0);
   const [pageHigh, setPageHigh] = useState<number>(0);
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
-  const heightRef = useRef(0);
+  const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
 
   useEffect(() => {
-    heightRef.current = document.documentElement.offsetHeight;
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -306,7 +375,17 @@ const Header = () => {
     });
     dispatch(setOwnPets(allOwnPet));
   }
-  console.log(document.documentElement.offsetHeight);
+
+  function signOutProfile() {
+    signOut(auth)
+      .then(() => {
+        dispatch(checkIfLogged(false));
+        dispatch(clearProfileInfo());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <>
@@ -362,16 +441,28 @@ const Header = () => {
         </NavBarContainer>
 
         {profile.isLogged ? (
-          <ProfileNavBarContainer style={{ marginRight: "5px" }}>
-            <ProfileNavBar
-              style={{ marginRight: "20px" }}
-              onClick={() => navigate(`/profile/${profile.uid}`)}
-            >
-              會員專區
-            </ProfileNavBar>
-            <ProfileNavBar onClick={() => navigate("/profile")}>
-              {profile.name} 您好！
-            </ProfileNavBar>
+          <ProfileNavBarContainer
+            onClick={() =>
+              openProfileBox
+                ? setOpenProfileBox(false)
+                : setOpenProfileBox(true)
+            }
+          >
+            <ProfileImg src={profile.img as string} />
+            <ProfileNavBar>{profile.name}</ProfileNavBar>
+            <ProfileHoverBox $isActive={openProfileBox === true}>
+              <ProfileHoverUnit
+                onClick={() => navigate(`/profile/${profile.uid}`)}
+              >
+                個人頁面
+              </ProfileHoverUnit>
+              <ProfileHoverUnit onClick={() => navigate("/profile")}>
+                會員設定
+              </ProfileHoverUnit>
+              <ProfileHoverUnit onClick={() => signOutProfile()}>
+                登出
+              </ProfileHoverUnit>
+            </ProfileHoverBox>
           </ProfileNavBarContainer>
         ) : (
           <LoginRegisterBtnWrapper>

@@ -49,12 +49,15 @@ const SideBarWrapper = styled.div`
   background-color: #f8f6f6;
   height: 80px;
   position: fixed;
-  top: 72px;
+
   position: relative;
   z-index: 100;
   @media (max-width: 1120px) {
     padding-left: 30px;
     padding-right: 30px;
+  }
+  @media (max-width: 1025px) {
+    top: 72px;
   }
   @media (max-width: 953px) {
     display: flex;
@@ -252,9 +255,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           <UserProfileContainer>
             <ProfileImg src={profile.img as string} alt="" />
             <ProfileName>{profile.name}</ProfileName>
-            <RegisterLoginBtn onClick={() => props.signOutProfile()}>
-              登出
-            </RegisterLoginBtn>
           </UserProfileContainer>
           <SettingTabContainer>
             {tabs.map((tab, index) => (
