@@ -17,6 +17,69 @@ import tel from "./img/telephone.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import close from "./img/close.png";
 import { AiOutlineConsoleSql } from "react-icons/ai";
+import { CalendarContainer } from "../ProfileSetting/PetDiary";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+
+const ConsiderPetCalendarContainer = styled(CalendarContainer)`
+  margin-left: 0;
+  .react-calendar__month-view__weekdays__weekday {
+    font-weight: bold;
+    font-size: 8px;
+  }
+  .react-calendar__navigation {
+    padding: 5px;
+    button {
+      min-width: 20px;
+    }
+  }
+  .react-calendar__month-view__days__day {
+    font-size: 12px;
+  }
+  .react-calendar__viewContainer {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .react-calendar__month-view__days__day--neighboringMonth {
+    color: #d1cfcf;
+  }
+  .react-calendar__tile:disabled,
+  .react-calendar__navigation button:disabled {
+    background-color: #fff;
+    color: #ececec;
+  }
+  .react-calendar__tile--now {
+    background-color: #fff;
+  }
+  .react-calendar__tile--active {
+    background-color: #efefef;
+  }
+  @media (max-width: 654px) {
+    width: 100%;
+  }
+  @media (max-width: 495px) {
+    margin-left: 0;
+    margin-top: 0;
+  }
+`;
+
+const TimeBtnContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
+  position: relative;
+  flex: 1;
+  padding: 5px;
+  margin-right: 15px;
+  margin-top: 5px;
+  font-size: 16px;
+  background-color: ${(props) => (props.$isActive ? "#d1cfcf" : "#fff")};
+  &:nth-child(2n) {
+    margin-right: 0;
+  }
+`;
 
 const PetCard = styled.div<{ $Top: number }>`
   width: 350px;
@@ -216,6 +279,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
     (state) => state.profile
   ) as Profile;
   const [scroll, setScroll] = useState<number>(0);
+
   useEffect(() => {
     if (!props.considerDetail) {
       window.addEventListener("scroll", handleScroll);
@@ -294,9 +358,14 @@ const ConsiderPetDetail = (props: {
   const [inviteDatingInfo, setInviteDatingInfo] = useState<{
     name: string;
     email: string;
-    date: number;
-  }>({ name: "", email: "", date: 0 });
+    date: Date | string;
+    time: string;
+  }>({ name: "", email: "", date: "", time: "" });
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
+  const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
+  const [timeIndex, setTimeIndex] = useState<number>(-1);
+
+  console.log(inviteDatingInfo);
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
@@ -315,6 +384,7 @@ const ConsiderPetDetail = (props: {
         image: list.image,
         datingDate: inviteDatingInfo.date,
         inviter: inviteDatingInfo.name,
+        time: inviteDatingInfo.time,
       }
     );
   }
@@ -325,11 +395,10 @@ const ConsiderPetDetail = (props: {
       to_name: inviteDatingInfo.name,
       shelterName: list.shelterName,
       petID: list.id,
-      datingDate: `${new Date(inviteDatingInfo.date * 1000).getFullYear()}/
-                  ${new Date(inviteDatingInfo.date * 1000).getMonth() + 1}/
-                  ${new Date(inviteDatingInfo.date * 1000).getDate()}${" "}
-                  ${new Date(inviteDatingInfo.date * 1000).getHours()}:
-                  ${new Date(inviteDatingInfo.date * 1000).getMinutes()}`,
+      datingDate: `${new Date(inviteDatingInfo.date).getFullYear()}/
+                  ${new Date(inviteDatingInfo.date).getMonth() + 1}/
+                  ${new Date(inviteDatingInfo.date).getDate()}${" "}
+                  ${inviteDatingInfo.time}`,
       reply_to: "maorongrongfluffy@gmail.com",
       userEmail: inviteDatingInfo.email,
     };
@@ -501,40 +570,47 @@ const ConsiderPetDetail = (props: {
             <InviteInfoLabel htmlFor="datingTime">
               申請日期與時間：
             </InviteInfoLabel>
-            <InviteInfoInput
-              type="datetime-local"
-              id="datingTime"
-              min={`${new Date().getFullYear()}-${
-                new Date().getMonth() + 1 < 10
-                  ? `0${new Date().getMonth() + 1}`
-                  : `${new Date().getMonth() + 1}`
-              }-${
-                new Date().getDate() < 10
-                  ? `0${new Date().getDate()}`
-                  : `${new Date().getDate()}`
-              }T${
-                new Date().getHours() < 10
-                  ? `0${new Date().getHours()}`
-                  : `${new Date().getHours()}`
-              }:${
-                new Date().getMinutes() < 10
-                  ? `0${new Date().getMinutes()}`
-                  : `${new Date().getMinutes()}`
-              }`}
+            <ConsiderPetCalendarContainer>
+              <Calendar
+                minDate={new Date()}
+                onClickDay={(value) =>
+                  setInviteDatingInfo({
+                    ...inviteDatingInfo,
+                    date: value,
+                  })
+                }
+              />
+            </ConsiderPetCalendarContainer>
+            <TimeBtnContainer>
+              {timeSelect.map((time, index) => (
+                <TimeBtn
+                  $isActive={timeIndex === index}
+                  key={index}
+                  onClick={() => {
+                    setTimeIndex(index);
+                    setInviteDatingInfo({
+                      ...inviteDatingInfo,
+                      time: timeSelect[index],
+                    });
+                  }}
+                >
+                  {time}
+                </TimeBtn>
+              ))}
+            </TimeBtnContainer>
+            {/* <InviteInfoInput
+              
               onChange={(e) => {
                 setInviteDatingInfo({
                   ...inviteDatingInfo,
                   date: Date.parse(e.target.value) / 1000,
                 });
               }}
-            />
+            /> */}
           </InviteInfoContainer>
           <SendInviteBtn
             onClick={async () => {
-              if (
-                Object.values(inviteDatingInfo).some((item) => item === "") ||
-                inviteDatingInfo.date === 0
-              ) {
+              if (Object.values(inviteDatingInfo).some((item) => item === "")) {
                 window.alert("請填寫完整資料以利進行申請約會體驗！");
                 return;
               }

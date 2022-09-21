@@ -222,7 +222,6 @@ const UpcomingList: React.FC<Props> = (props) => {
     birthYear: number;
   }>({ name: "", birthYear: 0 });
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
-
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -277,27 +276,25 @@ const UpcomingList: React.FC<Props> = (props) => {
 
             <UpcomingInfoImgContainer>
               <UpcomingInfoImg src={clock} />
-              <UpcomingInfo>
-                預約時間：
-                {new Date(date.datingDate * 1000).getFullYear()}/
-                {new Date(date.datingDate * 1000).getMonth() + 1 < 10
-                  ? `0${new Date(date.datingDate * 1000).getMonth() + 1}`
-                  : new Date(date.datingDate * 1000).getMonth() + 1}
-                /
-                {new Date(date.datingDate * 1000).getDate() < 10
-                  ? `0${new Date(date.datingDate * 1000).getDate()}`
-                  : new Date(date.datingDate * 1000).getDate()}{" "}
-                {new Date(date.datingDate * 1000).getHours() < 10
-                  ? `0${new Date(date.datingDate * 1000).getHours()}`
-                  : new Date(date.datingDate * 1000).getHours()}
-                :
-                {new Date(date.datingDate * 1000).getMinutes() < 10
-                  ? `0${new Date(date.datingDate * 1000).getMinutes()}`
-                  : new Date(date.datingDate * 1000).getMinutes()}
-              </UpcomingInfo>
+              {typeof date.datingDate === "number" ? (
+                <UpcomingInfo>
+                  預約時間：
+                  {new Date(date.datingDate * 1000).getFullYear()}/
+                  {new Date(date.datingDate * 1000).getMonth() + 1 < 10
+                    ? `0${new Date(date.datingDate * 1000).getMonth() + 1}`
+                    : new Date(date.datingDate * 1000).getMonth() + 1}
+                  /
+                  {new Date(date.datingDate * 1000).getDate() < 10
+                    ? `0${new Date(date.datingDate * 1000).getDate()}`
+                    : new Date(date.datingDate * 1000).getDate()}{" "}
+                  {date.time}
+                </UpcomingInfo>
+              ) : (
+                ""
+              )}
             </UpcomingInfoImgContainer>
           </UpcomingInfoContainer>
-          {date.datingDate * 1000 < Date.now() ? (
+          {Date.parse(`${date.datingDate}`) < Date.parse(`${new Date()}`) ? (
             <>
               <DatingDoneBtn
                 onClick={() => {

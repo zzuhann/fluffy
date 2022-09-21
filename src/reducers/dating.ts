@@ -58,8 +58,9 @@ export type InviteDating = {
   color: string;
   sterilization: string;
   image: string;
-  datingDate: number;
+  datingDate: Date | number;
   inviter: string;
+  time: string;
 };
 
 export type Card = {

@@ -345,10 +345,14 @@ const Pairing: React.FC = () => {
 
   async function getUpcomingListData() {
     let upcomingDate: InviteDating[] = [];
+    console.log(profile.uid);
     const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
-      upcomingDate.push(info.data() as InviteDating);
+      upcomingDate.push({
+        ...info.data(),
+        datingDate: info.data().datingDate.seconds,
+      } as InviteDating);
     });
     dispatch(setUpcomingDateList(upcomingDate));
   }

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
 import { Profile, PetDiaryType } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,
-  deleteFirebaseData,
   deleteFirebaseDataMutipleWhere,
   storage,
   updateFirebaseDataMutipleWhere,
@@ -33,12 +34,9 @@ import {
   EditContainer,
   EditInfoLabel,
   EditInfoInput,
-  UpdateBtn,
-  CancelUpdateBtn,
 } from "./UserInfos";
 import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
-import pet from "./pet.png";
 import trash from "./bin.png";
 import upload from "./upload.png";
 import defaultProfile from "./defaultprofile.png";
@@ -87,12 +85,9 @@ const EditPetDiaryModeContainer = styled(EditModeDiaryContainer)`
 `;
 
 const PetInfo = styled.div`
-  /* display: flex;
-  flex-wrap: wrap; */
   width: 100%;
   margin: 0 auto;
   position: relative;
-  /* justify-content: space-between; */
   margin-top: 30px;
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
@@ -109,7 +104,6 @@ const PetInfo = styled.div`
 `;
 
 const PetSimpleCard = styled.div`
-  /* flex-basis: 300px; */
   border-radius: 10px;
   overflow: hidden;
   position: relative;
@@ -205,18 +199,6 @@ const PreviewCancelBtn = styled.div`
 
 const PetDetailInput = styled.input`
   display: none;
-`;
-
-const CloseBtn = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 30px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #000;
-  z-index: 99;
 `;
 
 const SelectGroup = styled.div`
@@ -480,6 +462,66 @@ const PetDiaryName = styled.div`
   }
 `;
 
+export const CalendarContainer = styled.div`
+  max-width: 300px;
+  border: solid 3px #d1cfcf;
+  border-radius: 8px;
+  color: #3c3c3c;
+  margin-left: 10px;
+
+  .react-calendar {
+    border: none;
+    border-radius: 8px;
+    font-family: NotoSansTC;
+  }
+  .react-calendar__navigation {
+    height: auto;
+    padding: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 0;
+    font-size: 16px;
+    button {
+      min-width: 30px;
+    }
+  }
+  .react-calendar__viewContainer {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+  }
+  .react-calendar__month-view__days__day {
+    color: #3c3c3c;
+    font-weight: bold;
+  }
+  .react-calendar__month-view__days__day--weekend {
+    color: #d0470c;
+  }
+  .react-calendar__month-view__days__day--neighboringMonth {
+    color: #ececec;
+  }
+  .react-calendar__tile--now,
+  .react-calendar__tile--active:enabled:hover {
+    background-color: #fff;
+    &:hover {
+      background-color: #efefef;
+    }
+  }
+  .react-calendar__tile--active,
+  .react-calendar__tile--active:enabled:focus {
+    background-color: #efefef;
+  }
+  .react-calendar__tile {
+    padding: 8px;
+  }
+  @media (max-width: 653px) {
+    width: 250px;
+  }
+  @media (max-width: 495px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+`;
+
 type UploadImgType = { file: File | null; url: string };
 const uploadImgInitialState: UploadImgType = {
   file: null,
@@ -508,7 +550,6 @@ export const PetDiary = () => {
     context: "",
     birthYear: 0,
   });
-
   const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>();
   const [editDiaryBoxOpen, setEditDiaryBoxOpen] = useState<boolean>(false);
   const [detailDiaryBoxOpen, setDetailDiaryBoxOpen] = useState<boolean>(false);
@@ -524,6 +565,7 @@ export const PetDiary = () => {
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
+  const [value, onChange] = useState(new Date());
 
   useEffect(() => {
     getAuthorPetDiary(profile.uid);
@@ -781,7 +823,10 @@ export const PetDiary = () => {
                 <AddDiaryLabel htmlFor="takePhotoTime">
                   拍攝此照片時間:{" "}
                 </AddDiaryLabel>
-                <InputTimeAddDiary
+                <CalendarContainer>
+                  <Calendar onClickDay={(value) => console.log(value)} />
+                </CalendarContainer>
+                {/* <InputTimeAddDiary
                   id="takePhotoTime"
                   type="datetime-local"
                   max={`${new Date().getFullYear()}-${
@@ -807,7 +852,7 @@ export const PetDiary = () => {
                       takePhotoTime: Date.parse(e.target.value),
                     });
                   }}
-                />
+                /> */}
               </AddDiaryInputContainer>
 
               <AddDiaryInputContainer>
