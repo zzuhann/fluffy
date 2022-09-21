@@ -20,13 +20,27 @@ const UpcomingListCard = styled.div`
   border-radius: 5px;
   margin-bottom: 20px;
   border: solid 2px #d1cfcf;
+  @media (max-width: 612px) {
+    flex-direction: column;
+  }
 `;
 
+const InvitePetImgContainer = styled.div`
+  aspect-ratio: 1;
+  flex: 0.5;
+  position: relative;
+  @media (max-width: 612px) {
+    aspect-ratio: inherit;
+  }
+`;
 const InvitePetImg = styled.img`
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
+  @media (max-width: 612px) {
+    height: 250px;
+  }
 `;
 const UpcomingInfoContainer = styled.div`
   flex: 1;
@@ -35,6 +49,10 @@ const UpcomingInfoContainer = styled.div`
   padding: 10px 20px;
   letter-spacing: 1.5px;
   justify-content: center;
+  line-height: 22px;
+  @media (max-width: 612px) {
+    padding-bottom: 60px;
+  }
 `;
 
 const UpcomingInfoImgContainer = styled.div`
@@ -49,6 +67,9 @@ const UpcomingInfoImgContainer = styled.div`
 const UpcomingInfoImg = styled.img`
   width: 20px;
   height: 20px;
+  @media (max-width: 437px) {
+    display: none;
+  }
 `;
 
 const UpcomingInfoTitle = styled.div`
@@ -58,6 +79,9 @@ const UpcomingInfoTitle = styled.div`
 `;
 const UpcomingInfo = styled.div`
   margin-left: 15px;
+  @media (max-width: 437px) {
+    margin-left: 0;
+  }
 `;
 
 const PetShelterAddress = styled.a`
@@ -166,6 +190,14 @@ const DatingDoneBtn = styled(Btn)`
     font-size: 12px;
     padding: 5px;
   }
+  @media (max-width: 612px) {
+    padding: 5px 10px;
+    background-color: #fff;
+    color: #737373;
+    font-size: 16px;
+    left: auto;
+    right: 5px;
+  }
 `;
 
 type Props = {
@@ -196,7 +228,10 @@ const UpcomingList: React.FC<Props> = (props) => {
     <>
       {dating.upcomingDateList.map((date, index) => (
         <UpcomingListCard key={index}>
-          <InvitePetImg src={date.image} />
+          <InvitePetImgContainer>
+            <InvitePetImg src={date.image} />
+          </InvitePetImgContainer>
+
           <UpcomingInfoContainer>
             <UpcomingInfoTitle>
               {date.id} / {date.color}

@@ -16,10 +16,11 @@ import googlemap from "./img/placeholder.png";
 import tel from "./img/telephone.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import close from "./img/close.png";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const PetCard = styled.div<{ $Top: number }>`
   width: 350px;
-  height: 620px;
+  /* height: 680px; */
   border-radius: 10px;
   overflow: hidden;
   position: absolute;
@@ -31,6 +32,7 @@ const PetCard = styled.div<{ $Top: number }>`
   transform: translateX(-50%);
   box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
   z-index: 1200;
+  padding-bottom: 50px;
 `;
 
 const PetImg = styled.img`
@@ -99,15 +101,16 @@ const NotCondiserBtn = styled(Btn)`
   font-size: 16px;
 `;
 
-const InviteDatingBox = styled.div`
+const InviteDatingBox = styled.div<{ $Top: number }>`
   width: 250px;
   position: absolute;
-  right: 20px;
-  top: 80px;
+  right: 100px;
+  top: ${(props) => props.$Top - 40}px;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
   letter-spacing: 1.5px;
+  z-index: 1201;
 `;
 
 const InviteDatingTitle = styled.div`
@@ -212,6 +215,18 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const [scroll, setScroll] = useState<number>(0);
+  useEffect(() => {
+    if (!props.considerDetail) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [props.considerDetail]);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
 
   if (!dating.considerList) return null;
   return (
@@ -254,6 +269,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           nowChosenPetIndex={props.nowChosenPetIndex}
           setConsiderDetail={props.setConsiderDetail}
           considerDetail={props.considerDetail}
+          scroll={scroll}
         />
       ) : (
         ""
@@ -266,6 +282,7 @@ const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;
   considerDetail: Boolean;
+  scroll: number;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -280,17 +297,6 @@ const ConsiderPetDetail = (props: {
     date: number;
   }>({ name: "", email: "", date: 0 });
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
-  const [scroll, setScroll] = useState<number>(0);
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll((prev) => scrollTop);
-  }
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
@@ -350,7 +356,7 @@ const ConsiderPetDetail = (props: {
 
   return (
     <>
-      <PetCard $Top={scroll}>
+      <PetCard $Top={props.scroll}>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}
           alt=""
@@ -428,7 +434,16 @@ const ConsiderPetDetail = (props: {
         >
           關閉
         </CloseBtn>
-        <InviteDatingBtn onClick={() => setInviteBoxOpen(true)}>
+        <InviteDatingBtn
+          onClick={() => {
+            setInviteBoxOpen(true);
+            setInviteDatingInfo({
+              ...inviteDatingInfo,
+              name: profile.name,
+              email: profile.email,
+            });
+          }}
+        >
           申請與他約會: 相處體驗
         </InviteDatingBtn>
         <NotCondiserBtn
@@ -450,13 +465,14 @@ const ConsiderPetDetail = (props: {
         </NotCondiserBtn>
       </PetCard>
       {inviteBoxOpen ? (
-        <InviteDatingBox>
+        <InviteDatingBox $Top={props.scroll}>
           <InviteDatingTitle>
             申請與 {dating.considerList[props.nowChosenPetIndex].id} 約會
           </InviteDatingTitle>
           <InviteInfoContainer>
             <InviteInfoLabel htmlFor="name">您的本名：</InviteInfoLabel>
             <InviteInfoInput
+              value={inviteDatingInfo.name}
               type="text"
               id="name"
               onChange={(e) =>
@@ -470,6 +486,7 @@ const ConsiderPetDetail = (props: {
           <InviteInfoContainer>
             <InviteInfoLabel htmlFor="email">您的信箱：</InviteInfoLabel>
             <InviteInfoInput
+              value={inviteDatingInfo.email}
               type="email"
               id="email"
               onChange={(e) =>
