@@ -40,21 +40,40 @@ import trash from "./bin.png";
 import upload from "./upload.png";
 
 const FinishAddArticleBtn = styled(Btn)`
-  top: 15px;
+  bottom: 15px;
   right: 100px;
 `;
 
 const CancelBtn = styled(Btn)`
-  top: 15px;
+  bottom: 15px;
   right: 15px;
 `;
 
 const EditTitleInput = styled(EditInfoInput)`
   width: 300px;
+  @media (max-width: 533px) {
+    margin-left: 15px;
+    width: 200px;
+  }
+  @media (max-width: 465px) {
+    margin-left: 5px;
+    width: 100%;
+  }
 `;
 
 const EditArticleLabel = styled(EditInfoLabel)`
   width: 100px;
+  margin-left: 0;
+  @media (max-width: 533px) {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+`;
+
+const CoverEditArticleLabel = styled(EditArticleLabel)`
+  @media (max-width: 533px) {
+    display: none;
+  }
 `;
 
 const SaveBtn = styled.div`
@@ -87,6 +106,9 @@ const PreviewContainer = styled.div`
   width: 350px;
   height: 200px;
   padding-left: 15px;
+  @media (max-width: 533px) {
+    padding-left: 0px;
+  }
 `;
 
 const PreviewImg = styled.img`
@@ -110,6 +132,14 @@ const PreviewCancelBtn = styled.div`
     background-color: #952f04;
     color: #fff;
   }
+  @media (max-width: 533px) {
+    bottom: -5px;
+    right: -20px;
+  }
+  @media (max-width: 465px) {
+    bottom: -5px;
+    right: -10px;
+  }
 `;
 
 const PetDetailImg = styled.label`
@@ -118,6 +148,9 @@ const PetDetailImg = styled.label`
   object-fit: cover;
   position: relative;
   padding-left: 15px;
+  @media (max-width: 533px) {
+    padding-left: 0px;
+  }
 `;
 const PetDetailInput = styled.input`
   display: none;
@@ -301,12 +334,11 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   useEffect(() => {
     getAuthorArticles(profile.uid);
   }, []);
-  console.log(detailArticleOpen);
 
   return (
     <>
       {addArticleMode ? (
-        <InfoContainer>
+        <AddArticleInfoContainer>
           <FinishAddArticleBtn
             onClick={() => {
               if (
@@ -371,7 +403,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             />
           </EditContainer>
           <EditContainer>
-            <EditArticleLabel htmlFor="cover">文章封面: </EditArticleLabel>
+            <CoverEditArticleLabel htmlFor="cover">
+              文章封面:{" "}
+            </CoverEditArticleLabel>
             {props.articleCover.url ? (
               <PreviewContainer>
                 <PreviewImg src={props.articleCover.url} alt="" />
@@ -411,7 +445,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             addArticleInfo={props.addArticleInfo}
           />
           <ContextDetails addArticleInfo={props.addArticleInfo} />
-        </InfoContainer>
+        </AddArticleInfoContainer>
       ) : editArticleMode ? (
         <InfoContainer>
           <EditContainer>
@@ -612,12 +646,17 @@ const InfoContainer = styled.div`
   padding: 20px 40px;
   position: relative;
   margin-bottom: 50px;
+
   @media (max-width: 960px) {
     padding: 20px;
   }
   @media (max-width: 403px) {
     padding: 10px;
   }
+`;
+
+const AddArticleInfoContainer = styled(InfoContainer)`
+  padding-bottom: 70px;
 `;
 
 const UserArticleContainer = styled.div`
@@ -716,6 +755,16 @@ const UserArticleTitle = styled.div`
 const ArticleCover = styled.img`
   width: 100%;
   height: 400px;
+  object-fit: cover;
+  @media (max-width: 853px) {
+    height: 350px;
+  }
+  @media (max-width: 740px) {
+    height: 300px;
+  }
+  @media (max-width: 542px) {
+    height: 250px;
+  }
 `;
 
 const ArticleTitle = styled.div`
@@ -723,6 +772,12 @@ const ArticleTitle = styled.div`
   font-weight: bold;
   margin-top: 20px;
   margin-bottom: 15px;
+  @media (max-width: 542px) {
+    font-size: 28px;
+  }
+  @media (max-width: 416px) {
+    font-size: 22px;
+  }
 `;
 
 const ArticleContext = styled.div`
@@ -737,16 +792,84 @@ const ArticlePostTime = styled.div`
 `;
 
 const EditArticleBtn = styled(Btn)`
-  right: 185px;
-  top: 430px;
+  right: 205px;
+  top: 435px;
+  @media (max-width: 960px) {
+    right: 185px;
+  }
+  @media (max-width: 853px) {
+    top: 385px;
+  }
+  @media (max-width: 740px) {
+    top: 335px;
+  }
+  @media (max-width: 542px) {
+    padding: 5px 10px;
+    top: 290px;
+    right: 150px;
+    font-size: 16px;
+  }
+  @media (max-width: 416px) {
+    padding: 5px;
+    top: 285px;
+  }
+  @media (max-width: 403px) {
+    right: 120px;
+    top: 275px;
+  }
 `;
 
 const DeteleArticleBtn = styled(Btn)`
-  right: 105px;
-  top: 430px;
+  right: 125px;
+  top: 435px;
+  @media (max-width: 960px) {
+    right: 105px;
+  }
+  @media (max-width: 853px) {
+    top: 385px;
+  }
+  @media (max-width: 740px) {
+    top: 335px;
+  }
+  @media (max-width: 542px) {
+    padding: 5px 10px;
+    top: 290px;
+    right: 85px;
+    font-size: 16px;
+  }
+  @media (max-width: 416px) {
+    padding: 5px;
+    top: 285px;
+  }
+  @media (max-width: 403px) {
+    right: 65px;
+    top: 275px;
+  }
 `;
 
 const CancelDetailBtn = styled(Btn)`
-  right: 20px;
-  top: 430px;
+  right: 40px;
+  top: 435px;
+  @media (max-width: 960px) {
+    right: 20px;
+  }
+  @media (max-width: 853px) {
+    top: 385px;
+  }
+  @media (max-width: 740px) {
+    top: 335px;
+  }
+  @media (max-width: 542px) {
+    padding: 5px 10px;
+    top: 290px;
+    font-size: 16px;
+  }
+  @media (max-width: 416px) {
+    padding: 5px;
+    top: 285px;
+  }
+  @media (max-width: 403px) {
+    right: 10px;
+    top: 275px;
+  }
 `;

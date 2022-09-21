@@ -22,65 +22,94 @@ const EditorInput = styled.div`
   border: solid 1px black;
 `;
 
+const MenuBarContainer = styled.div`
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+`;
+
+const HTMLButton = styled.button`
+  font-size: 18px;
+  margin: 7px;
+  margin-right: 15px;
+  outline: none;
+  border: none;
+  background: none;
+  color: rgb(70, 70, 70);
+  cursor: pointer;
+  padding: 2px 3px;
+  @media (max-width: 565px) {
+    font-size: 16px;
+    margin: 5px;
+  }
+  &:last-child {
+    margin-right: 7px;
+  }
+`;
+
 const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
   if (!editor) {
     return null;
   }
 
   return (
-    <div className="menuBar">
-      <button
+    <MenuBarContainer>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive("bold") ? "is-active" : ""}
       >
         <FaBold />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={editor.isActive("strike") ? "is-active" : ""}
       >
         <FaStrikethrough />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
       >
         <FaHeading />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
       >
         <TbHeading />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
         <MdFormatListBulleted />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive("orderedList") ? "is-active" : ""}
       >
         <AiOutlineOrderedList />
-      </button>
-      <button
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={editor.isActive("blockquote") ? "is-active" : ""}
       >
         <TbBlockquote />
-      </button>
-      <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+      </HTMLButton>
+      <HTMLButton
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
         <MdHorizontalRule />
-      </button>
-      <button onClick={() => editor.chain().focus().undo().run()}>
+      </HTMLButton>
+      <HTMLButton onClick={() => editor.chain().focus().undo().run()}>
         <FaUndo />
-      </button>
-      <button onClick={() => editor.chain().focus().redo().run()}>
+      </HTMLButton>
+      <HTMLButton onClick={() => editor.chain().focus().redo().run()}>
         <FaRedo />
-      </button>
-    </div>
+      </HTMLButton>
+    </MenuBarContainer>
   );
 };
 

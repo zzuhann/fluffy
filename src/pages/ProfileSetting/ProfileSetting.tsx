@@ -38,6 +38,10 @@ const Wrapper = styled.div`
     padding-left: 50px;
     padding-right: 50px;
   }
+  @media (max-width: 657px) {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 `;
 
 const SideBarWrapper = styled.div`
@@ -296,21 +300,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ) : (
             ""
           )}
-          {/* {selectedTab === tabs[1] && addPet ? (
-            <AddPet
-              setAddPet={setAddPet}
-              petNewImg={petNewImg}
-              petImg={petImg}
-              setPetImg={setPetImg}
-              addPetInfo={addPetInfo}
-              setAddPetInfo={setAddPetInfo}
-              setOwnPetDetail={setOwnPetDetail}
-              addDocOwnPets={addDocOwnPets}
-              setPetNewImg={setPetNewImg}
-            />
-          ) : (
-            ""
-          )} */}
           {selectedTab === tabs[2] ? <PetDiary /> : ""}
           {selectedTab === tabs[3] ? (
             <WritePetArticle
