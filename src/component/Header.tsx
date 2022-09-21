@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "./fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,23 +31,74 @@ import {
   setOwnPets,
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
-import TogglePairingTabs from "../pages/Dating/TogglePairingTabs";
+import burgerMenu from "./bar.png";
 
 const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: fixed;
-  z-index: 1002;
-  background-color: ${(props) => (props.$isActive ? "#fff" : "transparent")};
+  z-index: 2502;
+  /* background-color: ${(props) =>
+    props.$isActive ? "#fff" : "transparent"}; */
+  background-color: #fff;
   width: 100%;
   padding: 15px 20px;
   letter-spacing: 1.5px;
   transition: 0.1s;
+  height: 72px;
 `;
 
-const Logo = styled(Link)``;
+const BurgerMenu = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-right: 30px;
+  display: none;
+  @media (max-width: 1025px) {
+    display: block;
+  }
+`;
+
+const Logo = styled(Link)`
+  @media (max-width: 1025px) {
+    margin-right: auto;
+  }
+`;
 const LogoImg = styled.img`
   width: 150px;
+`;
+
+const SidebarContainer = styled.ul<{ $isActive: boolean }>`
+  left: -250px;
+  top: 72px;
+  @media (max-width: 1025px) {
+    left: ${(props) => (props.$isActive ? "0" : "-250px")};
+    transition: ${(props) => (props.$isActive ? "0.3s" : "0")};
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 72px;
+    background-color: #fff;
+    z-index: 2501;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-top: solid 1px #d1cfcf;
+  }
+`;
+
+const BlackMask = styled.div<{
+  $isActive: boolean;
+  $Height: number;
+}>`
+  opacity: ${(props) => (props.$isActive ? "1" : "0")};
+  overflow-y: hidden;
+  transition: 0.3s;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: ${(props) => props.$Height}px;
+  z-index: 2500;
 `;
 
 const NavBarContainer = styled.ul`
@@ -55,9 +106,51 @@ const NavBarContainer = styled.ul`
   align-items: center;
   margin-right: auto;
   margin-left: 50px;
+  @media (max-width: 1025px) {
+    display: none;
+  }
+`;
+
+const ProfileNavBarContainer = styled.ul`
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  margin-left: 50px;
 `;
 
 const NavBar = styled.li`
+  margin-right: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  position: relative;
+
+  &:after {
+    transition: 0.3s;
+    content: "";
+    width: 0%;
+    height: 3px;
+    background-color: #b7b0a8;
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  &:hover:after {
+    width: 100%;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+  @media (max-width: 1025px) {
+    font-size: 24px;
+    letter-spacing: 1.5px;
+    margin-right: 0;
+    margin-top: 40px;
+  }
+`;
+
+const ProfileNavBar = styled.li`
   margin-right: 20px;
   font-size: 18px;
   cursor: pointer;
@@ -121,11 +214,25 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [scroll, setScroll] = useState<number>(0);
+  const [pageHigh, setPageHigh] = useState<number>(0);
+  const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
+  const heightRef = useRef(0);
 
   useEffect(() => {
+    heightRef.current = document.documentElement.offsetHeight;
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    window.addEventListener("click", togglePageHeight);
+    return () => window.removeEventListener("scroll", togglePageHeight);
+  }, []);
+
+  function togglePageHeight() {
+    let pageHeight = document.documentElement.offsetHeight;
+    setPageHigh(pageHeight);
+  }
 
   function handleScroll() {
     let scrollTop = document.documentElement.scrollTop;
@@ -199,15 +306,98 @@ const Header = () => {
     });
     dispatch(setOwnPets(allOwnPet));
   }
+  console.log(document.documentElement.offsetHeight);
 
   return (
-    <Wrapper $isActive={scroll > 0}>
-      <Logo to="/">
-        <LogoImg src={logo} alt="" />
-      </Logo>
-      <NavBarContainer>
+    <>
+      <BlackMask $isActive={clickBurgerMenu === true} $Height={pageHigh} />
+      <Wrapper $isActive={scroll > 0}>
+        <BurgerMenu
+          src={burgerMenu}
+          onClick={() =>
+            clickBurgerMenu
+              ? setClickBurgerMenu(false)
+              : setClickBurgerMenu(true)
+          }
+        />
+        <Logo to="/">
+          <LogoImg src={logo} alt="" />
+        </Logo>
+        <NavBarContainer>
+          <NavBar
+            onClick={() => {
+              if (!profile.isLogged) {
+                window.alert(
+                  "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
+                );
+                navigate("/profile");
+              } else {
+                navigate("/dating");
+              }
+            }}
+          >
+            配對專區
+          </NavBar>
+          <NavBar
+            onClick={() => {
+              navigate("/petdiary");
+            }}
+          >
+            寵物日記
+          </NavBar>
+          <NavBar
+            onClick={() => {
+              navigate("/articles");
+            }}
+          >
+            寵物文章補給
+          </NavBar>
+          <NavBar
+            onClick={() => {
+              navigate("/clinic");
+            }}
+          >
+            24 小時動物醫院
+          </NavBar>
+        </NavBarContainer>
+
+        {profile.isLogged ? (
+          <ProfileNavBarContainer style={{ marginRight: "5px" }}>
+            <ProfileNavBar
+              style={{ marginRight: "20px" }}
+              onClick={() => navigate(`/profile/${profile.uid}`)}
+            >
+              會員專區
+            </ProfileNavBar>
+            <ProfileNavBar onClick={() => navigate("/profile")}>
+              {profile.name} 您好！
+            </ProfileNavBar>
+          </ProfileNavBarContainer>
+        ) : (
+          <LoginRegisterBtnWrapper>
+            <LoginRegisterBtn
+              onClick={() => {
+                dispatch(targetRegisterOrLogin("register"));
+                navigate("/profile");
+              }}
+            >
+              註冊
+            </LoginRegisterBtn>
+            <LoginRegisterBtn
+              onClick={() => {
+                dispatch(targetRegisterOrLogin("login"));
+                navigate("/profile");
+              }}
+            >
+              登入
+            </LoginRegisterBtn>
+          </LoginRegisterBtnWrapper>
+        )}
+      </Wrapper>
+      <SidebarContainer $isActive={clickBurgerMenu === true}>
         <NavBar
           onClick={() => {
+            setClickBurgerMenu(false);
             if (!profile.isLogged) {
               window.alert(
                 "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
@@ -222,6 +412,7 @@ const Header = () => {
         </NavBar>
         <NavBar
           onClick={() => {
+            setClickBurgerMenu(false);
             navigate("/petdiary");
           }}
         >
@@ -229,6 +420,7 @@ const Header = () => {
         </NavBar>
         <NavBar
           onClick={() => {
+            setClickBurgerMenu(false);
             navigate("/articles");
           }}
         >
@@ -236,46 +428,14 @@ const Header = () => {
         </NavBar>
         <NavBar
           onClick={() => {
+            setClickBurgerMenu(false);
             navigate("/clinic");
           }}
         >
           24 小時動物醫院
         </NavBar>
-      </NavBarContainer>
-
-      {profile.isLogged ? (
-        <NavBarContainer style={{ marginRight: "5px" }}>
-          <NavBar
-            style={{ marginRight: "20px" }}
-            onClick={() => navigate(`/profile/${profile.uid}`)}
-          >
-            會員專區
-          </NavBar>
-          <NavBar onClick={() => navigate("/profile")}>
-            {profile.name} 您好！
-          </NavBar>
-        </NavBarContainer>
-      ) : (
-        <LoginRegisterBtnWrapper>
-          <LoginRegisterBtn
-            onClick={() => {
-              dispatch(targetRegisterOrLogin("register"));
-              navigate("/profile");
-            }}
-          >
-            註冊
-          </LoginRegisterBtn>
-          <LoginRegisterBtn
-            onClick={() => {
-              dispatch(targetRegisterOrLogin("login"));
-              navigate("/profile");
-            }}
-          >
-            登入
-          </LoginRegisterBtn>
-        </LoginRegisterBtnWrapper>
-      )}
-    </Wrapper>
+      </SidebarContainer>
+    </>
   );
 };
 
