@@ -40,8 +40,6 @@ const Wrapper = styled.div<{ $isActive: boolean }>`
   align-items: center;
   position: fixed;
   z-index: 2502;
-  /* background-color: ${(props) =>
-    props.$isActive ? "#fff" : "transparent"}; */
   background-color: #fff;
   width: 100%;
   padding: 15px 20px;
