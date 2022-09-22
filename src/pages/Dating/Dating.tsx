@@ -215,19 +215,23 @@ const UpcomingListContainer = styled.div`
   /* overflow-y: auto; */
 `;
 
-const OpenToggleTabs = styled.div`
+const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
   width: 50px;
   height: 50px;
   border-radius: 25px;
   position: fixed;
   bottom: 20px;
   left: 20px;
-  background-color: #b7b0a8;
+  /* background-color: #b7b0a8; */
+  background-color: ${(props) =>
+    props.$Notification ? "#ff5106" : " #b7b0a8"};
   z-index: 500;
   cursor: pointer;
   transition: 0.2s;
   &:hover {
-    background-color: #928c86;
+    /* background-color: #928c86; */
+    background-color: ${(props) =>
+      props.$Notification ? "#d23f00" : " #928c86"};
   }
 `;
 const OpenToggleTabsIcon = styled.img`
@@ -369,6 +373,7 @@ const Pairing: React.FC = () => {
             ? setOpenDatingFeatureMenu(false)
             : setOpenDatingFeatureMenu(true);
         }}
+        $Notification={matchSuccessQty > 0}
       >
         <OpenToggleTabsIcon src={menuburger} />
       </OpenToggleTabs>

@@ -7,7 +7,10 @@ import { Dating } from "../../reducers/dating";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
-import { setUpcomingDateList } from "../../functions/datingReducerFunction";
+import {
+  setConsiderList,
+  setUpcomingDateList,
+} from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import findplace from "./img/loupe.png";
@@ -310,22 +313,6 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
             {pet.color}
             {pet.kind}
           </ConsiderTitle>
-          {/* <NotConsiderBtn
-            onClick={async () => {
-              deleteFirebaseData(
-                `/memberProfiles/${profile.uid}/considerLists`,
-                "id",
-                pet.id
-              );
-              getListsData();
-              await addDoc(
-                collection(db, `/memberProfiles/${profile.uid}/considerLists`),
-                { id: pet.id }
-              );
-            }}
-          >
-            不考慮領養
-          </NotConsiderBtn> */}
         </ConsiderPetCard>
       ))}
       {props.considerDetail ? (
@@ -364,8 +351,6 @@ const ConsiderPetDetail = (props: {
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
   const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
   const [timeIndex, setTimeIndex] = useState<number>(-1);
-
-  console.log(inviteDatingInfo);
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
@@ -522,12 +507,15 @@ const ConsiderPetDetail = (props: {
               "id",
               dating.considerList[props.nowChosenPetIndex].id
             );
-            getListsData();
             await addDoc(
-              collection(db, `/memberProfiles/${profile.uid}/considerLists`),
+              collection(db, `/memberProfiles/${profile.uid}/notConsiderLists`),
               { id: dating.considerList[props.nowChosenPetIndex].id }
             );
+            const newConsiderList = dating.considerList;
+            newConsiderList.splice(props.nowChosenPetIndex, 1);
+            dispatch(setConsiderList(newConsiderList));
             props.setConsiderDetail(false);
+            window.alert("更新完成!");
           }}
         >
           不考慮領養
@@ -598,20 +586,25 @@ const ConsiderPetDetail = (props: {
                 </TimeBtn>
               ))}
             </TimeBtnContainer>
-            {/* <InviteInfoInput
-              
-              onChange={(e) => {
-                setInviteDatingInfo({
-                  ...inviteDatingInfo,
-                  date: Date.parse(e.target.value) / 1000,
-                });
-              }}
-            /> */}
           </InviteInfoContainer>
           <SendInviteBtn
             onClick={async () => {
               if (Object.values(inviteDatingInfo).some((item) => item === "")) {
                 window.alert("請填寫完整資料以利進行申請約會體驗！");
+                return;
+              }
+              if (
+                dating.upcomingDateList.find(
+                  (date) =>
+                    date.id === dating.considerList[props.nowChosenPetIndex].id
+                )
+              ) {
+                window.alert(
+                  `您已向 ${
+                    dating.considerList[props.nowChosenPetIndex].id
+                  } 申請過約會體驗，請至「即將到來的約會」專區查看`
+                );
+                setInviteBoxOpen(false);
                 return;
               }
               updateUpcomingDate(dating.considerList[props.nowChosenPetIndex]);
@@ -640,6 +633,3 @@ const ConsiderPetDetail = (props: {
 };
 
 export default ConsiderPetDetail;
-function getListsData() {
-  throw new Error("Function not implemented.");
-}

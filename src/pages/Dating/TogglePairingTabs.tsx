@@ -25,9 +25,10 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   padding: 10px;
   width: 100%;
   cursor: pointer;
+  font-size: 18px;
   transition: 0.3s;
   background-color: ${(props) => (props.$isActive ? "#b7b0a8" : "#fff")};
-  opacity: ${(props) => (props.$isActive ? "1" : "0.7")};
+  opacity: ${(props) => (props.$isActive ? "1" : "0.9")};
   &:hover {
     background-color: #b7b0a8;
     opacity: 1;
@@ -40,22 +41,11 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   }
 `;
 
-const PairingTabIcon = styled.img`
-  width: 35px;
-  height: 35px;
-  @media (max-width: 725px) {
-    width: 30px;
-    height: 30px;
-  }
-  @media (max-width: 574px) {
-    display: none;
-  }
-`;
-
 const PairingTab = styled.div`
   letter-spacing: 1.5px;
   margin-left: 15px;
   position: relative;
+  padding: 10px;
   @media (max-width: 688px) {
     letter-spacing: 1px;
     margin-left: 10px;
@@ -72,8 +62,9 @@ const AlertMatchQty = styled.div`
   justify-content: center;
   align-items: center;
   color: #fff;
-  left: -55px;
-  bottom: -10px;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
   letter-spacing: 1px;
 `;
 
@@ -90,6 +81,7 @@ export type TogglePairingTabsProps = {
 };
 
 const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
+  console.log(props.matchSuccessQty);
   return (
     <TogglePairingTab
       onMouseLeave={() => props.setOpenDatingFeatureMenu(false)}
@@ -99,7 +91,6 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         onClick={() => props.setTab("pairing")}
         $isActive={props.tab === "pairing"}
       >
-        <PairingTabIcon src={pairing} />
         <PairingTab>配對系統</PairingTab>
       </PairingTabContainer>
       <PairingTabContainer
@@ -114,7 +105,7 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         {props.matchSuccessQty > 0 ? (
           <AlertMatchQty>+{props.matchSuccessQty}</AlertMatchQty>
         ) : (
-          <PairingTabIcon src={consideradopt} />
+          ""
         )}
         <PairingTab>考慮領養清單</PairingTab>
       </PairingTabContainer>
@@ -125,7 +116,6 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         }}
         $isActive={props.tab === "upcomingDate"}
       >
-        <PairingTabIcon src={upcomingdate} />
         <PairingTab>即將到來的約會</PairingTab>
       </PairingTabContainer>
     </TogglePairingTab>
