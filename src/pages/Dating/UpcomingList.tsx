@@ -222,6 +222,11 @@ const UpcomingList: React.FC<Props> = (props) => {
     birthYear: number;
   }>({ name: "", birthYear: 0 });
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
+
+  console.log(
+    dating.upcomingDateList[0].datingDate,
+    Date.parse(`${new Date()}`)
+  );
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -294,7 +299,7 @@ const UpcomingList: React.FC<Props> = (props) => {
               )}
             </UpcomingInfoImgContainer>
           </UpcomingInfoContainer>
-          {Date.parse(`${date.datingDate}`) < Date.parse(`${new Date()}`) ? (
+          {(date.datingDate as number) * 1000 < Date.parse(`${new Date()}`) ? (
             <>
               <DatingDoneBtn
                 onClick={() => {
@@ -360,7 +365,6 @@ const UpcomingList: React.FC<Props> = (props) => {
                           id="year"
                           min="1900"
                           max={new Date().getFullYear()}
-                          value={new Date().getFullYear()}
                           onChange={(e) =>
                             setAdoptPetInfo({
                               ...adoptPetInfo,
@@ -388,7 +392,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                                 id: date.id,
                                 shelterName: date.shelterName,
                                 kind: date.kind,
-                                image: date.image,
+                                img: date.image,
                                 sex: date.sex,
                                 name: adoptPetInfo.name,
                                 birthYear: adoptPetInfo.birthYear,

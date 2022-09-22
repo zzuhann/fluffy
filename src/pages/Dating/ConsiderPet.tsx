@@ -572,7 +572,7 @@ const ConsiderPetDetail = (props: {
             </InviteInfoLabel>
             <ConsiderPetCalendarContainer>
               <Calendar
-                minDate={new Date()}
+                // minDate={new Date()}
                 onClickDay={(value) =>
                   setInviteDatingInfo({
                     ...inviteDatingInfo,

@@ -326,7 +326,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
                 },
               }
             );
-            updateAllCommentsUserData();
+            updateAllCommentsUserData(downloadURL);
             window.alert("更新成功！");
           });
         }
@@ -374,12 +374,12 @@ const UserInfos: React.FC<userInfoType> = (props) => {
           },
         }
       );
-      updateAllCommentsUserData();
+      updateAllCommentsUserData(profile.img as string);
       window.alert("更新成功！");
     }
   }
 
-  async function updateAllCommentsUserData() {
+  async function updateAllCommentsUserData(newImg: string) {
     const comments = query(
       collectionGroup(db, "comments"),
       where("useruid", "==", profile.uid)
@@ -390,12 +390,14 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       const targetRef = doc(db, d.ref.path);
       promises.push(
         updateDoc(targetRef, {
-          user: { name: props.newName, img: profile.img },
+          user: { name: props.newName, img: newImg },
         })
       );
     });
     await Promise.all(promises);
   }
+
+  console.log(profile.img);
 
   return (
     <>

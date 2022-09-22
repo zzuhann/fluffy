@@ -217,6 +217,7 @@ const AddComment = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 15px 0 15px;
+  position: relative;
 `;
 const AddCommentTextArea = styled.textarea`
   resize: vertical;
@@ -227,13 +228,15 @@ const AddCommentTextArea = styled.textarea`
   border-radius: 5px;
   padding: 10px 15px;
   font-size: 18px;
+  padding-right: 90px;
 `;
 const AddCommentBtn = styled(Btn)`
-  bottom: 95px;
-  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 25px;
   padding: 5px 10px;
   @media (max-width: 889px) {
-    bottom: 100px;
+    /* bottom: 100px; */
   }
 `;
 
@@ -384,8 +387,13 @@ const DiaryDetail = () => {
                     {new Date(comment.commentTime).getFullYear()}/
                     {new Date(comment.commentTime).getMonth() + 1}/
                     {new Date(comment.commentTime).getDate()}{" "}
-                    {new Date(comment.commentTime).getHours()}:
-                    {new Date(comment.commentTime).getMinutes()}
+                    {new Date(comment.commentTime).getHours() < 10
+                      ? `0${new Date(comment.commentTime).getHours() < 10}`
+                      : new Date(comment.commentTime).getHours()}
+                    :
+                    {new Date(comment.commentTime).getMinutes() < 10
+                      ? `0${new Date(comment.commentTime).getMinutes()}`
+                      : new Date(comment.commentTime).getMinutes()}
                   </CommentTime>
                   <CommentContext>{comment.context}</CommentContext>
                 </CommentCard>
@@ -435,7 +443,7 @@ const DiaryDetail = () => {
                 addDiaryComment();
               }}
             >
-              新增留言
+              送出
             </AddCommentBtn>
           </AddComment>
         </DiaryTextInfo>
