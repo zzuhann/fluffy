@@ -16,23 +16,12 @@ import {
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
 
-const RegisterLoginBtn = styled.div`
-  width: 200px;
-  cursor: pointer;
-  align-self: center;
-  text-align: center;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-top: 72px;
+  padding-top: 144px;
   padding-bottom: 72px;
   @media (max-width: 1120px) {
     padding-left: 50px;
@@ -49,8 +38,7 @@ const SideBarWrapper = styled.div`
   background-color: #f8f6f6;
   height: 80px;
   position: fixed;
-
-  position: relative;
+  top: 72px;
   z-index: 100;
   @media (max-width: 1120px) {
     padding-left: 30px;

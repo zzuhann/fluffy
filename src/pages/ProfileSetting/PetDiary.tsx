@@ -497,7 +497,7 @@ export const CalendarContainer = styled.div`
     color: #d0470c;
   }
   .react-calendar__month-view__days__day--neighboringMonth {
-    color: #ececec;
+    color: #d1cfcf;
   }
   .react-calendar__tile--now,
   .react-calendar__tile--active:enabled:hover {
@@ -509,6 +509,11 @@ export const CalendarContainer = styled.div`
   .react-calendar__tile--active,
   .react-calendar__tile--active:enabled:focus {
     background-color: #efefef;
+  }
+  .react-calendar__tile:disabled,
+  .react-calendar__navigation button:disabled {
+    background-color: #fff;
+    color: #ececec;
   }
   .react-calendar__tile {
     padding: 8px;
@@ -712,7 +717,7 @@ export const PetDiary = () => {
     });
     dispatch(setOwnPetDiary(authorPetDiary));
   }
-
+  console.log(uploadDiaryInfo.takePhotoTime);
   return (
     <>
       {writeDiaryBoxOpen ? (
@@ -821,38 +826,19 @@ export const PetDiary = () => {
 
               <AddDiaryInputContainer>
                 <AddDiaryLabel htmlFor="takePhotoTime">
-                  拍攝此照片時間:{" "}
+                  拍攝照片日期:{" "}
                 </AddDiaryLabel>
                 <CalendarContainer>
-                  <Calendar onClickDay={(value) => console.log(value)} />
+                  <Calendar
+                    defaultValue={new Date(uploadDiaryInfo.takePhotoTime)}
+                    onClickDay={(value) => {
+                      setUploadDiaryInfo({
+                        ...uploadDiaryInfo,
+                        takePhotoTime: Date.parse(`${value}`),
+                      });
+                    }}
+                  />
                 </CalendarContainer>
-                {/* <InputTimeAddDiary
-                  id="takePhotoTime"
-                  type="datetime-local"
-                  max={`${new Date().getFullYear()}-${
-                    new Date().getMonth() + 1 < 10
-                      ? `0${new Date().getMonth() + 1}`
-                      : `${new Date().getMonth() + 1}`
-                  }-${
-                    new Date().getDate() < 10
-                      ? `0${new Date().getDate()}`
-                      : `${new Date().getDate()}`
-                  }T${
-                    new Date().getHours() < 10
-                      ? `0${new Date().getHours()}`
-                      : `${new Date().getHours()}`
-                  }:${
-                    new Date().getMinutes() < 10
-                      ? `0${new Date().getMinutes()}`
-                      : `${new Date().getMinutes()}`
-                  }`}
-                  onChange={(e) => {
-                    setUploadDiaryInfo({
-                      ...uploadDiaryInfo,
-                      takePhotoTime: Date.parse(e.target.value),
-                    });
-                  }}
-                /> */}
               </AddDiaryInputContainer>
 
               <AddDiaryInputContainer>
@@ -926,7 +912,7 @@ export const PetDiary = () => {
                 內容: {profile.petDiary[ownPetDiaryIndex].context}
               </PetSingleName>
               <PetSingleName>
-                拍攝時間:{" "}
+                拍攝日期:{" "}
                 {`${new Date(newDiaryContext.takePhotoTime).getFullYear()}/${
                   new Date(newDiaryContext.takePhotoTime).getMonth() + 1 < 10
                     ? `0${
@@ -939,15 +925,7 @@ export const PetDiary = () => {
                   new Date(newDiaryContext.takePhotoTime).getDate() < 10
                     ? `0${new Date(newDiaryContext.takePhotoTime).getDate()}`
                     : `${new Date(newDiaryContext.takePhotoTime).getDate()}`
-                } ${
-                  new Date(newDiaryContext.takePhotoTime).getHours() < 10
-                    ? `0${new Date(newDiaryContext.takePhotoTime).getHours()}`
-                    : `${new Date(newDiaryContext.takePhotoTime).getHours()}`
-                }:${
-                  new Date(newDiaryContext.takePhotoTime).getMinutes() < 10
-                    ? `0${new Date(newDiaryContext.takePhotoTime).getMinutes()}`
-                    : `${new Date(newDiaryContext.takePhotoTime).getMinutes()}`
-                }`}
+                } `}
               </PetSingleName>
             </PetSingleDetailTextContainer>
           </PetSingleContainer>
@@ -1033,64 +1011,21 @@ export const PetDiary = () => {
               </AddDiaryInputContainer>
               <AddDiaryInputContainer>
                 <EditPetDiaryLabel htmlFor="takePhotoTime">
-                  拍攝此照片時間:{" "}
+                  拍攝照片日期:{" "}
                 </EditPetDiaryLabel>
-                <InputTimeAddDiary
-                  id="takePhotoTime"
-                  type="datetime-local"
-                  max={`${new Date().getFullYear()}-${
-                    new Date().getMonth() + 1 < 10
-                      ? `0${new Date().getMonth() + 1}`
-                      : `${new Date().getMonth() + 1}`
-                  }-${
-                    new Date().getDate() < 10
-                      ? `0${new Date().getDate()}`
-                      : `${new Date().getDate()}`
-                  }T${
-                    new Date().getHours() < 10
-                      ? `0${new Date().getHours()}`
-                      : `${new Date().getHours()}`
-                  }:${
-                    new Date().getMinutes() < 10
-                      ? `0${new Date().getMinutes()}`
-                      : `${new Date().getMinutes()}`
-                  }`}
-                  value={`${new Date(
-                    newDiaryContext.takePhotoTime
-                  ).getFullYear()}-${
-                    new Date(newDiaryContext.takePhotoTime).getMonth() + 1 < 10
-                      ? `0${
-                          new Date(newDiaryContext.takePhotoTime).getMonth() + 1
-                        }`
-                      : `${
-                          new Date(newDiaryContext.takePhotoTime).getMonth() + 1
-                        }`
-                  }-${
-                    new Date(newDiaryContext.takePhotoTime).getDate() < 10
-                      ? `0${new Date(newDiaryContext.takePhotoTime).getDate()}`
-                      : `${new Date(newDiaryContext.takePhotoTime).getDate()}`
-                  }T${
-                    new Date(newDiaryContext.takePhotoTime).getHours() < 10
-                      ? `0${new Date(newDiaryContext.takePhotoTime).getHours()}`
-                      : `${new Date(newDiaryContext.takePhotoTime).getHours()}`
-                  }:${
-                    new Date(newDiaryContext.takePhotoTime).getMinutes() < 10
-                      ? `0${new Date(
-                          newDiaryContext.takePhotoTime
-                        ).getMinutes()}`
-                      : `${new Date(
-                          newDiaryContext.takePhotoTime
-                        ).getMinutes()}`
-                  }`}
-                  onChange={(e) => {
-                    setNewDiaryContext({
-                      ...newDiaryContext,
-                      takePhotoTime: Date.parse(e.target.value),
-                    });
-                  }}
-                />
+                <CalendarContainer>
+                  <Calendar
+                    defaultValue={new Date(newDiaryContext.takePhotoTime)}
+                    maxDate={new Date()}
+                    onClickDay={(value) => {
+                      setNewDiaryContext({
+                        ...newDiaryContext,
+                        takePhotoTime: Date.parse(`${value}`),
+                      });
+                    }}
+                  />
+                </CalendarContainer>
               </AddDiaryInputContainer>
-
               <AddDiaryInputContainer>
                 <EditPetDiaryLabel htmlFor="context">
                   日記內文:{" "}

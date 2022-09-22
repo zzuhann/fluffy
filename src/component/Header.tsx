@@ -71,6 +71,7 @@ const LogoImg = styled.img`
 const SidebarContainer = styled.ul<{ $isActive: boolean }>`
   left: -250px;
   top: 72px;
+  display: none;
   @media (max-width: 1025px) {
     left: ${(props) => (props.$isActive ? "0" : "-250px")};
     transition: ${(props) => (props.$isActive ? "0.3s" : "0")};
