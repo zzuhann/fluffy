@@ -16,8 +16,8 @@ import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import notyetLike from "./NotLike.png";
-import alreadyLike from "./AlreadyLike.png";
+import notyetLike from "./heart.png";
+import alreadyLike from "./love.png";
 import comment from "./chat.png";
 import { AllPetDiariesType } from "./AllPetDiraies";
 import { CommentType } from "../Articles/ArticleDetail";
@@ -160,6 +160,11 @@ const RecordContainer = styled.div`
 const RecordImg = styled.img`
   width: 25px;
   height: 25px;
+`;
+
+const CommentRecordImg = styled.img`
+  width: 23px;
+  height: 23px;
 `;
 const Record = styled.div`
   margin-right: 15px;
@@ -409,7 +414,7 @@ const DiaryDetail = () => {
                 <Record>{targetDiary.likedBy.length}</Record>
               </>
             )}
-            <RecordImg src={comment} />
+            <CommentRecordImg src={comment} />
             <Record>{targetDiary.commentCount}</Record>
           </RecordContainer>
           <AddComment>

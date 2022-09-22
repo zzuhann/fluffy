@@ -15,13 +15,6 @@ import { TbHeading, TbBlockquote } from "react-icons/tb";
 import { MdFormatListBulleted, MdHorizontalRule } from "react-icons/md";
 import { AiOutlineOrderedList } from "react-icons/ai";
 
-const EditorInput = styled.div`
-  position: absolute;
-  width: 600px;
-  height: 500px;
-  border: solid 1px black;
-`;
-
 const MenuBarContainer = styled.div`
   padding-bottom: 5px;
   display: flex;
@@ -147,6 +140,7 @@ const MirrorTitle = styled.div`
   font-size: 30px;
   font-weight: bold;
   margin-top: 30px;
+  margin-bottom: 10px;
 `;
 const ProseMirror = styled.div``;
 

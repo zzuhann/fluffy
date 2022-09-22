@@ -20,8 +20,8 @@ import { useParams } from "react-router-dom";
 import { AllPetArticlesType } from "./AllArticles";
 import parse from "html-react-parser";
 import "./ArticleDetail.css";
-import notyetLike from "./NotLike.png";
-import alreadyLike from "./AlreadyLike.png";
+import notyetLike from "./heart.png";
+import alreadyLike from "./love.png";
 import comment from "./chat.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 
@@ -98,8 +98,9 @@ const ArticleDate = styled.div`
 `;
 const ArticleContext = styled.div`
   padding: 20px;
-  font-size: 22px;
-  line-height: 26px;
+  font-size: 18px;
+  line-height: 34px;
+  letter-spacing: 1.2px;
   @media (max-width: 650px) {
     font-size: 16px;
   }
@@ -121,6 +122,10 @@ const RecordImg = styled.img`
   width: 25px;
   height: 25px;
 `;
+const CommentRecordImg = styled.img`
+  width: 23px;
+  height: 23px;
+`;
 const CommentContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -139,12 +144,14 @@ const AddCommentTextArea = styled.textarea`
   border: 3px solid #efefef;
   border-radius: 5px;
   padding: 10px 15px;
+  padding-right: 80px;
   font-size: 18px;
 `;
 const AddCommentBtn = styled(Btn)`
-  top: -50px;
-  right: 0;
+  bottom: 20px;
+  right: 10px;
   font-size: 16px;
+  padding: 5px 10px;
 `;
 const CommentCount = styled.div`
   margin-top: 10px;
@@ -190,6 +197,7 @@ const CommentContext = styled.div`
   @media (max-width: 440px) {
     margin-left: 0;
     margin-top: 10px;
+    font-size: 14px;
   }
 `;
 
@@ -350,7 +358,7 @@ const ArticleDetail = () => {
               <Record>{targetArticle.likedBy.length}</Record>
             </>
           )}
-          <RecordImg src={comment} />
+          <CommentRecordImg src={comment} />
           <Record>{targetArticle.commentCount}</Record>
         </RecordContainer>
         <CommentContainer>
@@ -372,7 +380,7 @@ const ArticleDetail = () => {
                 addArticleComment();
               }}
             >
-              新增留言
+              送出
             </AddCommentBtn>
           </AddComment>
           <CommentCount>共 {targetArticle.commentCount} 則留言</CommentCount>

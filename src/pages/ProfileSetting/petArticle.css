@@ -1,10 +1,19 @@
-.ProseMirror {
+.textEditor {
+  line-height: 34px;
+  font-size: 18px;
   padding: 10px;
+}
+
+.ProseMirror {
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-top: 1px solid grey;
   background: white;
   border-radius: 0 0 5px 5px;
-  height: 200px;
+  height: 250px;
   overflow-y: scroll;
+  line-height: 34px;
+  font-size: 18px;
 }
 
 .ProseMirror:focus {

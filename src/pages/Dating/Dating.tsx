@@ -9,7 +9,7 @@ import {
 import { Card, Dating, petCardInfo, InviteDating } from "../../reducers/dating";
 import api from "../../utils/api";
 import { db } from "../../utils/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
 import ConsiderPetDetail from "./ConsiderPet";
 import UpcomingList from "./UpcomingList";
@@ -345,8 +345,10 @@ const Pairing: React.FC = () => {
 
   async function getUpcomingListData() {
     let upcomingDate: InviteDating[] = [];
-    console.log(profile.uid);
-    const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
+    const q = query(
+      collection(db, "memberProfiles", profile.uid, "upcomingDates"),
+      orderBy("datingDate")
+    );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       upcomingDate.push({

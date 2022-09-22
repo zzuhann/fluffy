@@ -717,7 +717,6 @@ export const PetDiary = () => {
     });
     dispatch(setOwnPetDiary(authorPetDiary));
   }
-  console.log(uploadDiaryInfo.takePhotoTime);
   return (
     <>
       {writeDiaryBoxOpen ? (

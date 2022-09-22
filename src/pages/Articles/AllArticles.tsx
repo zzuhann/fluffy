@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
-import notyetLike from "./NotLike.png";
+import notyetLike from "./heart.png";
 import comment from "./chat.png";
 
 const Wrap = styled.div`
@@ -94,7 +94,7 @@ const ArticleTitle = styled.div`
 const HeartAndCommentRecordContainer = styled.div`
   display: flex;
   font-size: 18px;
-  color: #7d7d7d;
+  color: #3c3c3c;
 `;
 
 const RecordImg = styled.img`

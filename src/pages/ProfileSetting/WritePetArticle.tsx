@@ -76,17 +76,6 @@ const CoverEditArticleLabel = styled(EditArticleLabel)`
   }
 `;
 
-const SaveBtn = styled.div`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
 const HintUploadImg = styled.div`
   font-size: 18px;
   color: #3c3c3c;
@@ -108,6 +97,7 @@ const PreviewContainer = styled.div`
   padding-left: 15px;
   @media (max-width: 533px) {
     padding-left: 0px;
+    width: 100%;
   }
 `;
 
@@ -116,6 +106,9 @@ const PreviewImg = styled.img`
   height: 200px;
   object-fit: cover;
   position: relative;
+  @media (max-width: 533px) {
+    width: 100%;
+  }
 `;
 
 const PreviewCancelBtn = styled.div`
@@ -134,11 +127,14 @@ const PreviewCancelBtn = styled.div`
   }
   @media (max-width: 533px) {
     bottom: -5px;
-    right: -20px;
+    right: -15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
   }
   @media (max-width: 465px) {
-    bottom: -5px;
-    right: -10px;
+    bottom: -8px;
+    right: -5px;
   }
 `;
 
@@ -462,7 +458,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             />
           </EditContainer>
           <EditContainer>
-            <EditInfoLabel htmlFor="cover">文章封面: </EditInfoLabel>
+            <CoverEditArticleLabel htmlFor="cover">
+              文章封面:{" "}
+            </CoverEditArticleLabel>
             {editArticleCover.url ? (
               <PreviewContainer>
                 <PreviewImg src={editArticleCover.url} alt="" />
@@ -517,63 +515,68 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           <ArticleTitle>
             {profile.ownArticles[ownArticleIndex].title}
           </ArticleTitle>
-          <ArticlePostTime>{`${new Date(
-            profile.ownArticles[ownArticleIndex].postTime
-          ).getFullYear()}-${
-            new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() +
-              1 <
-            10
-              ? `0${
-                  new Date(
+          <ArticlePostTime>
+            {`${new Date(
+              profile.ownArticles[ownArticleIndex].postTime
+            ).getFullYear()}-${
+              new Date(
+                profile.ownArticles[ownArticleIndex].postTime
+              ).getMonth() +
+                1 <
+              10
+                ? `0${
+                    new Date(
+                      profile.ownArticles[ownArticleIndex].postTime
+                    ).getMonth() + 1
+                  }`
+                : `${
+                    new Date(
+                      profile.ownArticles[ownArticleIndex].postTime
+                    ).getMonth() + 1
+                  }`
+            }-${
+              new Date(
+                profile.ownArticles[ownArticleIndex].postTime
+              ).getDate() < 10
+                ? `0${new Date(
                     profile.ownArticles[ownArticleIndex].postTime
-                  ).getMonth() + 1
-                }`
-              : `${
-                  new Date(
+                  ).getDate()}`
+                : `${new Date(
                     profile.ownArticles[ownArticleIndex].postTime
-                  ).getMonth() + 1
-                }`
-          }-${
-            new Date(profile.ownArticles[ownArticleIndex].postTime).getDate() <
-            10
-              ? `0${new Date(
-                  profile.ownArticles[ownArticleIndex].postTime
-                ).getDate()}`
-              : `${new Date(
-                  profile.ownArticles[ownArticleIndex].postTime
-                ).getDate()}`
-          }`}</ArticlePostTime>
+                  ).getDate()}`
+            }`}
+            <EditArticleBtn
+              onClick={() => {
+                setEditArticleMode(true);
+              }}
+            >
+              編輯
+            </EditArticleBtn>
+            <DeteleArticleBtn
+              onClick={async () => {
+                await deleteFirebaseDataMutipleWhere(
+                  `/petArticles`,
+                  "postTime",
+                  profile.ownArticles[ownArticleIndex].postTime,
+                  "authorUid",
+                  profile.uid
+                );
+                setDetailArticleOpen(false);
+                const DeleOwnPetArticle = profile.ownArticles;
+                DeleOwnPetArticle.splice(ownArticleIndex, 1);
+                dispatch(setOwnArticle(DeleOwnPetArticle));
+                window.alert("刪除完成！");
+              }}
+            >
+              刪除
+            </DeteleArticleBtn>
+            <CancelDetailBtn onClick={() => setDetailArticleOpen(false)}>
+              取消
+            </CancelDetailBtn>
+          </ArticlePostTime>
           <ArticleContext className="DetailProseMirror">
             {parse(profile.ownArticles[ownArticleIndex].context)}
           </ArticleContext>
-          <EditArticleBtn
-            onClick={() => {
-              setEditArticleMode(true);
-            }}
-          >
-            編輯
-          </EditArticleBtn>
-          <DeteleArticleBtn
-            onClick={async () => {
-              await deleteFirebaseDataMutipleWhere(
-                `/petArticles`,
-                "postTime",
-                profile.ownArticles[ownArticleIndex].postTime,
-                "authorUid",
-                profile.uid
-              );
-              setDetailArticleOpen(false);
-              const DeleOwnPetArticle = profile.ownArticles;
-              DeleOwnPetArticle.splice(ownArticleIndex, 1);
-              dispatch(setOwnArticle(DeleOwnPetArticle));
-              window.alert("刪除完成！");
-            }}
-          >
-            刪除
-          </DeteleArticleBtn>
-          <CancelDetailBtn onClick={() => setDetailArticleOpen(false)}>
-            取消
-          </CancelDetailBtn>
         </InfoContainer>
       ) : (
         <InfoContainer>
@@ -646,12 +649,14 @@ const InfoContainer = styled.div`
   padding: 20px 40px;
   position: relative;
   margin-bottom: 50px;
-
+  padding-bottom: 70px;
   @media (max-width: 960px) {
     padding: 20px;
+    padding-bottom: 70px;
   }
   @media (max-width: 403px) {
     padding: 10px;
+    padding-bottom: 70px;
   }
 `;
 
@@ -772,7 +777,8 @@ const ArticleTitle = styled.div`
   font-weight: bold;
   margin-top: 20px;
   margin-bottom: 15px;
-  @media (max-width: 542px) {
+  line-height: 40px;
+  @media (max-width: 740px) {
     font-size: 28px;
   }
   @media (max-width: 416px) {
@@ -782,6 +788,8 @@ const ArticleTitle = styled.div`
 
 const ArticleContext = styled.div`
   margin-top: 25px;
+  line-height: 34px;
+  font-size: 18px;
 `;
 
 const ArticlePostTime = styled.div`
@@ -789,87 +797,55 @@ const ArticlePostTime = styled.div`
   border-bottom: 2px solid #d1cfcf;
   color: #d1cfcf;
   font-weight: bold;
+  position: relative;
 `;
 
 const EditArticleBtn = styled(Btn)`
-  right: 205px;
-  top: 435px;
-  @media (max-width: 960px) {
-    right: 185px;
-  }
-  @media (max-width: 853px) {
-    top: 385px;
-  }
-  @media (max-width: 740px) {
-    top: 335px;
-  }
+  padding: 5px 10px;
+  right: 170px;
+  bottom: 13px;
   @media (max-width: 542px) {
-    padding: 5px 10px;
-    top: 290px;
-    right: 150px;
+    right: 140px;
     font-size: 16px;
   }
   @media (max-width: 416px) {
     padding: 5px;
-    top: 285px;
+    right: 110px;
   }
   @media (max-width: 403px) {
-    right: 120px;
-    top: 275px;
+    right: 110px;
   }
 `;
 
 const DeteleArticleBtn = styled(Btn)`
-  right: 125px;
-  top: 435px;
-  @media (max-width: 960px) {
-    right: 105px;
-  }
-  @media (max-width: 853px) {
-    top: 385px;
-  }
-  @media (max-width: 740px) {
-    top: 335px;
-  }
+  padding: 5px 10px;
+  right: 85px;
+  bottom: 13px;
   @media (max-width: 542px) {
-    padding: 5px 10px;
-    top: 290px;
-    right: 85px;
     font-size: 16px;
+    right: 70px;
   }
   @media (max-width: 416px) {
     padding: 5px;
-    top: 285px;
+    right: 55px;
   }
   @media (max-width: 403px) {
-    right: 65px;
-    top: 275px;
+    right: 55px;
   }
 `;
 
 const CancelDetailBtn = styled(Btn)`
-  right: 40px;
-  top: 435px;
+  padding: 5px 10px;
+  right: 0;
+  bottom: 13px;
   @media (max-width: 960px) {
-    right: 20px;
-  }
-  @media (max-width: 853px) {
-    top: 385px;
-  }
-  @media (max-width: 740px) {
-    top: 335px;
+    right: 0;
   }
   @media (max-width: 542px) {
     padding: 5px 10px;
-    top: 290px;
     font-size: 16px;
   }
   @media (max-width: 416px) {
     padding: 5px;
-    top: 285px;
-  }
-  @media (max-width: 403px) {
-    right: 10px;
-    top: 275px;
   }
 `;
