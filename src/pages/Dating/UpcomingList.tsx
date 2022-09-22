@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
@@ -13,6 +13,10 @@ import tel from "./img/telephone.png";
 import clock from "./img/clock.png";
 import close from "./img/close.png";
 import { Btn } from "../ProfileSetting/UserInfos";
+import {
+  setConsiderList,
+  setUpcomingDateList,
+} from "../../functions/datingReducerFunction";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -211,11 +215,16 @@ const UpcomingList: React.FC<Props> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [checkToAdoptPet, setCheckToAdoptPet] = useState<Boolean>(false);
-  const [datingDone, setDatingDone] = useState<{ id: number; open: Boolean }>({
+  const [datingDone, setDatingDone] = useState<{
+    id: number;
+    open: Boolean;
+    index: number;
+  }>({
     id: 0,
     open: false,
+    index: -1,
   });
   const [adoptPetInfo, setAdoptPetInfo] = useState<{
     name: string;
@@ -223,10 +232,6 @@ const UpcomingList: React.FC<Props> = (props) => {
   }>({ name: "", birthYear: 0 });
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
 
-  console.log(
-    dating.upcomingDateList[0].datingDate,
-    Date.parse(`${new Date()}`)
-  );
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -303,7 +308,11 @@ const UpcomingList: React.FC<Props> = (props) => {
             <>
               <DatingDoneBtn
                 onClick={() => {
-                  setDatingDone({ id: date.id, open: !datingDone.open });
+                  setDatingDone({
+                    id: date.id,
+                    open: !datingDone.open,
+                    index: index,
+                  });
                   setCheckToAdoptPet(false);
                 }}
               >
@@ -313,7 +322,9 @@ const UpcomingList: React.FC<Props> = (props) => {
                 <AskIfAdoptPetBox>
                   <CloseAdoptBtn
                     src={close}
-                    onClick={() => setDatingDone({ id: 0, open: false })}
+                    onClick={() =>
+                      setDatingDone({ id: 0, open: false, index: -1 })
+                    }
                   />
                   <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
                   <AnswerBtnContainer>
@@ -334,7 +345,9 @@ const UpcomingList: React.FC<Props> = (props) => {
                           date.id
                         );
                         window.alert("好ㄛ🙆");
-                        props.getUpcomingListData();
+                        const newUpcomingList = dating.upcomingDateList;
+                        newUpcomingList.splice(datingDone.index, 1);
+                        dispatch(setUpcomingDateList(newUpcomingList));
                         setAdoptAnswer(1);
                       }}
                       $isActive={adoptAnswer === 1}
@@ -403,8 +416,28 @@ const UpcomingList: React.FC<Props> = (props) => {
                               "id",
                               date.id
                             );
+                            const newUpcomingList = dating.upcomingDateList;
+                            newUpcomingList.splice(index, 1);
+                            dispatch(setUpcomingDateList(newUpcomingList));
+                            const newConsiderList = dating.considerList.filter(
+                              (pet) => {
+                                return pet.id !== date.id;
+                              }
+                            );
+                            dispatch(setConsiderList(newConsiderList));
+                            deleteFirebaseData(
+                              `/memberProfiles/${profile.uid}/considerLists`,
+                              "id",
+                              date.id
+                            );
+                            await addDoc(
+                              collection(
+                                db,
+                                `/memberProfiles/${profile.uid}/notConsiderLists`
+                              ),
+                              { id: date.id }
+                            );
                             window.alert("已將領養寵物新增至您的會員資料！");
-                            props.getUpcomingListData();
                           }}
                         >
                           確認(日後可修改)
@@ -427,7 +460,10 @@ const UpcomingList: React.FC<Props> = (props) => {
                   "id",
                   date.id
                 );
-                props.getUpcomingListData();
+                const newUpcomingList = dating.upcomingDateList;
+                newUpcomingList.splice(index, 1);
+                dispatch(setUpcomingDateList(newUpcomingList));
+                window.alert("成功取消約會!");
               }}
             >
               取消此次約會
