@@ -270,6 +270,9 @@ const VetClinic = () => {
             onMouseEnter={() => {
               setOptionBoxOpen(true);
             }}
+            onClick={() => {
+              optionBoxOpen ? setOptionBoxOpen(false) : setOptionBoxOpen(true);
+            }}
           >
             {nowCountry}
           </NowChooseOption>

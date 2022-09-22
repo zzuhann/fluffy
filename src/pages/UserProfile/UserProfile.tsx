@@ -475,6 +475,11 @@ const UserProfile = () => {
                   onMouseEnter={() => {
                     setOptionBoxOpen(true);
                   }}
+                  onClick={() => {
+                    optionBoxOpen
+                      ? setOptionBoxOpen(false)
+                      : setOptionBoxOpen(true);
+                  }}
                 >
                   {nowChoosePet}
                 </NowChooseOption>

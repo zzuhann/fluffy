@@ -254,16 +254,6 @@ const OptionName = styled.li`
   }
 `;
 
-const InputTimeAddDiary = styled(EditInfoInput)`
-  @media (max-width: 653px) {
-    width: 250px;
-  }
-  @media (max-width: 495px) {
-    margin-left: 0;
-    margin-top: 10px;
-  }
-`;
-
 const AddDiaryInputContainer = styled(EditContainer)`
   @media (max-width: 495px) {
     flex-direction: column;
@@ -570,7 +560,6 @@ export const PetDiary = () => {
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
-  const [value, onChange] = useState(new Date());
 
   useEffect(() => {
     getAuthorPetDiary(profile.uid);
@@ -777,6 +766,11 @@ export const PetDiary = () => {
                       onMouseEnter={() => {
                         setOptionBoxOpen(true);
                       }}
+                      onClick={() => {
+                        optionBoxOpen
+                          ? setOptionBoxOpen(false)
+                          : setOptionBoxOpen(true);
+                      }}
                     >
                       {nowChoosePetName}
                     </NowChooseOption>
@@ -784,6 +778,11 @@ export const PetDiary = () => {
                     <NowChooseOption
                       onMouseEnter={() => {
                         setOptionBoxOpen(true);
+                      }}
+                      onClick={() => {
+                        optionBoxOpen
+                          ? setOptionBoxOpen(false)
+                          : setOptionBoxOpen(true);
                       }}
                     >
                       選擇寵物
