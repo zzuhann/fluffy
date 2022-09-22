@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -270,6 +270,7 @@ type ConsiderSingleCard = {
   tab: string;
   considerDetail: Boolean;
   nowChosenPetIndex: number;
+  setDatingQty: Dispatch<SetStateAction<number>>;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -321,6 +322,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           setConsiderDetail={props.setConsiderDetail}
           considerDetail={props.considerDetail}
           scroll={scroll}
+          setDatingQty={props.setDatingQty}
         />
       ) : (
         ""
@@ -334,6 +336,7 @@ const ConsiderPetDetail = (props: {
   setConsiderDetail: (considerDetail: Boolean) => void;
   considerDetail: Boolean;
   scroll: number;
+  setDatingQty: Dispatch<SetStateAction<number>>;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -612,6 +615,7 @@ const ConsiderPetDetail = (props: {
                 dating.considerList[props.nowChosenPetIndex]
               );
               getUpcomingListData();
+              props.setDatingQty((prev) => prev + 1);
               window.alert("申請成功！可至「即將到來的約會」查看");
               setInviteBoxOpen(false);
             }}

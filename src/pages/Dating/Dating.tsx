@@ -164,31 +164,41 @@ const KindOption = styled(FilterInfoOption)<{ $isActive: boolean }>`
 const AreaOption = styled(FilterInfoOption)<{ $isActive: boolean }>`
   background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
 `;
+const NoCardSWrapper = styled.div`
+  max-width: 1120px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
 
 const NoCardsTitle = styled.div`
   font-size: 22px;
+  letter-spacing: 1.5px;
   font-weight: bold;
   color: #3c3c3c;
-  position: absolute;
-  top: 25%;
+  text-align: center;
+  line-height: 40px;
+  /* top: 25%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
 `;
 
 const NoCardsBtn = styled(Btn)`
   width: 250px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const RequestMoreCardsBtn = styled(NoCardsBtn)`
-  top: 35%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 40px;
 `;
 
 const LookConsiderListBtn = styled(NoCardsBtn)`
-  top: 45%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 70px;
 `;
 
 const ConsiderList = styled.div`
@@ -316,6 +326,7 @@ const Pairing: React.FC = () => {
   const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
   const chosenIdRef = useRef<number[]>([]);
   const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
+  const [datingQty, setDatingQty] = useState<number>(0);
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
@@ -430,12 +441,11 @@ const Pairing: React.FC = () => {
             ? setOpenDatingFeatureMenu(false)
             : setOpenDatingFeatureMenu(true);
         }}
-        $Notification={matchSuccessQty > 0}
+        $Notification={matchSuccessQty > 0 || datingQty > 0}
       >
         <OpenToggleTabsIcon src={menuburger} />
       </OpenToggleTabs>
       <OpenTutorial
-        onMouseEnter={() => setOpenTutorialMenu(true)}
         onClick={() => {
           openTutorialMenu
             ? setOpenTutorialMenu(false)
@@ -443,10 +453,7 @@ const Pairing: React.FC = () => {
         }}
       >
         <OpenTutorialIcon src={question} />
-        <TutorialBox
-          onMouseLeave={() => setOpenTutorialMenu(true)}
-          $isActive={openTutorialMenu === true}
-        >
+        <TutorialBox $isActive={openTutorialMenu === true}>
           <TutorialTitle>配對專區使用簡介</TutorialTitle>
           <TutorialContext>
             1. 這些動物皆來自台灣各地收容所，對喜歡的動物按個愛心吧！
@@ -468,6 +475,8 @@ const Pairing: React.FC = () => {
       <TogglePairingTabs
         matchSuccessQty={matchSuccessQty}
         setMatchSuccessQty={setMatchSuccessQty}
+        datingQty={datingQty}
+        setDatingQty={setDatingQty}
         tab={tab}
         setTab={setTab}
         getListsData={getListsData}
@@ -480,7 +489,7 @@ const Pairing: React.FC = () => {
         {tab === "pairing" ? (
           <>
             {dating.allCards.length <= 0 ? (
-              <>
+              <NoCardSWrapper>
                 <NoCardsTitle>
                   有發現喜歡的寵物嗎？接下來您可以選擇 ...
                 </NoCardsTitle>
@@ -498,7 +507,7 @@ const Pairing: React.FC = () => {
                 >
                   看目前考慮領養清單
                 </LookConsiderListBtn>
-              </>
+              </NoCardSWrapper>
             ) : (
               <Cards>
                 <FilterContainer onClick={() => setOpenFilterBox(true)}>
@@ -580,6 +589,7 @@ const Pairing: React.FC = () => {
                 tab={tab}
                 considerDetail={considerDetail}
                 nowChosenPetIndex={nowChosenPetIndex}
+                setDatingQty={setDatingQty}
               />
             </ConsiderList>
           </>

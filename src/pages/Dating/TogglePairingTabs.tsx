@@ -53,8 +53,8 @@ const PairingTab = styled.div`
 `;
 
 const AlertMatchQty = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   position: absolute;
   background-color: #ff5106;
@@ -78,10 +78,11 @@ export type TogglePairingTabsProps = {
   setMatchSuccessQty: Dispatch<SetStateAction<number>>;
   setOpenDatingFeatureMenu: Dispatch<SetStateAction<boolean>>;
   openDatingFeatureMenu: boolean;
+  datingQty: number;
+  setDatingQty: Dispatch<SetStateAction<number>>;
 };
 
 const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
-  console.log(props.matchSuccessQty);
   return (
     <TogglePairingTab
       onMouseLeave={() => props.setOpenDatingFeatureMenu(false)}
@@ -113,9 +114,15 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         onClick={() => {
           props.setTab("upcomingDate");
           props.getUpcomingListData();
+          props.setDatingQty(0);
         }}
         $isActive={props.tab === "upcomingDate"}
       >
+        {props.datingQty > 0 ? (
+          <AlertMatchQty>+{props.datingQty}</AlertMatchQty>
+        ) : (
+          ""
+        )}
         <PairingTab>即將到來的約會</PairingTab>
       </PairingTabContainer>
     </TogglePairingTab>
