@@ -21,6 +21,7 @@ import preferenceSet from "./img/preference.png";
 import { area } from "./constantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
+import question from "./img/help-sing.png";
 
 const ConsiderTitle = styled(Title)`
   position: absolute;
@@ -212,7 +213,6 @@ const UpcomingListContainer = styled.div`
   transform: translateX(-50%);
   position: relative;
   padding: 20px;
-  /* overflow-y: auto; */
 `;
 
 const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
@@ -222,14 +222,13 @@ const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
   position: fixed;
   bottom: 20px;
   left: 20px;
-  /* background-color: #b7b0a8; */
   background-color: ${(props) =>
     props.$Notification ? "#ff5106" : " #b7b0a8"};
   z-index: 500;
   cursor: pointer;
   transition: 0.2s;
+  box-shadow: 0px 0px 2px 3px rgba(0, 0, 0, 0.2);
   &:hover {
-    /* background-color: #928c86; */
     background-color: ${(props) =>
       props.$Notification ? "#d23f00" : " #928c86"};
   }
@@ -241,6 +240,63 @@ const OpenToggleTabsIcon = styled.img`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const OpenTutorial = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fff;
+  z-index: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0px 0px 1px 4px rgba(0, 0, 0, 0.1);
+  &:hover {
+    background-color: #ececec;
+  }
+`;
+const OpenTutorialIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+const TutorialBox = styled.div<{ $isActive: boolean }>`
+  width: 250px;
+  position: absolute;
+  top: -320px;
+  right: 0;
+  height: ${(props) => (props.$isActive ? "auto" : "0")};
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s;
+  padding: ${(props) => (props.$isActive ? "10px 15px" : "0")};
+  border-radius: 5px;
+  box-shadow: ${(props) =>
+    props.$isActive ? "2px 2px 6px 3px rgba(0, 0, 0, 0.1)" : "0"};
+  background-color: #fbfbfb;
+`;
+
+const TutorialTitle = styled.div`
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+`;
+
+const TutorialContext = styled.div`
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 1.5px;
+  margin-bottom: 5px;
 `;
 
 const Pairing: React.FC = () => {
@@ -262,6 +318,7 @@ const Pairing: React.FC = () => {
   const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
+  const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
 
   useEffect(() => {
     checkChosenAndAppendNewPet(100);
@@ -377,6 +434,37 @@ const Pairing: React.FC = () => {
       >
         <OpenToggleTabsIcon src={menuburger} />
       </OpenToggleTabs>
+      <OpenTutorial
+        onMouseEnter={() => setOpenTutorialMenu(true)}
+        onClick={() => {
+          openTutorialMenu
+            ? setOpenTutorialMenu(false)
+            : setOpenTutorialMenu(true);
+        }}
+      >
+        <OpenTutorialIcon src={question} />
+        <TutorialBox
+          onMouseLeave={() => setOpenTutorialMenu(true)}
+          $isActive={openTutorialMenu === true}
+        >
+          <TutorialTitle>配對專區使用簡介</TutorialTitle>
+          <TutorialContext>
+            1. 這些動物皆來自台灣各地收容所，對喜歡的動物按個愛心吧！
+          </TutorialContext>
+          <TutorialContext>
+            2. 按下愛心後，可以到左下角的「考慮領養清單」查看
+          </TutorialContext>
+          <TutorialContext>
+            3. 想要實際和動物相處？按下「申請與他約會」按鈕！
+          </TutorialContext>
+          <TutorialContext>
+            4. 申請約會後，可以在「即將到來的約會」中查看
+          </TutorialContext>
+          <TutorialContext>
+            5. 完成約會後，再告訴我們你是否決定要領養唷！
+          </TutorialContext>
+        </TutorialBox>
+      </OpenTutorial>
       <TogglePairingTabs
         matchSuccessQty={matchSuccessQty}
         setMatchSuccessQty={setMatchSuccessQty}
