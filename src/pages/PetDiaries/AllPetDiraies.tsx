@@ -10,7 +10,7 @@ export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: absolute;
-  top: 90px;
+  top: 140px;
   padding-left: 12px;
   &:before {
     content: "";
@@ -41,7 +41,7 @@ const AllDiariesContainer = styled.div`
   max-width: 1120px;
   width: 100%;
   margin: 0 auto;
-  padding: 150px 0 46px;
+  padding: 200px 0 46px;
   /* display: flex;
   flex-wrap: wrap; */
   transition: 0.3s;

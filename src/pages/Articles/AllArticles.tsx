@@ -19,7 +19,7 @@ const AllArticlesContainer = styled.div`
   max-width: 1120px;
   margin: 0 auto;
   width: 100%;
-  padding: 150px 0 46px;
+  padding: 200px 0 46px;
   display: flex;
   flex-wrap: wrap;
   transition: 0.3s;
@@ -39,7 +39,7 @@ const AllArticlesContainer = styled.div`
 `;
 
 const ArticleCard = styled(Link)`
-  width: calc((100% - 120px) / 2);
+  width: calc((100% - 150px) / 2);
   /* margin: 0 20px 50px; */
   flex-shrink: 0;
   display: flex;
@@ -87,8 +87,14 @@ const ArticleCardBottom = styled.div`
 
 const ArticleTitle = styled.div`
   font-weight: bold;
-  flex: 1;
+  /* flex: 1; */
   margin-bottom: 20px;
+  line-height: 25px;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 `;
 
 const HeartAndCommentRecordContainer = styled.div`

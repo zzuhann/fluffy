@@ -343,9 +343,6 @@ const Record = styled.div`
 
 const PetInfo = styled.div`
   padding: 70px 0 46px;
-  /* display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; */
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
@@ -375,13 +372,9 @@ const PetInfo = styled.div`
 `;
 
 const PetSimpleCard = styled.div`
-  /* width: 250px;
-  height: 250px; */
   position: relative;
-  /* margin: 0 auto; */
   border-radius: 10px;
   overflow: hidden;
-  /* margin-bottom: 30px; */
   transition: 0.3s;
   bottom: 0;
   &:hover {
