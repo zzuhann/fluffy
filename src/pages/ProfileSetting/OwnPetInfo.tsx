@@ -7,6 +7,7 @@ import {
   db,
   deleteFirebaseData,
   storage,
+  updateFirebaseDataMutipleWhere,
   updateUseStateInputImage,
 } from "../../utils/firebase";
 import {
@@ -19,7 +20,6 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Title } from "./UserInfos";
-import pet from "./pet.png";
 import trash from "./bin.png";
 import upload from "./upload.png";
 import defaultProfile from "./defaultprofile.png";
@@ -526,7 +526,15 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
     }
     if (props.petNewImg.url !== profile.ownPets[props.ownPetIndex].img) {
       await updateOwnPetInfo();
-
+      await updateFirebaseDataMutipleWhere(
+        `/petDiaries`,
+        "authorUid",
+        profile.uid,
+        "petName",
+        profile.ownPets[props.ownPetIndex].name,
+        "",
+        { petName: props.petNewInfo.name }
+      );
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
       const updateOwnPet = profile.ownPets;
@@ -538,6 +546,15 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
       };
     } else {
       await updatePetInfo("");
+      await updateFirebaseDataMutipleWhere(
+        `/petDiaries`,
+        "authorUid",
+        profile.uid,
+        "petName",
+        profile.ownPets[props.ownPetIndex].name,
+        "",
+        { petName: props.petNewInfo.name }
+      );
       window.alert("更新完成！");
       props.setOwnPetEdit(false);
       const updateOwnPet = profile.ownPets;

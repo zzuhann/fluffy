@@ -119,7 +119,7 @@ export function updateUseStateInputImage(file: FileList, fn: Function) {
 export async function updateFirebaseDataMutipleWhere(
   collectionUrl: string,
   field1: string,
-  target1: number,
+  target1: number | string,
   field2: string,
   target2: string,
   imgURL: string,
