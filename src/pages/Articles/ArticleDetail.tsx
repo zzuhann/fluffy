@@ -114,7 +114,7 @@ const RecordContainer = styled.div`
   padding: 20px;
 `;
 const Record = styled.div`
-  font-size: 15px;
+  font-size: 16px;
   margin-right: 15px;
   margin-left: 5px;
 `;
@@ -187,7 +187,7 @@ const CommentTime = styled.div`
   position: absolute;
   right: 5px;
   top: 5px;
-  font-size: 12px;
+  font-size: 14px;
   color: #7d7d7d;
 `;
 const CommentContext = styled.div`

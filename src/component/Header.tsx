@@ -144,7 +144,7 @@ const NavBar = styled.li`
     margin-right: 0;
   }
   @media (max-width: 1025px) {
-    font-size: 24px;
+    font-size: 22px;
     letter-spacing: 1.5px;
     margin-right: 0;
     margin-top: 40px;

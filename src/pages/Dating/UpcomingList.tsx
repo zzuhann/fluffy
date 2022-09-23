@@ -182,17 +182,9 @@ const DatingDoneBtn = styled(Btn)`
   font-size: 16px;
   @media (max-width: 740px) {
     right: 15px;
-    bottom: 160px;
+    top: 5px;
+    bottom: auto;
     padding: 5px 10px;
-  }
-  @media (max-width: 630px) {
-    bottom: 10px;
-    left: 5px;
-    right: auto;
-    background-color: #aca8a8;
-    color: #fff;
-    font-size: 12px;
-    padding: 5px;
   }
   @media (max-width: 612px) {
     padding: 5px 10px;
@@ -201,6 +193,8 @@ const DatingDoneBtn = styled(Btn)`
     font-size: 16px;
     left: auto;
     right: 5px;
+    top: auto;
+    bottom: 10px;
   }
 `;
 

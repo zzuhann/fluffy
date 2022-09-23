@@ -89,7 +89,8 @@ const Tab = styled.div<{ $isActive: boolean }>`
   flex: 1;
   text-align: center;
   height: 50px;
-  font-size: 20px;
+  font-size: 22px;
+  letter-spacing: 2px;
   cursor: pointer;
   background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#EFEFEF")};
   color: ${(props) => (props.$isActive ? "#fff" : "black")};
@@ -170,6 +171,7 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
   width: 200px;
   left: 0;
   top: 50px;
+  border-radius: 8px;
 `;
 const OptionName = styled.li`
   display: flex;

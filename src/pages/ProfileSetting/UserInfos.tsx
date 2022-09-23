@@ -24,7 +24,7 @@ import upload from "./upload.png";
 
 export const Btn = styled.div`
   position: absolute;
-  font-size: 20px;
+  font-size: 18px;
   color: #737373;
   letter-spacing: 1.5px;
   text-align: center;
@@ -54,7 +54,7 @@ const EditUserInfoContainer = styled(UserInfo)`
   padding-bottom: 80px;
 `;
 export const Title = styled.div`
-  font-size: 30px;
+  font-size: 32px;
   font-weight: bold;
   position: relative;
   padding-left: 15px;
@@ -68,7 +68,7 @@ export const Title = styled.div`
     left: 0;
   }
   @media (max-width: 403px) {
-    font-size: 24px;
+    font-size: 22px;
     padding-left: 10px;
     left: 15px;
   }
@@ -83,7 +83,7 @@ const UserContainer = styled.div`
 `;
 
 const UserName = styled.div`
-  font-size: 25px;
+  font-size: 22px;
   margin-left: 20px;
   @media (max-width: 617px) {
     margin-left: 0;
@@ -173,11 +173,11 @@ const PreviewCancelBtn = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: #d0470c;
+  background-color: #db5452;
   transition: 0.3s;
   cursor: pointer;
   &:hover {
-    background-color: #952f04;
+    background-color: #b54745;
     color: #fff;
   }
 `;

@@ -19,10 +19,10 @@ const ClinicListContainer = styled.div`
   width: 100%;
   position: relative;
   margin: 0 auto;
-  padding-top: 150px;
+  padding-top: 220px;
   padding-bottom: 80px;
   @media (max-width: 778px) {
-    padding: 150px 30px 80px 30px;
+    padding: 220px 30px 80px 30px;
   }
 `;
 
@@ -50,7 +50,7 @@ const ClinicCard = styled.div`
 const ClinicLoc = styled.div`
   font-size: 22px;
   font-weight: bold;
-  color: #d0470c;
+  color: #db5452;
   position: absolute;
   top: 20px;
   right: 20px;
@@ -64,7 +64,7 @@ const ClinicLoc = styled.div`
 `;
 
 const ClinicTitle = styled.div`
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   margin-bottom: 20px;
   @media (max-width: 472px) {
@@ -80,12 +80,14 @@ const ClinicInfo = styled.div`
   }
 `;
 
-const PhoneLink = styled.a``;
+const PhoneLink = styled.a`
+  color: #db5452;
+`;
 const AreaTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: absolute;
-  top: 80px;
+  top: 150px;
   padding-left: 12px;
   &:before {
     content: "";
@@ -109,7 +111,7 @@ const SelectGroup = styled.div`
   border-radius: 5px;
   width: 200px;
   z-index: 1000;
-  top: 80px;
+  top: 150px;
   left: -250px;
   @media (max-width: 1435px) {
     right: 0;
@@ -144,6 +146,7 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
   width: 200px;
   left: 0;
   top: 50px;
+  border-radius: 8px;
   @media (max-width: 506px) {
     width: 150px;
   }
@@ -154,8 +157,8 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
 `;
 const OptionName = styled.li`
   display: flex;
-  justify-content: center;
-  padding: 8px 10px;
+  /* justify-content: center; */
+  padding: 13px;
   transition: 0.2s;
   &:hover {
     background-color: #d1cfcf;

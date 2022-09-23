@@ -64,6 +64,7 @@ const CoverTextContainer = styled.div`
   }
   @media (max-width: 530px) {
     width: 65%;
+    top: 30%;
   }
   @media (max-width: 489px) {
     top: 35%;
@@ -80,8 +81,8 @@ const CoverTitle = styled.h1`
   @media (max-width: 704px) {
     font-size: 28px;
   }
-  @media (max-width: 522px) {
-    font-size: 22px;
+  @media (max-width: 585px) {
+    line-height: 40px;
     font-weight: bold;
   }
   @media (max-width: 489px) {
@@ -93,9 +94,6 @@ const CoverText = styled.div`
   line-height: 30px;
   letter-spacing: 1.5px;
   position: relative;
-  @media (max-width: 585px) {
-    font-size: 14px;
-  }
   @media (max-width: 489px) {
     display: none;
   }
@@ -147,9 +145,6 @@ const SectionText = styled.div`
   position: relative;
   @media (max-width: 892px) {
     text-align: center;
-  }
-  @media (max-width: 461px) {
-    font-size: 14px;
   }
 `;
 const SectionFirstImg = styled.img`

@@ -16,7 +16,7 @@ export const PageTitle = styled.h1`
     content: "";
     width: 4px;
     height: 100%;
-    background-color: #d0470c;
+    background-color: #db5452;
     position: absolute;
     left: 0;
   }
@@ -24,6 +24,7 @@ export const PageTitle = styled.h1`
     left: 50px;
   }
   @media (max-width: 725px) {
+    top: 120px;
     left: 50%;
     transform: translateX(-50%);
   }

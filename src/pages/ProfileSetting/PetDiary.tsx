@@ -142,7 +142,7 @@ const PetSimpleInfos = styled.div`
   padding: 10px 15px;
 `;
 const PetSimpleInfo = styled.div`
-  font-size: 25px;
+  font-size: 22px;
   color: #fff;
   letter-spacing: 1.5px;
 `;
@@ -188,11 +188,11 @@ const PreviewCancelBtn = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: #d0470c;
+  background-color: #db5452;
   transition: 0.3s;
   cursor: pointer;
   &:hover {
-    background-color: #952f04;
+    background-color: #b54745;
     color: #fff;
   }
 `;

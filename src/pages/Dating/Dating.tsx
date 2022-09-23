@@ -83,7 +83,7 @@ const FilterImg = styled.img`
 `;
 
 const FilterTitle = styled.div`
-  font-size: 15px;
+  font-size: 16px;
   position: relative;
   top: 2px;
 `;
@@ -110,7 +110,7 @@ const FilterInsideContainer = styled.div`
   z-index: 999;
   background-color: #fff;
   padding: 15px;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 1.5px;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
   width: 350px;
@@ -138,7 +138,7 @@ const FilterOptionGroup = styled.div`
 `;
 const FilterInfoOption = styled(Btn)`
   width: auto;
-  font-size: 15px;
+  font-size: 16px;
   position: relative;
   border: solid 2px #d1cfcf;
   padding: 5px 15px;

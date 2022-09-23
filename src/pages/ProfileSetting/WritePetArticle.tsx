@@ -118,11 +118,11 @@ const PreviewCancelBtn = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: #d0470c;
+  background-color: #db5452;
   transition: 0.3s;
   cursor: pointer;
   &:hover {
-    background-color: #952f04;
+    background-color: #b54745;
     color: #fff;
   }
   @media (max-width: 533px) {
