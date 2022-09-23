@@ -113,10 +113,30 @@ const MainSection = styled.div`
 const AllDiariesContainer = styled.div`
   margin: 0 auto;
   padding: 70px 0 46px;
-  display: flex;
-  flex-wrap: wrap;
+  /* display: flex;
+  flex-wrap: wrap; */
   transition: 0.3s;
   position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 230px);
+  justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 230px;
+  @media (max-width: 769px) {
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, 250px);
+    grid-template-rows: 250px;
+  }
+
+  @media (max-width: 649px) {
+    grid-template-columns: repeat(auto-fill, 200px);
+    grid-template-rows: 200px;
+  }
+  @media (max-width: 549px) {
+    grid-template-columns: repeat(auto-fill, 250px);
+    grid-template-rows: 250px;
+  }
 `;
 
 const SelectGroup = styled.div`
@@ -163,8 +183,6 @@ const OptionName = styled.li`
 `;
 
 const DiaryCard = styled(Link)<{ likecount: number; commentcount: number }>`
-  width: 250px;
-  height: 250px;
   border-radius: 10px;
   overflow: hidden;
   margin: 0 auto;
@@ -197,9 +215,21 @@ const DiaryCard = styled(Link)<{ likecount: number; commentcount: number }>`
   }
 `;
 const DiaryImg = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 230px;
+  height: 230px;
   object-fit: cover;
+  @media (max-width: 769px) {
+    width: 250px;
+    height: 250px;
+  }
+  @media (max-width: 649px) {
+    width: 200px;
+    height: 200px;
+  }
+  @media (max-width: 549px) {
+    width: 250px;
+    height: 250px;
+  }
 `;
 const DiaryBottom = styled.div`
   display: flex;
@@ -211,12 +241,11 @@ const DiaryBottom = styled.div`
   left: 0;
   width: 100%;
   padding: 10px 15px;
-  font-size: 22px;
-`;
-const DiaryTitle = styled.div``;
-const PetAge = styled.div`
+  font-size: 18px;
   letter-spacing: 1.5px;
 `;
+const DiaryTitle = styled.div``;
+const PetAge = styled.div``;
 
 // article style
 const AllArticlesContainer = styled.div`
@@ -224,25 +253,37 @@ const AllArticlesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: flex-start;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
   /* padding: 15px; */
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  justify-content: space-between;
+  gap: 10px;
+  /* grid-template-rows: 400px; */
   position: relative;
-  @media (max-width: 529px) {
+  /* @media (max-width: 529px) {
     justify-content: center;
+  } */
+  @media (max-width: 640px) {
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, 300px);
   }
 `;
 
 const ArticleCard = styled(Link)`
-  width: 250px;
+  /* width: 250px; */
   /* margin: 0 auto; */
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: black;
+  color: #3c3c3c;
   position: relative;
   margin-bottom: 10px;
   border-radius: 10px;
@@ -259,6 +300,10 @@ const ArticleCover = styled.img`
   width: 100%;
   height: 200px;
   object-fit: cover;
+  flex-shrink: 0;
+  @media (max-width: 640px) {
+    height: 150px;
+  }
 `;
 
 const ArticleCardBottom = styled.div`
@@ -270,14 +315,20 @@ const ArticleCardBottom = styled.div`
   color: #3c3c3c;
   letter-spacing: 1.5px;
   border-radius: 0 0 10px 10px;
+  height: 100%;
 `;
 
 const ArticleTitle = styled.div`
   font-weight: bold;
-  flex: 1;
+  height: 60px;
   font-size: 22px;
   line-height: 30px;
   margin-bottom: 10px;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 `;
 
 const HeartAndCommentRecordContainer = styled.div`
@@ -292,28 +343,45 @@ const Record = styled.div`
 
 const PetInfo = styled.div`
   padding: 70px 0 46px;
-  display: flex;
+  /* display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-between; */
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
   padding: 15px;
   position: relative;
-  @media (max-width: 559px) {
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 230px);
+  justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 230px;
+  @media (max-width: 769px) {
     justify-content: center;
+    grid-template-columns: repeat(auto-fill, 250px);
+    grid-template-rows: 250px;
+  }
+
+  @media (max-width: 649px) {
+    grid-template-columns: repeat(auto-fill, 200px);
+    grid-template-rows: 200px;
+  }
+  @media (max-width: 549px) {
+    grid-template-columns: repeat(auto-fill, 250px);
+    grid-template-rows: 250px;
   }
 `;
 
 const PetSimpleCard = styled.div`
-  width: 250px;
-  height: 250px;
+  /* width: 250px;
+  height: 250px; */
   position: relative;
   /* margin: 0 auto; */
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   transition: 0.3s;
   bottom: 0;
   &:hover {
@@ -323,9 +391,21 @@ const PetSimpleCard = styled.div`
 `;
 
 const PetSimpleImage = styled.img`
-  width: 250px;
-  height: 250px;
+  width: 230px;
+  height: 230px;
   object-fit: cover;
+  @media (max-width: 769px) {
+    width: 250px;
+    height: 250px;
+  }
+  @media (max-width: 649px) {
+    width: 200px;
+    height: 200px;
+  }
+  @media (max-width: 549px) {
+    width: 250px;
+    height: 250px;
+  }
 `;
 const PetSimpleInfos = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
@@ -337,11 +417,21 @@ const PetSimpleInfos = styled.div`
   left: 0;
   width: 100%;
   padding: 10px 15px;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: 1.5px;
 `;
 const PetSimpleInfo = styled.div`
   color: #fff;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  white-space: nowrap;
+  position: relative;
+  line-height: 25px;
+`;
+
+const PetYearAge = styled.div`
+  color: #fff;
+  flex-shrink: 0;
 `;
 
 const UserProfile = () => {
@@ -514,19 +604,6 @@ const UserProfile = () => {
                 </OptionGroup>
               </SelectGroup>
               <AllDiariesContainer>
-                {/* <AllPetNameContainer>
-                  {ownPet.map((pet, index) => (
-                    <AllPetBtn
-                      key={index}
-                      onClick={() => setChoosePetDiary(index)}
-                    >
-                      {pet}
-                    </AllPetBtn>
-                  ))}
-                  <AllPetBtn key={-1} onClick={() => setChoosePetDiary(-1)}>
-                    全部
-                  </AllPetBtn>
-                </AllPetNameContainer> */}
                 {nowChoosePet === "全部"
                   ? userDiary.map((diary, index) => (
                       <DiaryCard
@@ -539,7 +616,7 @@ const UserProfile = () => {
                         <DiaryBottom>
                           <DiaryTitle>{diary.petName}</DiaryTitle>
                           <PetAge>
-                            {`${new Date().getFullYear() - diary.birthYear}`}Y
+                            {`${new Date().getFullYear() - diary.birthYear}`}y
                           </PetAge>
                         </DiaryBottom>
                       </DiaryCard>
@@ -588,7 +665,9 @@ const UserProfile = () => {
                     <PetSimpleInfo>
                       {pet.name} {pet.sex === "M" ? "♂" : "♀"}
                     </PetSimpleInfo>
-                    <PetSimpleInfo>{`${2022 - pet.birthYear}`}Y</PetSimpleInfo>
+                    <PetYearAge>
+                      {`${new Date().getFullYear() - pet.birthYear}`}Y
+                    </PetYearAge>
                   </PetSimpleInfos>
                 </PetSimpleCard>
               ))}

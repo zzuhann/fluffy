@@ -1,8 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import pairing from "./img/disguise.png";
-import consideradopt from "./img/cat.png";
-import upcomingdate from "./img/house.png";
 
 const TogglePairingTab = styled.div<{ $isActive: boolean }>`
   position: fixed;
@@ -27,10 +24,10 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   cursor: pointer;
   font-size: 18px;
   transition: 0.3s;
-  background-color: ${(props) => (props.$isActive ? "#b7b0a8" : "#fff")};
+  background-color: ${(props) => (props.$isActive ? "#FFE5E5" : "#fff")};
   opacity: ${(props) => (props.$isActive ? "1" : "0.9")};
   &:hover {
-    background-color: #b7b0a8;
+    background-color: #ffe5e5;
     opacity: 1;
   }
   @media (max-width: 688px) {
@@ -57,7 +54,7 @@ const AlertMatchQty = styled.div`
   height: 30px;
   border-radius: 50%;
   position: absolute;
-  background-color: #ff5106;
+  background-color: #db5452;
   display: flex;
   justify-content: center;
   align-items: center;

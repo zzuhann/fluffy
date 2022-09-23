@@ -89,7 +89,7 @@ const UpcomingInfo = styled.div`
 `;
 
 const PetShelterAddress = styled.a`
-  color: #952f04;
+  color: #db5452;
 `;
 
 const AskIfAdoptPetBox = styled.div`

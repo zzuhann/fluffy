@@ -63,7 +63,7 @@ export const Title = styled.div`
     content: "";
     width: 4px;
     height: 100%;
-    background-color: #d0470c;
+    background-color: #db5452;
     position: absolute;
     left: 0;
   }

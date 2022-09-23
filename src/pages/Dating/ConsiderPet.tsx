@@ -19,7 +19,6 @@ import googlemap from "./img/placeholder.png";
 import tel from "./img/telephone.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import close from "./img/close.png";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 import { CalendarContainer } from "../ProfileSetting/PetDiary";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -135,7 +134,7 @@ const PetInfo = styled.div`
 `;
 
 const PetShelterAddress = styled.a`
-  color: #952f04;
+  color: #db5452;
 `;
 
 const CloseBtn = styled(Btn)`
@@ -150,8 +149,6 @@ const CloseBtn = styled(Btn)`
 
 const InviteDatingBtn = styled(Btn)`
   bottom: 18px;
-  /* left: 50%;
-  transform: translateX(-50%); */
   left: 10px;
   padding: 5px 5px;
   width: 220px;
@@ -160,8 +157,6 @@ const InviteDatingBtn = styled(Btn)`
 
 const NotCondiserBtn = styled(Btn)`
   bottom: 18px;
-  /* left: 50%;
-  transform: translateX(-50%); */
   right: 10px;
   padding: 5px 5px;
   font-size: 16px;

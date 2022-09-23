@@ -20,6 +20,13 @@ export const PageTitle = styled.h1`
     position: absolute;
     left: 0;
   }
+  @media (max-width: 1120px) {
+    left: 50px;
+  }
+  @media (max-width: 725px) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 `;
 
 const Wrap = styled.div`
@@ -35,21 +42,29 @@ const AllDiariesContainer = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 150px 0 46px;
-  display: flex;
-  flex-wrap: wrap;
+  /* display: flex;
+  flex-wrap: wrap; */
   transition: 0.3s;
   position: relative;
+  /* justify-content: space-between; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
   justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 250px;
   @media (max-width: 1120px) {
     padding-left: 50px;
     padding-right: 50px;
   }
-  @media (max-width: 699.5px) {
+  @media (max-width: 725px) {
     justify-content: center;
+    grid-template-columns: repeat(auto-fill, 300px);
+  }
+  @media (max-width: 432px) {
+    grid-template-columns: repeat(auto-fill, 250px);
   }
 `;
 const DiaryCard = styled(Link)`
-  width: 300px;
   margin-bottom: 30px;
   transition: 0.2s;
   bottom: 0;
@@ -96,9 +111,15 @@ const HoverCard = styled.div<{ $isActive: boolean }>`
 `;
 
 const DiaryImg = styled.img`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
+  @media (max-width: 725px) {
+    width: 300px;
+  }
+  @media (max-width: 432px) {
+    width: 250px;
+  }
 `;
 const DiaryBottom = styled.div`
   display: flex;

@@ -11,7 +11,6 @@ import api from "../../utils/api";
 import { db } from "../../utils/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
-import ConsiderPetDetail from "./ConsiderPet";
 import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
 import { ConsiderEverySinglePetCard } from "./ConsiderPet";
@@ -25,12 +24,12 @@ import question from "./img/help-sing.png";
 
 const ConsiderTitle = styled(Title)`
   position: absolute;
-  top: -35px;
+  top: 0px;
 `;
 
 const UpcomingTitle = styled(Title)`
   position: absolute;
-  top: -35px;
+  top: 0px;
 `;
 
 const Wrap = styled.div`
@@ -210,6 +209,7 @@ const ConsiderList = styled.div`
   transform: translateX(-50%);
   justify-content: space-between;
   padding: 20px;
+  padding-top: 70px;
   @media (max-width: 539px) {
     justify-content: center;
   }
@@ -223,6 +223,7 @@ const UpcomingListContainer = styled.div`
   transform: translateX(-50%);
   position: relative;
   padding: 20px;
+  padding-top: 70px;
 `;
 
 const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
@@ -233,14 +234,14 @@ const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
   bottom: 20px;
   left: 20px;
   background-color: ${(props) =>
-    props.$Notification ? "#ff5106" : " #b7b0a8"};
+    props.$Notification ? "#DB5452" : " #FFB9B8"};
   z-index: 500;
   cursor: pointer;
   transition: 0.2s;
-  box-shadow: 0px 0px 2px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 4px 2px rgba(219, 84, 82, 0.4);
   &:hover {
     background-color: ${(props) =>
-      props.$Notification ? "#d23f00" : " #928c86"};
+      props.$Notification ? "#B54745" : " #E4B2B1"};
   }
 `;
 const OpenToggleTabsIcon = styled.img`
