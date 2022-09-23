@@ -100,6 +100,22 @@ const PetCard = styled.div<{ $Top: number }>`
   padding-bottom: 50px;
 `;
 
+const BlackMask = styled.div<{
+  $isActive: boolean;
+  $Height: number;
+}>`
+  opacity: ${(props) => (props.$isActive ? "1" : "0")};
+  overflow-y: hidden;
+  transition: 0.3s;
+  position: fixed;
+  background-color: transparent;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: ${(props) => props.$Height}px;
+  z-index: ${(props) => (props.$isActive ? "2500" : "0")};
+`;
+
 const PetImg = styled.img`
   width: 350px;
   height: 350px;
@@ -349,6 +365,17 @@ const ConsiderPetDetail = (props: {
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
   const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
   const [timeIndex, setTimeIndex] = useState<number>(-1);
+  const [pageHigh, setPageHigh] = useState<number>(0);
+
+  useEffect(() => {
+    window.addEventListener("click", togglePageHeight);
+    return () => window.removeEventListener("scroll", togglePageHeight);
+  }, []);
+
+  function togglePageHeight() {
+    let pageHeight = document.documentElement.offsetHeight;
+    setPageHigh(pageHeight);
+  }
 
   async function updateUpcomingDate(list: Card) {
     await addDoc(
@@ -408,6 +435,15 @@ const ConsiderPetDetail = (props: {
 
   return (
     <>
+      <BlackMask
+        $isActive={props.considerDetail === true}
+        $Height={props.considerDetail ? pageHigh : 0}
+        onClick={() =>
+          props.considerDetail
+            ? props.setConsiderDetail(false)
+            : props.setConsiderDetail(true)
+        }
+      />
       <PetCard $Top={props.scroll}>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}

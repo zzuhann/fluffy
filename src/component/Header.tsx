@@ -391,6 +391,9 @@ const Header = () => {
       <BlackMask
         $isActive={clickBurgerMenu === true}
         $Height={clickBurgerMenu ? pageHigh : 0}
+        onClick={() =>
+          clickBurgerMenu ? setClickBurgerMenu(false) : setClickBurgerMenu(true)
+        }
       />
       <Wrapper $isActive={scroll > 0}>
         <BurgerMenu
