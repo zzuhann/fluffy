@@ -1,4 +1,5 @@
 export enum ActionType {
+  setProfileLogin = "setProfileLogin",
   setProfileName = "setProfileName",
   setProfileEmail = "setProfileEmail",
   setProfilePassword = "setProfilePassword",

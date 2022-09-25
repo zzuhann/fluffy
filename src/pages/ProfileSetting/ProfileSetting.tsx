@@ -4,10 +4,9 @@ import styled from "styled-components";
 import { Profile, OwnPet } from "../../reducers/profile";
 import UserInfos from "./UserInfos";
 import { PetDiary } from "./PetDiary";
-import { db, storage } from "../../utils/firebase";
+import { db } from "../../utils/firebase";
 import { getDocs, collection, addDoc } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import {
   SimpleSinglePetCard,
   EditAddedPetInfo,
@@ -232,8 +231,6 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
       ...addPetInfo,
       img: downloadURL,
     });
-
-    // getOwnPetList();
   }
 
   return (
