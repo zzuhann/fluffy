@@ -43,11 +43,8 @@ const AllDiariesContainer = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 200px 0 46px;
-  /* display: flex;
-  flex-wrap: wrap; */
   transition: 0.3s;
   position: relative;
-  /* justify-content: space-between; */
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   justify-content: space-between;

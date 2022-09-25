@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -9,6 +9,18 @@ import pairingcover from "./pairingcover.jpg";
 import diarycover from "./diarycover.jpg";
 import articlecover from "./articlecover.jpg";
 import cliniccover from "./cliniccover.jpg";
+import {
+  PopImg,
+  PopUpMessage,
+  PopUpNote,
+  PopUpText,
+  BlackMask,
+} from "../../component/Header";
+import catHand from "./cat_hand_white.png";
+
+const PopupTopMessage = styled(PopUpMessage)<{ $Top: number }>`
+  top: ${(props) => props.$Top + 300}px;
+`;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -178,9 +190,67 @@ const Home = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const [openPopupBox, setOpenPopupBox] = useState(false);
+  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
+  const [pageHigh, setPageHigh] = useState<number>(0);
+  const [scroll, setScroll] = useState<number>(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.addEventListener("click", togglePageHeight);
+    return () => window.removeEventListener("scroll", togglePageHeight);
+  }, []);
+  useEffect(() => {
+    if (!openPopupBox) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [openPopupBox]);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
+
+  function togglePageHeight() {
+    let pageHeight = document.documentElement.offsetHeight;
+    setPageHigh(pageHeight);
+  }
+
+  function gotoProfilePage() {
+    setNavigateToProfileTime(3);
+    setOpenPopupBox(true);
+    const coundDownTimer = setInterval(() => {
+      setNavigateToProfileTime((prev) => {
+        if (prev <= 0) {
+          clearInterval(coundDownTimer);
+          setOpenPopupBox(false);
+          navigate("/profile");
+          return 0;
+        } else {
+          return prev - 1;
+        }
+      });
+    }, 1000);
+  }
+
   return (
     <Wrapper>
+      {openPopupBox && (
+        <>
+          <PopupTopMessage $Top={scroll}>
+            <PopImg src={catHand} />
+            <PopUpText>進入配對專區需先登入/註冊</PopUpText>
+            <PopUpNote>
+              {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
+            </PopUpNote>
+          </PopupTopMessage>
+          <BlackMask
+            $isActive={openPopupBox === true}
+            $Height={openPopupBox ? pageHigh : 0}
+          />
+        </>
+      )}
       <CoverContainer>
         <CoverTextContainer>
           <CoverTitle>
@@ -207,10 +277,7 @@ const Home = () => {
             <SectionLinkBtn
               onClick={() => {
                 if (!profile.isLogged) {
-                  window.alert(
-                    "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
-                  );
-                  navigate("/profile");
+                  gotoProfilePage();
                 } else {
                   navigate("/dating");
                 }

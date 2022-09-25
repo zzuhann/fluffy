@@ -22,6 +22,7 @@ import comment from "./chat.png";
 import { AllPetDiariesType } from "./AllPetDiraies";
 import { CommentType } from "../Articles/ArticleDetail";
 import { Btn } from "../ProfileSetting/UserInfos";
+import { LoginRegisterBox } from "../ProfileSetting/ProfileLoginRegister";
 
 const Wrap = styled.div`
   width: 100%;
@@ -249,6 +250,7 @@ const DiaryDetail = () => {
   const [targetDiary, setTargetDiary] = useState<AllPetDiariesType>();
   const [diaryComments, setDiaryComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
+  const [openLoginBox, setOpenLoginBox] = useState(false);
 
   async function addDiaryComment() {
     if (!targetDiary) return;
@@ -305,8 +307,7 @@ const DiaryDetail = () => {
   async function toggleLike() {
     if (!targetDiary) return;
     if (!profile.isLogged) {
-      window.alert("按讚需先登入，確認後導向登入頁面");
-      navigate("/profile");
+      setOpenLoginBox(true);
       return;
     }
     const articleDetailRef = doc(db, "petDiaries", id as string);
@@ -436,8 +437,7 @@ const DiaryDetail = () => {
             <AddCommentBtn
               onClick={() => {
                 if (!profile.isLogged) {
-                  window.alert("留言需先登入，確認後導向登入頁面");
-                  navigate("/profile");
+                  setOpenLoginBox(true);
                   return;
                 }
                 addDiaryComment();
@@ -448,6 +448,12 @@ const DiaryDetail = () => {
           </AddComment>
         </DiaryTextInfo>
       </DiaryContainer>
+      {openLoginBox && (
+        <LoginRegisterBox
+          openLoginBox={openLoginBox}
+          setOpenLoginBox={setOpenLoginBox}
+        />
+      )}
     </Wrap>
   );
 };

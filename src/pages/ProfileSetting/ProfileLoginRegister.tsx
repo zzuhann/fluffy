@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
@@ -22,6 +22,7 @@ import { Profile } from "../../reducers/profile";
 import styled from "styled-components";
 import ProfileSetting from "./ProfileSetting";
 import defaultProfile from "./defaultprofile.png";
+import close from "./close.png";
 
 const WarningText = styled.div`
   color: #db5452;
@@ -81,9 +82,6 @@ const InputContainer = styled.div`
   flex-direction: column;
   margin-bottom: 30px;
   position: relative;
-  &:last-child {
-    /* background-color: green; */
-  }
 `;
 
 const Label = styled.label`
@@ -126,7 +124,27 @@ export const RegisterLoginBtn = styled.div`
     background-color: #8a2b02;
   }
 `;
-const ProfileLoginRegister = () => {
+
+const LoginPopupCancel = styled.img`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+type LoginRegisterType = {
+  openLoginBox: boolean;
+  setOpenLoginBox: Dispatch<SetStateAction<boolean>>;
+};
+
+export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
@@ -280,6 +298,210 @@ const ProfileLoginRegister = () => {
         }
       });
   }
+  return profile.clickLoginOrRegister === "login" ? (
+    <RegisterLoginWrapper>
+      {props.openLoginBox && (
+        <LoginPopupCancel
+          src={close}
+          onClick={() => props.setOpenLoginBox(false)}
+        />
+      )}
+
+      <RegisterLoginTitle>登入</RegisterLoginTitle>
+      <ToggleRegisterLogin
+        onClick={() => {
+          dispatch(setEmail(""));
+          dispatch(setPassword(""));
+          dispatch(targetRegisterOrLogin("register"));
+          setErrorStatus("");
+        }}
+      >
+        尚未有帳號？進行註冊
+      </ToggleRegisterLogin>
+      <InputContainer>
+        <Label htmlFor="email">Email 帳號</Label>
+        <Input
+          key="emailLogin"
+          type="text"
+          placeholder="請輸入 Email"
+          id="email"
+          defaultValue={profile.email}
+          onChange={(e) => {
+            dispatch(setEmail(e.target.value));
+          }}
+          onBlur={(e) => {
+            if (e.target.value === "") {
+              setLoginStatus({ ...loginStatus, email: "empty" });
+            } else if (!Emailregex.test(e.target.value)) {
+              setLoginStatus({ ...loginStatus, email: "wrongFormat" });
+            } else {
+              setLoginStatus({ ...loginStatus, email: "" });
+            }
+          }}
+        />
+        {loginStatus.email === "empty" ? (
+          <WarningText>Email 不得為空白</WarningText>
+        ) : loginStatus.email === "wrongFormat" ? (
+          <WarningText>Email 格式錯誤，請填寫有效 Email</WarningText>
+        ) : (
+          ""
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Label htmlFor="password">密碼</Label>
+        <Input
+          key="passwordLogin"
+          type="password"
+          placeholder="請輸入密碼"
+          id="password"
+          defaultValue={profile.password}
+          onChange={(e) => {
+            dispatch(setPassword(e.target.value));
+          }}
+          onBlur={(e) => {
+            if (e.target.value.length === 0) {
+              setLoginStatus({ ...loginStatus, password: "empty" });
+            } else if (e.target.value.length < 6) {
+              setLoginStatus({ ...loginStatus, password: "wrongLength" });
+            } else {
+              setLoginStatus({ ...loginStatus, password: "" });
+            }
+          }}
+        />
+        {loginStatus.password === "empty" ? (
+          <WarningText>密碼不得為空白</WarningText>
+        ) : loginStatus.password === "wrongLength" ? (
+          <WarningText>密碼不能少於 6 個字元</WarningText>
+        ) : (
+          ""
+        )}
+      </InputContainer>
+      {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
+      <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
+    </RegisterLoginWrapper>
+  ) : (
+    <RegisterLoginWrapper>
+      {props.openLoginBox && (
+        <LoginPopupCancel
+          src={close}
+          onClick={() => props.setOpenLoginBox(false)}
+        />
+      )}
+      <RegisterLoginTitle>註冊</RegisterLoginTitle>
+      <InputContainer>
+        <Label htmlFor="name">使用者名稱</Label>
+        <Input
+          key="nameRegister"
+          type="text"
+          placeholder="輸入使用者名稱"
+          id="name"
+          defaultValue={profile.name}
+          onChange={(e) => {
+            dispatch(setName(e.target.value));
+          }}
+          onBlur={(e) => {
+            if (e.target.value === "") {
+              setRegisterStatus({ ...registerStatus, name: "empty" });
+            } else {
+              setRegisterStatus({ ...registerStatus, name: "" });
+            }
+          }}
+        />
+        {registerStatus.name === "empty" ? (
+          <WarningText>使用者名稱不得為空白</WarningText>
+        ) : (
+          ""
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Label htmlFor="email">Email 帳號</Label>
+        <Input
+          key="emailRegister"
+          type="text"
+          placeholder="請輸入 email"
+          id="email"
+          // value={profile.email}
+          defaultValue={profile.email}
+          onChange={(e) => {
+            dispatch(setEmail(e.target.value));
+          }}
+          onBlur={(e) => {
+            if (e.target.value === "") {
+              setRegisterStatus({ ...registerStatus, email: "empty" });
+            } else if (!Emailregex.test(e.target.value)) {
+              setRegisterStatus({
+                ...registerStatus,
+                email: "wrongFormat",
+              });
+            } else {
+              setRegisterStatus({ ...registerStatus, email: "" });
+            }
+          }}
+        />
+        {registerStatus.email === "empty" ? (
+          <WarningText>Email 不得為空白</WarningText>
+        ) : registerStatus.email === "wrongFormat" ? (
+          <WarningText>Email 格式錯誤，請填寫有效 Email</WarningText>
+        ) : (
+          ""
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Label htmlFor="password">密碼</Label>
+        <Input
+          key="passwordRegister"
+          type="password"
+          placeholder="長度至少六位字元"
+          id="password"
+          defaultValue={profile.password}
+          onChange={(e) => {
+            dispatch(setPassword(e.target.value));
+          }}
+          onBlur={(e) => {
+            if (e.target.value.length === 0) {
+              setRegisterStatus({ ...registerStatus, password: "empty" });
+            } else if (e.target.value.length < 6) {
+              setRegisterStatus({
+                ...registerStatus,
+                password: "wrongLength",
+              });
+            } else {
+              setRegisterStatus({ ...registerStatus, password: "" });
+            }
+          }}
+        />
+        {registerStatus.password === "empty" ? (
+          <WarningText>密碼不得為空白</WarningText>
+        ) : registerStatus.password === "wrongLength" ? (
+          <WarningText>密碼不能少於 6 個字元</WarningText>
+        ) : (
+          ""
+        )}
+      </InputContainer>
+      {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
+      <RegisterLoginBtn onClick={() => createProfile()}>註冊</RegisterLoginBtn>
+
+      <ToggleRegisterLogin
+        onClick={() => {
+          dispatch(setName(""));
+          dispatch(setEmail(""));
+          dispatch(setPassword(""));
+          dispatch(targetRegisterOrLogin("login"));
+          setErrorStatus("");
+        }}
+      >
+        已經有帳號？進行登入
+      </ToggleRegisterLogin>
+    </RegisterLoginWrapper>
+  );
+};
+
+const ProfileLoginRegister = () => {
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
+  const dispatch = useDispatch();
+  const [notthing, setNotThing] = useState(false);
 
   function signOutProfile() {
     signOut(auth)
@@ -295,192 +517,8 @@ const ProfileLoginRegister = () => {
     <>
       {profile.isLogged ? (
         <ProfileSetting signOutProfile={signOutProfile} />
-      ) : profile.clickLoginOrRegister === "login" ? (
-        <RegisterLoginWrapper>
-          <RegisterLoginTitle>登入</RegisterLoginTitle>
-          <ToggleRegisterLogin
-            onClick={() => {
-              dispatch(setEmail(""));
-              dispatch(setPassword(""));
-              dispatch(targetRegisterOrLogin("register"));
-              setErrorStatus("");
-            }}
-          >
-            尚未有帳號？進行註冊
-          </ToggleRegisterLogin>
-          <InputContainer>
-            <Label htmlFor="email">Email 帳號</Label>
-            <Input
-              key="emailLogin"
-              type="text"
-              placeholder="請輸入 Email"
-              id="email"
-              defaultValue={profile.email}
-              onChange={(e) => {
-                dispatch(setEmail(e.target.value));
-              }}
-              onBlur={(e) => {
-                if (e.target.value === "") {
-                  setLoginStatus({ ...loginStatus, email: "empty" });
-                } else if (!Emailregex.test(e.target.value)) {
-                  setLoginStatus({ ...loginStatus, email: "wrongFormat" });
-                } else {
-                  setLoginStatus({ ...loginStatus, email: "" });
-                }
-              }}
-            />
-            {loginStatus.email === "empty" ? (
-              <WarningText>Email 不得為空白</WarningText>
-            ) : loginStatus.email === "wrongFormat" ? (
-              <WarningText>Email 格式錯誤，請填寫有效 Email</WarningText>
-            ) : (
-              ""
-            )}
-          </InputContainer>
-          <InputContainer>
-            <Label htmlFor="password">密碼</Label>
-            <Input
-              key="passwordLogin"
-              type="password"
-              placeholder="請輸入密碼"
-              id="password"
-              defaultValue={profile.password}
-              onChange={(e) => {
-                dispatch(setPassword(e.target.value));
-              }}
-              onBlur={(e) => {
-                if (e.target.value.length === 0) {
-                  setLoginStatus({ ...loginStatus, password: "empty" });
-                } else if (e.target.value.length < 6) {
-                  setLoginStatus({ ...loginStatus, password: "wrongLength" });
-                } else {
-                  setLoginStatus({ ...loginStatus, password: "" });
-                }
-              }}
-            />
-            {loginStatus.password === "empty" ? (
-              <WarningText>密碼不得為空白</WarningText>
-            ) : loginStatus.password === "wrongLength" ? (
-              <WarningText>密碼不能少於 6 個字元</WarningText>
-            ) : (
-              ""
-            )}
-          </InputContainer>
-          {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
-          <RegisterLoginBtn onClick={() => logInProfile()}>
-            登入
-          </RegisterLoginBtn>
-        </RegisterLoginWrapper>
       ) : (
-        <RegisterLoginWrapper>
-          <RegisterLoginTitle>註冊</RegisterLoginTitle>
-          <InputContainer>
-            <Label htmlFor="name">使用者名稱</Label>
-            <Input
-              key="nameRegister"
-              type="text"
-              placeholder="輸入使用者名稱"
-              id="name"
-              defaultValue={profile.name}
-              onChange={(e) => {
-                dispatch(setName(e.target.value));
-              }}
-              onBlur={(e) => {
-                if (e.target.value === "") {
-                  setRegisterStatus({ ...registerStatus, name: "empty" });
-                } else {
-                  setRegisterStatus({ ...registerStatus, name: "" });
-                }
-              }}
-            />
-            {registerStatus.name === "empty" ? (
-              <WarningText>使用者名稱不得為空白</WarningText>
-            ) : (
-              ""
-            )}
-          </InputContainer>
-          <InputContainer>
-            <Label htmlFor="email">Email 帳號</Label>
-            <Input
-              key="emailRegister"
-              type="text"
-              placeholder="請輸入 email"
-              id="email"
-              // value={profile.email}
-              defaultValue={profile.email}
-              onChange={(e) => {
-                dispatch(setEmail(e.target.value));
-              }}
-              onBlur={(e) => {
-                if (e.target.value === "") {
-                  setRegisterStatus({ ...registerStatus, email: "empty" });
-                } else if (!Emailregex.test(e.target.value)) {
-                  setRegisterStatus({
-                    ...registerStatus,
-                    email: "wrongFormat",
-                  });
-                } else {
-                  setRegisterStatus({ ...registerStatus, email: "" });
-                }
-              }}
-            />
-            {registerStatus.email === "empty" ? (
-              <WarningText>Email 不得為空白</WarningText>
-            ) : registerStatus.email === "wrongFormat" ? (
-              <WarningText>Email 格式錯誤，請填寫有效 Email</WarningText>
-            ) : (
-              ""
-            )}
-          </InputContainer>
-          <InputContainer>
-            <Label htmlFor="password">密碼</Label>
-            <Input
-              key="passwordRegister"
-              type="password"
-              placeholder="長度至少六位字元"
-              id="password"
-              defaultValue={profile.password}
-              onChange={(e) => {
-                dispatch(setPassword(e.target.value));
-              }}
-              onBlur={(e) => {
-                if (e.target.value.length === 0) {
-                  setRegisterStatus({ ...registerStatus, password: "empty" });
-                } else if (e.target.value.length < 6) {
-                  setRegisterStatus({
-                    ...registerStatus,
-                    password: "wrongLength",
-                  });
-                } else {
-                  setRegisterStatus({ ...registerStatus, password: "" });
-                }
-              }}
-            />
-            {registerStatus.password === "empty" ? (
-              <WarningText>密碼不得為空白</WarningText>
-            ) : registerStatus.password === "wrongLength" ? (
-              <WarningText>密碼不能少於 6 個字元</WarningText>
-            ) : (
-              ""
-            )}
-          </InputContainer>
-          {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
-          <RegisterLoginBtn onClick={() => createProfile()}>
-            註冊
-          </RegisterLoginBtn>
-
-          <ToggleRegisterLogin
-            onClick={() => {
-              dispatch(setName(""));
-              dispatch(setEmail(""));
-              dispatch(setPassword(""));
-              dispatch(targetRegisterOrLogin("login"));
-              setErrorStatus("");
-            }}
-          >
-            已經有帳號？進行登入
-          </ToggleRegisterLogin>
-        </RegisterLoginWrapper>
+        <LoginRegisterBox openLoginBox={false} setOpenLoginBox={setNotThing} />
       )}
     </>
   );

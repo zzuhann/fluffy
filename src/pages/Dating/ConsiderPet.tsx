@@ -96,7 +96,7 @@ const PetCard = styled.div<{ $Top: number }>`
   top: ${(props) => props.$Top - 40}px;
   transform: translateX(-50%);
   box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
-  z-index: 1200;
+  z-index: 2501;
   padding-bottom: 50px;
 `;
 
@@ -187,7 +187,7 @@ const InviteDatingBox = styled.div<{ $Top: number }>`
   padding: 20px;
   border-radius: 10px;
   letter-spacing: 1.5px;
-  z-index: 1201;
+  z-index: 2502;
 `;
 
 const InviteDatingTitle = styled.div`

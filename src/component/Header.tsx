@@ -24,6 +24,7 @@ import {
   clearProfileInfo,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./defaultprofile.png";
+import catHand from "./cat_hand_white.png";
 
 import {
   checkIfLogged,
@@ -88,7 +89,7 @@ const SidebarContainer = styled.ul<{ $isActive: boolean }>`
   }
 `;
 
-const BlackMask = styled.div<{
+export const BlackMask = styled.div<{
   $isActive: boolean;
   $Height: number;
 }>`
@@ -97,6 +98,8 @@ const BlackMask = styled.div<{
   transition: 0.3s;
   position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
+  left: 0;
+  top: 0;
   width: 100%;
   height: ${(props) => props.$Height}px;
   z-index: ${(props) => (props.$isActive ? "2500" : "0")};
@@ -276,6 +279,43 @@ const ProfileHoverUnit = styled.li`
   }
 `;
 
+export const PopUpMessage = styled.div`
+  width: 400px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 40vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  position: absolute;
+  z-index: 2505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+`;
+
+export const PopUpText = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 22px;
+  margin-top: 20px;
+`;
+
+export const PopUpNote = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  margin-top: 15px;
+`;
+
+export const PopImg = styled.img`
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: top;
+`;
+
 const Header = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -286,6 +326,8 @@ const Header = () => {
   const [pageHigh, setPageHigh] = useState<number>(0);
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
+  const [openPopupBox, setOpenPopupBox] = useState(false);
+  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -361,6 +403,7 @@ const Header = () => {
         }
       } else {
         dispatch(checkIfLogged(false));
+        dispatch(targetRegisterOrLogin("register"));
       }
     });
   }, []);
@@ -384,6 +427,23 @@ const Header = () => {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  function gotoProfilePage() {
+    setNavigateToProfileTime(3);
+    setOpenPopupBox(true);
+    const coundDownTimer = setInterval(() => {
+      setNavigateToProfileTime((prev) => {
+        if (prev <= 0) {
+          clearInterval(coundDownTimer);
+          setOpenPopupBox(false);
+          navigate("/profile");
+          return 0;
+        } else {
+          return prev - 1;
+        }
+      });
+    }, 1000);
   }
 
   return (
@@ -411,10 +471,7 @@ const Header = () => {
           <NavBar
             onClick={() => {
               if (!profile.isLogged) {
-                window.alert(
-                  "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
-                );
-                navigate("/profile");
+                gotoProfilePage();
               } else {
                 navigate("/dating");
               }
@@ -444,6 +501,21 @@ const Header = () => {
             24 小時動物醫院
           </NavBar>
         </NavBarContainer>
+        {openPopupBox && (
+          <>
+            <PopUpMessage>
+              <PopImg src={catHand} />
+              <PopUpText>進入配對專區需先登入/註冊</PopUpText>
+              <PopUpNote>
+                {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
+              </PopUpNote>
+            </PopUpMessage>
+            <BlackMask
+              $isActive={openPopupBox === true}
+              $Height={openPopupBox ? pageHigh : 0}
+            />
+          </>
+        )}
 
         {profile.isLogged ? (
           <ProfileNavBarContainer
@@ -495,10 +567,7 @@ const Header = () => {
           onClick={() => {
             setClickBurgerMenu(false);
             if (!profile.isLogged) {
-              window.alert(
-                "使用此功能需先註冊或登入！點擊確認後前往註冊與登入頁面"
-              );
-              navigate("/profile");
+              gotoProfilePage();
             } else {
               navigate("/dating");
             }

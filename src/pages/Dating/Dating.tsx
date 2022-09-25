@@ -25,6 +25,11 @@ import question from "./img/help-sing.png";
 const ConsiderTitle = styled(Title)`
   position: absolute;
   top: 0px;
+  left: 20px;
+  @media (max-width: 539px) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 `;
 
 const UpcomingTitle = styled(Title)`
@@ -180,9 +185,6 @@ const NoCardsTitle = styled.div`
   color: #3c3c3c;
   text-align: center;
   line-height: 40px;
-  /* top: 25%;
-  left: 50%;
-  transform: translateX(-50%); */
 `;
 
 const NoCardsBtn = styled(Btn)`
@@ -202,14 +204,16 @@ const LookConsiderListBtn = styled(NoCardsBtn)`
 
 const ConsiderList = styled.div`
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
   max-width: 1120px;
   left: 50%;
   transform: translateX(-50%);
-  justify-content: space-between;
   padding: 20px;
   padding-top: 70px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  justify-content: space-between;
+  gap: 20px;
+  grid-template-rows: 250px;
   @media (max-width: 539px) {
     justify-content: center;
   }
