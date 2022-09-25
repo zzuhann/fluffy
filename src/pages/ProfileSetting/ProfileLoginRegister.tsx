@@ -16,6 +16,7 @@ import {
   targetRegisterOrLogin,
   checkIfLogged,
   afterRegisterSaveName,
+  setProfileUid,
 } from "../../functions/profileReducerFunction";
 import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
@@ -36,14 +37,14 @@ const WarningErrorCode = styled(WarningText)`
   align-self: center;
 `;
 
-const RegisterLoginWrapper = styled.div`
+const RegisterLoginWrapper = styled.div<{ $Top: number }>`
   display: flex;
   flex-direction: column;
   width: 350px;
   height: 500px;
   margin: 0 auto;
   position: absolute;
-  top: 50%;
+  top: ${(props) => (props.$Top ? `${props.$Top + 500}px` : "50%")};
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 36px;
@@ -142,6 +143,7 @@ const LoginPopupCancel = styled.img`
 type LoginRegisterType = {
   openLoginBox: boolean;
   setOpenLoginBox: Dispatch<SetStateAction<boolean>>;
+  $Top: number;
 };
 
 export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
@@ -149,7 +151,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
-  let navigate = useNavigate();
+  // let navigate = useNavigate();
   const Emailregex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
   const [registerStatus, setRegisterStatus] = useState({
     name: "",
@@ -217,7 +219,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           name: profile.name,
         });
         dispatch(afterRegisterSaveName());
-        navigate("/");
+        props.setOpenLoginBox(false);
       })
       .catch((error) => {
         switch (error.code) {
@@ -272,11 +274,12 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       .then(async (userCredential) => {
         setErrorStatus("");
         dispatch(clearProfileInfo());
-        navigate("/");
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           dispatch(setName(docSnap.data().name));
+          dispatch(setProfileUid(userCredential.user.uid));
+          props.setOpenLoginBox(false);
           if (docSnap.data().img) {
             dispatch(setImage(docSnap.data().img));
           } else {
@@ -299,7 +302,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       });
   }
   return profile.clickLoginOrRegister === "login" ? (
-    <RegisterLoginWrapper>
+    <RegisterLoginWrapper $Top={props.$Top}>
       {props.openLoginBox && (
         <LoginPopupCancel
           src={close}
@@ -380,7 +383,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
     </RegisterLoginWrapper>
   ) : (
-    <RegisterLoginWrapper>
+    <RegisterLoginWrapper $Top={props.$Top}>
       {props.openLoginBox && (
         <LoginPopupCancel
           src={close}
@@ -518,7 +521,11 @@ const ProfileLoginRegister = () => {
       {profile.isLogged ? (
         <ProfileSetting signOutProfile={signOutProfile} />
       ) : (
-        <LoginRegisterBox openLoginBox={false} setOpenLoginBox={setNotThing} />
+        <LoginRegisterBox
+          openLoginBox={false}
+          setOpenLoginBox={setNotThing}
+          $Top={0}
+        />
       )}
     </>
   );

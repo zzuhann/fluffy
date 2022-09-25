@@ -255,7 +255,6 @@ const DiaryDetail = () => {
   async function addDiaryComment() {
     if (!targetDiary) return;
     if (!newCommentContext) {
-      window.alert("留言內容不能為空白！");
       return;
     }
     await addDoc(collection(db, `petDiaries/${targetDiary.id}/comments`), {
@@ -452,6 +451,7 @@ const DiaryDetail = () => {
         <LoginRegisterBox
           openLoginBox={openLoginBox}
           setOpenLoginBox={setOpenLoginBox}
+          $Top={0}
         />
       )}
     </Wrap>

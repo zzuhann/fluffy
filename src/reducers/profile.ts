@@ -174,7 +174,17 @@ const ProfileReducer = (
       return { ...state, isLogged: action.payload.isLogged };
     }
     case ActionType.clearProfileInfo: {
-      return { ...state, name: "", password: "", email: "", img: "" };
+      return {
+        ...state,
+        name: "",
+        password: "",
+        email: "",
+        img: "",
+        uid: "",
+        ownPets: [],
+        petDiary: [],
+        ownArticles: [],
+      };
     }
     case ActionType.afterRegisterSaveName: {
       return {

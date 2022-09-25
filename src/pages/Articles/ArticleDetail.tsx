@@ -10,7 +10,7 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -24,6 +24,8 @@ import notyetLike from "./heart.png";
 import alreadyLike from "./love.png";
 import comment from "./chat.png";
 import { Btn } from "../ProfileSetting/UserInfos";
+import { LoginRegisterBox } from "../ProfileSetting/ProfileLoginRegister";
+import { Loading } from "../../utils/loading";
 
 const Wrap = styled.div`
   width: 100%;
@@ -220,13 +222,36 @@ const ArticleDetail = () => {
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
+  const [openLoginBox, setOpenLoginBox] = useState(false);
+  const [scroll, setScroll] = useState<number>(0);
+  const [mainPageScrollHeight, setMainPageScrollHeight] = useState<number>(0);
+  const [loadingComment, setLoadingComment] = useState(false);
+
+  useEffect(() => {
+    if (!openLoginBox) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [openLoginBox]);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
+
+  useEffect(() => {
+    if (mainPageScrollHeight > 0) {
+      document.documentElement.scrollTop =
+        document.documentElement.scrollHeight;
+    }
+  }, [mainPageScrollHeight]);
 
   async function addArticleComment() {
     if (!targetArticle) return;
     if (!newCommentContext) {
-      window.alert("留言內容不能為空白！");
       return;
     }
+    setLoadingComment(true);
     await addDoc(collection(db, `petArticles/${targetArticle.id}/comments`), {
       user: {
         name: profile.name,
@@ -241,9 +266,10 @@ const ArticleDetail = () => {
       commentCount: targetArticle.commentCount + 1,
     });
     setNewCommentContext("");
-    window.alert("留言成功");
+    setMainPageScrollHeight(document.documentElement.scrollHeight + 100);
     getArticleComments();
     getSpecificArticle();
+    setLoadingComment(false);
   }
 
   async function getArticleComments() {
@@ -279,8 +305,7 @@ const ArticleDetail = () => {
   async function toggleLike() {
     if (!targetArticle) return;
     if (!profile.isLogged) {
-      window.alert("按讚需先登入，確認後導向登入頁面");
-      navigate("/profile");
+      setOpenLoginBox(true);
       return;
     }
     const articleDetailRef = doc(db, "petArticles", id as string);
@@ -370,18 +395,27 @@ const ArticleDetail = () => {
                 setNewCommentContext(e.target.value);
               }}
             />
-            <AddCommentBtn
-              onClick={() => {
-                if (!profile.isLogged) {
-                  window.alert("留言需先登入，確認後導向登入頁面");
-                  navigate("/profile");
-                  return;
-                }
-                addArticleComment();
-              }}
-            >
-              送出
-            </AddCommentBtn>
+            {loadingComment ? (
+              <Loading
+                $Top={"50%"}
+                $Bottom={"auto"}
+                $Right={"30px"}
+                $Left={"auto"}
+                $transform={"translateY(-50%)"}
+              />
+            ) : (
+              <AddCommentBtn
+                onClick={() => {
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addArticleComment();
+                }}
+              >
+                送出
+              </AddCommentBtn>
+            )}
           </AddComment>
           <CommentCount>共 {targetArticle.commentCount} 則留言</CommentCount>
           {articleComments.map((comment, index) => (
@@ -402,6 +436,13 @@ const ArticleDetail = () => {
           ))}
         </CommentContainer>
       </ArticleContainer>
+      {openLoginBox && (
+        <LoginRegisterBox
+          openLoginBox={openLoginBox}
+          setOpenLoginBox={setOpenLoginBox}
+          $Top={scroll}
+        />
+      )}
     </Wrap>
   );
 };
