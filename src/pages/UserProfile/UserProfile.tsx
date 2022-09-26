@@ -452,7 +452,7 @@ const UserProfile = () => {
     const q = query(
       collection(db, "petDiaries"),
       where("authorUid", "==", authorUid),
-      orderBy("postTime")
+      orderBy("takePhotoTime")
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
@@ -611,7 +611,11 @@ const UserProfile = () => {
                         <DiaryBottom>
                           <DiaryTitle>{diary.petName}</DiaryTitle>
                           <PetAge>
-                            {`${new Date().getFullYear() - diary.birthYear}`}y
+                            {`${
+                              new Date(diary.takePhotoTime).getFullYear() -
+                              diary.birthYear
+                            }`}
+                            y
                           </PetAge>
                         </DiaryBottom>
                       </DiaryCard>
@@ -629,7 +633,11 @@ const UserProfile = () => {
                           <DiaryBottom>
                             <DiaryTitle>{diary.petName}</DiaryTitle>
                             <PetAge>
-                              {`${new Date().getFullYear() - diary.birthYear}`}Y
+                              {`${
+                                new Date(diary.takePhotoTime).getFullYear() -
+                                diary.birthYear
+                              }`}
+                              Y
                             </PetAge>
                           </DiaryBottom>
                         </DiaryCard>

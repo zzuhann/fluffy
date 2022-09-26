@@ -266,7 +266,19 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
       </SideBarWrapper>
       <Wrapper>
         {updateInfo === "已更新個人資訊" && (
-          <PopupHint $Top={70}>已更新個人資訊</PopupHint>
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
+        {updateInfo === "已更新寵物資訊" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
+        {updateInfo === "新增寵物成功！" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
+        {updateInfo === "新增寵物日記成功！" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
+        {updateInfo === "已更新寵物日記" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
         )}
         <MainInfo>
           {selectedTab === tabs[0] ? (
@@ -296,6 +308,9 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
               setOwnPetDetail={setOwnPetDetail}
               addDocOwnPets={addDocOwnPets}
               setPetNewImg={setPetNewImg}
+              setUpdateInfo={setUpdateInfo}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
             />
           ) : selectedTab === tabs[1] && !ownPetDetail ? (
             <SimpleSinglePetCard
@@ -321,6 +336,9 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
               getOwnPetList={getOwnPetList}
               ownPetEdit={ownPetEdit}
               setOwnPetEdit={setOwnPetEdit}
+              setUpdateInfo={setUpdateInfo}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
             />
           ) : selectedTab === tabs[1] && ownPetDetail && !ownPetEdit ? (
             <DetailPetSingleInfo
@@ -335,7 +353,15 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
           ) : (
             ""
           )}
-          {selectedTab === tabs[2] ? <PetDiary /> : ""}
+          {selectedTab === tabs[2] ? (
+            <PetDiary
+              setUpdateInfo={setUpdateInfo}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
+            />
+          ) : (
+            ""
+          )}
           {selectedTab === tabs[3] ? (
             <WritePetArticle
               addArticleInfo={addArticleInfo}

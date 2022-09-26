@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -251,6 +251,18 @@ const PetSingleName = styled.div`
   font-size: 22px;
   margin-left: 20px;
   margin-bottom: 15px;
+  @media (max-width: 614px) {
+    margin-left: 0;
+  }
+`;
+
+const WarningText = styled.div`
+  margin-left: 20px;
+  font-size: 22px;
+  color: #b54745;
+  @media (max-width: 614px) {
+    margin-left: 0;
+  }
 `;
 
 const PetSingleImage = styled.img`
@@ -295,16 +307,16 @@ const DeleteBtn = styled(Btn)`
 `;
 
 type SimplePetCardType = {
-  setOwnPetDetail: (value: boolean) => void;
-  setOwnPetIndex: (value: number) => void;
-  setPetNewImg: (value: { file: File | string; url: string }) => void;
-  setPetNewInfo: (value: { name: string; birthYear: number }) => void;
+  setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
+  setOwnPetIndex: Dispatch<SetStateAction<number>>;
+  setPetNewImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
+  setPetNewInfo: Dispatch<SetStateAction<{ name: string; birthYear: number }>>;
+  setAddPet: Dispatch<SetStateAction<boolean>>;
   petNewImg: {
     file: File | string;
     url: string;
   };
   getOwnPetList: () => void;
-  setAddPet: (value: boolean) => void;
 };
 
 export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
@@ -350,18 +362,21 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
 };
 
 type DetailPetCardType = {
-  setOwnPetDetail: (value: boolean) => void;
+  setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   ownPetIndex: number;
-  setPetNewImg: (value: { file: File | string; url: string }) => void;
+  setPetNewImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
   petNewInfo: { name: string; birthYear: number };
-  setPetNewInfo: (value: { name: string; birthYear: number }) => void;
+  setPetNewInfo: Dispatch<SetStateAction<{ name: string; birthYear: number }>>;
   petNewImg: {
     file: File | string;
     url: string;
   };
   getOwnPetList: () => void;
   ownPetEdit: boolean;
-  setOwnPetEdit: (value: boolean) => void;
+  setOwnPetEdit: Dispatch<SetStateAction<boolean>>;
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
+  incompleteInfo: boolean;
 };
 
 type DetailPetSingleInfoType = {
@@ -511,8 +526,8 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
   }
 
   async function updatePetInfoCondition() {
-    if (!props.petNewInfo.name && !props.petNewImg.url) {
-      window.alert("更新資料不可為空");
+    if (!props.petNewInfo.name || !props.petNewImg.url) {
+      props.setIncompleteInfo(true);
       return;
     }
     if (
@@ -521,9 +536,9 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         profile.ownPets[props.ownPetIndex].birthYear &&
       props.petNewImg.url === profile.ownPets[props.ownPetIndex].img
     ) {
-      window.alert("未更新資料");
       return;
     }
+    props.setIncompleteInfo(false);
     if (props.petNewImg.url !== profile.ownPets[props.ownPetIndex].img) {
       await updateOwnPetInfo();
       await updateFirebaseDataMutipleWhere(
@@ -535,7 +550,6 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         "",
         { petName: props.petNewInfo.name }
       );
-      window.alert("更新完成！");
       props.setOwnPetEdit(false);
       const updateOwnPet = profile.ownPets;
       updateOwnPet[props.ownPetIndex] = {
@@ -544,6 +558,10 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         birthYear: props.petNewInfo.birthYear,
         img: props.petNewImg.url,
       };
+      props.setUpdateInfo("已更新寵物資訊");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
     } else {
       await updatePetInfo("");
       await updateFirebaseDataMutipleWhere(
@@ -555,7 +573,6 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         "",
         { petName: props.petNewInfo.name }
       );
-      window.alert("更新完成！");
       props.setOwnPetEdit(false);
       const updateOwnPet = profile.ownPets;
       updateOwnPet[props.ownPetIndex] = {
@@ -563,6 +580,10 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         name: props.petNewInfo.name,
         birthYear: props.petNewInfo.birthYear,
       };
+      props.setUpdateInfo("已更新寵物資訊");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
     }
   }
 
@@ -637,6 +658,9 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
           <PetSingleName>
             性別: {profile.ownPets[props.ownPetIndex].sex === "M" ? "公" : "母"}
           </PetSingleName>
+          {props.incompleteInfo && (
+            <WarningText>更新資料不可為空值</WarningText>
+          )}
         </EditModeUserInfoContainer>
         <CancelUpdateBtn
           onClick={() => {
@@ -649,6 +673,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
               name: profile.ownPets[props.ownPetIndex].name,
               birthYear: profile.ownPets[props.ownPetIndex].birthYear,
             });
+            props.setIncompleteInfo(false);
           }}
         >
           取消
@@ -666,12 +691,12 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
 };
 
 type AddPetType = {
-  setAddPet: (value: boolean) => void;
+  setAddPet: Dispatch<SetStateAction<boolean>>;
   petImg: {
     file: File | string;
     url: string;
   };
-  setPetImg: (value: { file: File | string; url: string }) => void;
+  setPetImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
   addPetInfo: {
     name: string;
     sex: string;
@@ -679,17 +704,22 @@ type AddPetType = {
     kind: string;
     birthYear: number;
   };
-  setAddPetInfo: (value: {
-    name: string;
-    sex: string;
-    shelterName: string;
-    kind: string;
-    birthYear: number;
-  }) => void;
-  setOwnPetDetail: (value: boolean) => void;
+  setAddPetInfo: Dispatch<
+    SetStateAction<{
+      name: string;
+      sex: string;
+      shelterName: string;
+      kind: string;
+      birthYear: number;
+    }>
+  >;
+  setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   addDocOwnPets: (value: string) => void;
   petNewImg: { file: File | string; url: string };
-  setPetNewImg: (value: { file: File | string; url: string }) => void;
+  setPetNewImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
+  incompleteInfo: boolean;
 };
 
 export const AddPet: React.FC<AddPetType> = (props) => {
@@ -795,6 +825,9 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               男
             </PetDetailSexBtn>
           </EditContainer>
+          {props.incompleteInfo && (
+            <WarningText>請填寫完整寵物資料</WarningText>
+          )}
         </EditModeUserInfoContainer>
         <AddPetBtn
           onClick={async () => {
@@ -802,9 +835,10 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               Object.values(props.addPetInfo).some((info) => !info) ||
               Object.values(props.petImg).some((info) => !info)
             ) {
-              window.alert("請填寫完整寵物資料");
+              props.setIncompleteInfo(true);
               return;
             }
+            props.setIncompleteInfo(false);
             props.setAddPet(false);
             addDataWithUploadImage(
               `pets/${profile.uid}-${props.addPetInfo.name}`,
@@ -814,13 +848,21 @@ export const AddPet: React.FC<AddPetType> = (props) => {
             const addNewPet = profile.ownPets;
             addNewPet.push({ ...props.addPetInfo, img: props.petImg.url });
             dispatch(setOwnPets(addNewPet));
-            window.alert("上傳成功！");
+            props.setUpdateInfo("新增寵物成功！");
+            setTimeout(() => {
+              props.setUpdateInfo("");
+            }, 3000);
             props.setPetImg({ file: "", url: "" });
           }}
         >
           上傳寵物資料
         </AddPetBtn>
-        <AddPetCancelBtn onClick={() => props.setAddPet(false)}>
+        <AddPetCancelBtn
+          onClick={() => {
+            props.setIncompleteInfo(false);
+            props.setAddPet(false);
+          }}
+        >
           取消
         </AddPetCancelBtn>
       </EditModeContainer>

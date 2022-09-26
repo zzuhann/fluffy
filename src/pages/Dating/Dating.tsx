@@ -357,8 +357,6 @@ const Pairing: React.FC = () => {
   const [updateInfo, setUpdateInfo] = useState("");
   const [scroll, setScroll] = useState<number>(0);
 
-  console.log(updateInfo);
-
   useEffect(() => {
     if (!updateInfo) {
       window.addEventListener("scroll", handleScroll);
@@ -384,7 +382,10 @@ const Pairing: React.FC = () => {
     if (!profile.uid) return;
     let userChosenId: number[] = [];
     let consider: Card[] = [];
-    const q = collection(db, "memberProfiles", profile.uid, "considerLists");
+    const q = query(
+      collection(db, "memberProfiles", profile.uid, "considerLists"),
+      orderBy("area")
+    );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       userChosenId.push(info.data().id);

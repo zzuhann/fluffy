@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -440,16 +440,22 @@ const EditPetDiaryCancelUpdateBtn = styled(Btn)`
 const EditPetDiaryLabel = styled(EditInfoLabel)`
   width: 180px;
   @media (max-width: 495px) {
+    width: auto;
+  }
+`;
+
+const WarningText = styled.div`
+  margin-left: 20px;
+  font-size: 22px;
+  color: #b54745;
+  @media (max-width: 614px) {
+    margin-left: 0;
   }
 `;
 
 const PetDiaryName = styled.div`
   font-size: 22px;
   margin-left: 15px;
-  @media (max-width: 495px) {
-    margin-left: 0;
-    margin-top: 10px;
-  }
 `;
 
 export const CalendarContainer = styled.div`
@@ -530,7 +536,11 @@ type UploadDiary = {
   birthYear: number;
 };
 
-export const PetDiary = () => {
+export const PetDiary: React.FC<{
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
+  incompleteInfo: boolean;
+}> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
@@ -606,7 +616,6 @@ export const PetDiary = () => {
       context: "",
       birthYear: 0,
     });
-    setDiaryImg({ file: null, url: "" });
     setEditDiaryBoxOpen(false);
   }
 
@@ -641,8 +650,8 @@ export const PetDiary = () => {
   }
 
   async function updatePetInfoCondition() {
-    if (!newDiaryContext.context && !newDiaryContext.takePhotoTime) {
-      window.alert("更新資料不可為空");
+    if (!newDiaryContext.context || !newDiaryContext.takePhotoTime) {
+      props.setIncompleteInfo(true);
       return;
     }
     if (
@@ -651,7 +660,6 @@ export const PetDiary = () => {
         profile.petDiary[ownPetDiaryIndex].takePhotoTime &&
       newDiaryImg.url === profile.petDiary[ownPetDiaryIndex].img
     ) {
-      window.alert("未更新資料");
       return;
     }
     if (newDiaryImg.url !== profile.petDiary[ownPetDiaryIndex].img) {
@@ -662,8 +670,12 @@ export const PetDiary = () => {
         context: newDiaryContext.context,
         img: newDiaryImg.url,
       };
-      window.alert("更新完成！");
-      setEditDiaryBoxOpen(false);
+      props.setIncompleteInfo(false);
+      props.setUpdateInfo("已更新寵物日記");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
+      setDetailDiaryBoxOpen(true);
       if (newDiaryImg.file) {
         await updateNewPetDiaryDataFirebase(
           newDiaryImg.file.name,
@@ -677,8 +689,12 @@ export const PetDiary = () => {
         takePhotoTime: newDiaryContext.takePhotoTime,
         context: newDiaryContext.context,
       };
-      window.alert("更新完成！");
-      setEditDiaryBoxOpen(false);
+      props.setIncompleteInfo(false);
+      props.setUpdateInfo("已更新寵物日記");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
+      setDetailDiaryBoxOpen(true);
       await updateFirebaseDataMutipleWhere(
         `/petDiaries`,
         "postTime",
@@ -721,6 +737,7 @@ export const PetDiary = () => {
                   birthYear: 0,
                 });
                 setNowChoosePetName("");
+                props.setIncompleteInfo(false);
               }}
             >
               取消
@@ -828,7 +845,7 @@ export const PetDiary = () => {
                 </AddDiaryLabel>
                 <CalendarContainer>
                   <Calendar
-                    defaultValue={new Date(uploadDiaryInfo.takePhotoTime)}
+                    defaultValue={new Date()}
                     onClickDay={(value) => {
                       setUploadDiaryInfo({
                         ...uploadDiaryInfo,
@@ -851,6 +868,9 @@ export const PetDiary = () => {
                   }}
                 ></DiaryTextArea>
               </AddDiaryInputContainer>
+              {props.incompleteInfo && (
+                <WarningText>請填寫完整寵物日記資訊</WarningText>
+              )}
             </EditModeDiaryContainer>
             <UploadAddDiaryBtn
               onClick={() => {
@@ -860,9 +880,10 @@ export const PetDiary = () => {
                   !uploadDiaryInfo.takePhotoTime ||
                   Object.values(diaryImg).some((info) => !info)
                 ) {
-                  window.alert("請填寫完整寵物日記資訊");
+                  props.setIncompleteInfo(true);
                   return;
                 }
+                props.setIncompleteInfo(false);
                 const addNewPet = profile.petDiary;
                 addNewPet.push({
                   ...uploadDiaryInfo,
@@ -875,8 +896,13 @@ export const PetDiary = () => {
                   id: "",
                 });
                 dispatch(setOwnPetDiary(addNewPet));
-                window.alert("上傳成功！");
+                props.setUpdateInfo("新增寵物日記成功！");
+                setTimeout(() => {
+                  props.setUpdateInfo("");
+                }, 3000);
+                setNowChoosePetName("");
                 setWriteDiaryBoxOpen(false);
+                setDiaryImg({ file: null, url: "" });
                 if (diaryImg.file) {
                   addDataWithUploadImage(
                     `petDiary/${diaryImg.file.name}`,
@@ -1001,12 +1027,12 @@ export const PetDiary = () => {
               </>
             )}
             <EditModePetDiaryContainer>
-              <AddDiaryInputContainer>
+              <EditContainer>
                 <EditPetDiaryLabel htmlFor="petName">
                   寵物主角:{" "}
                 </EditPetDiaryLabel>
                 <PetDiaryName>{newDiaryContext.petName}</PetDiaryName>
-              </AddDiaryInputContainer>
+              </EditContainer>
               <AddDiaryInputContainer>
                 <EditPetDiaryLabel htmlFor="takePhotoTime">
                   拍攝照片日期:{" "}
@@ -1039,11 +1065,15 @@ export const PetDiary = () => {
                   }}
                 ></DiaryTextArea>
               </AddDiaryInputContainer>
+              {props.incompleteInfo && (
+                <WarningText>更新資料不可為空值</WarningText>
+              )}
             </EditModePetDiaryContainer>
             <EditPetDiaryCancelUpdateBtn
               onClick={() => {
                 setEditDiaryBoxOpen(true);
                 setDetailDiaryBoxOpen(true);
+                props.setIncompleteInfo(false);
               }}
             >
               取消
