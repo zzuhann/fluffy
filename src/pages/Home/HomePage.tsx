@@ -99,6 +99,7 @@ const CoverTitle = styled.h1`
   }
   @media (max-width: 489px) {
     line-height: 40px;
+    font-size: 22px;
   }
 `;
 const CoverText = styled.div`

@@ -1,4 +1,4 @@
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -11,7 +11,7 @@ export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: absolute;
-  top: 140px;
+  top: 120px;
   padding-left: 12px;
   &:before {
     content: "";
@@ -25,9 +25,10 @@ export const PageTitle = styled.h1`
     left: 50px;
   }
   @media (max-width: 725px) {
-    top: 120px;
+    top: 100px;
     left: 50%;
     transform: translateX(-50%);
+    font-size: 28px;
   }
 `;
 
@@ -136,6 +137,25 @@ const DiaryBottom = styled.div`
 const DiaryTitle = styled.div``;
 const PetAge = styled.div``;
 
+const PetDiaryNote = styled.div`
+  font-size: 18px;
+  position: absolute;
+  top: 165px;
+  padding-left: 12px;
+  letter-spacing: 1.5px;
+  @media (max-width: 1120px) {
+    left: 50px;
+  }
+  @media (max-width: 725px) {
+    top: 140px;
+    line-height: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    text-align: center;
+  }
+`;
+
 export type AllPetDiariesType = {
   petName: string;
   context: string;
@@ -162,7 +182,7 @@ const AllPetDiaries = () => {
   async function getPetDiaries() {
     setIsLoading(true);
     const authorPetDiaries: AllPetDiariesType[] = [];
-    const q = query(collection(db, "petDiaries"));
+    const q = query(collection(db, "petDiaries"), orderBy("postTime", "desc"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
       authorPetDiaries.push({
@@ -187,6 +207,9 @@ const AllPetDiaries = () => {
       ) : (
         <AllDiariesContainer>
           <PageTitle>寵物日記</PageTitle>
+          <PetDiaryNote>
+            登入後，透過日記紀錄你與寵物共同擁有的回憶
+          </PetDiaryNote>
           {allPetDiraies.map((diary, index) => (
             <DiaryCard
               key={index}
@@ -212,7 +235,11 @@ const AllPetDiaries = () => {
               <DiaryBottom>
                 <DiaryTitle>{diary.petName}</DiaryTitle>
                 <PetAge>
-                  {`${new Date().getFullYear() - diary.birthYear}`}Y
+                  {`${
+                    new Date(diary.takePhotoTime).getFullYear() -
+                    diary.birthYear
+                  }`}
+                  y
                 </PetAge>
               </DiaryBottom>
             </DiaryCard>

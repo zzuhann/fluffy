@@ -379,6 +379,8 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           ""
         )}
       </InputContainer>
+      <Label>測試帳號：fluffy@test.com</Label>
+      <Label>測試密碼：Fluffy</Label>
       {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
       <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
     </RegisterLoginWrapper>

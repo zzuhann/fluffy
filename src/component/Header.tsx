@@ -403,7 +403,7 @@ const Header = () => {
         }
       } else {
         dispatch(checkIfLogged(false));
-        dispatch(targetRegisterOrLogin("register"));
+        dispatch(targetRegisterOrLogin("login"));
       }
     });
   }, []);
