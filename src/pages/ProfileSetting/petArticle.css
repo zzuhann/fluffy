@@ -18,6 +18,7 @@
 
 .ProseMirror:focus {
   border: none;
+  outline: none;
 }
 
 .ProseMirror > * + * {
@@ -62,26 +63,6 @@
 .ProseMirror h2 {
   font-size: 1.5em;
 }
-
-/* .ProseMirror pre {
-  background: #0d0d0d;
-  color: #fff;
-  font-family: "JetBrainsMono", monospace;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-}
-
-.ProseMirror pre code {
-  color: inherit;
-  padding: 0;
-  background: none;
-  font-size: 0.8rem;
-}
-
-.ProseMirror img {
-  max-width: 100%;
-  height: auto;
-} */
 
 .ProseMirror blockquote {
   background: #f9f9f9;

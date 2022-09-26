@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { db } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import { CatLoading } from "../../utils/loading";
 
 export const PageTitle = styled.h1`
   font-size: 32px;
@@ -156,8 +157,10 @@ const AllPetDiaries = () => {
   const [allPetDiraies, setAllPetArticles] = useState<AllPetDiariesType[]>([]);
   const [openLikeBox, setOpenLikeBox] = useState<boolean>(false);
   const [nowid, setNowId] = useState<number>(-1);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getPetDiaries() {
+    setIsLoading(true);
     const authorPetDiaries: AllPetDiariesType[] = [];
     const q = query(collection(db, "petDiaries"));
     const querySnapshot = await getDocs(q);
@@ -168,6 +171,9 @@ const AllPetDiaries = () => {
       } as AllPetDiariesType);
     });
     setAllPetArticles(authorPetDiaries);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }
 
   useEffect(() => {
@@ -176,39 +182,43 @@ const AllPetDiaries = () => {
 
   return (
     <Wrap>
-      <AllDiariesContainer>
-        <PageTitle>寵物日記</PageTitle>
-        {allPetDiraies.map((diary, index) => (
-          <DiaryCard
-            key={index}
-            to={`/petdiary/${diary.id}`}
-            onMouseEnter={() => {
-              setOpenLikeBox(true);
-              setNowId(index);
-            }}
-            onMouseLeave={() => {
-              setOpenLikeBox(false);
-              setNowId(-1);
-            }}
-          >
-            <HoverCard $isActive={openLikeBox === true && nowid === index}>
-              <LikeRecord>
-                <FontAwesomeIcon icon={faHeart} /> {diary.likedBy.length}
-              </LikeRecord>
-              <LikeRecord>
-                <FontAwesomeIcon icon={faComment} /> {diary.commentCount}
-              </LikeRecord>
-            </HoverCard>
-            <DiaryImg src={diary.img} />
-            <DiaryBottom>
-              <DiaryTitle>{diary.petName}</DiaryTitle>
-              <PetAge>
-                {`${new Date().getFullYear() - diary.birthYear}`}Y
-              </PetAge>
-            </DiaryBottom>
-          </DiaryCard>
-        ))}
-      </AllDiariesContainer>
+      {isLoading ? (
+        <CatLoading />
+      ) : (
+        <AllDiariesContainer>
+          <PageTitle>寵物日記</PageTitle>
+          {allPetDiraies.map((diary, index) => (
+            <DiaryCard
+              key={index}
+              to={`/petdiary/${diary.id}`}
+              onMouseEnter={() => {
+                setOpenLikeBox(true);
+                setNowId(index);
+              }}
+              onMouseLeave={() => {
+                setOpenLikeBox(false);
+                setNowId(-1);
+              }}
+            >
+              <HoverCard $isActive={openLikeBox === true && nowid === index}>
+                <LikeRecord>
+                  <FontAwesomeIcon icon={faHeart} /> {diary.likedBy.length}
+                </LikeRecord>
+                <LikeRecord>
+                  <FontAwesomeIcon icon={faComment} /> {diary.commentCount}
+                </LikeRecord>
+              </HoverCard>
+              <DiaryImg src={diary.img} />
+              <DiaryBottom>
+                <DiaryTitle>{diary.petName}</DiaryTitle>
+                <PetAge>
+                  {`${new Date().getFullYear() - diary.birthYear}`}Y
+                </PetAge>
+              </DiaryBottom>
+            </DiaryCard>
+          ))}
+        </AllDiariesContainer>
+      )}
     </Wrap>
   );
 };

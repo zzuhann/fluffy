@@ -131,7 +131,7 @@ export const PetArticle: React.FC<{
   return (
     <div className="textEditor">
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className="ProseMirror" />
     </div>
   );
 };

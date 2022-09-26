@@ -21,6 +21,7 @@ import { area } from "./constantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";
+import { CatLoading } from "../../utils/loading";
 
 const PopupAnimation = keyframes`
   0% {right: -300px}

@@ -280,6 +280,12 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         {updateInfo === "已更新寵物日記" && (
           <PopupHint $Top={70}>{updateInfo}</PopupHint>
         )}
+        {updateInfo === "已上傳寵物文章！" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
+        {updateInfo === "已更新寵物文章" && (
+          <PopupHint $Top={70}>{updateInfo}</PopupHint>
+        )}
         <MainInfo>
           {selectedTab === tabs[0] ? (
             <>
@@ -368,6 +374,9 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
               setAddArticleInfo={setAddArticleInfo}
               articleCover={articleCover}
               setArticleCover={setArticleCover}
+              setUpdateInfo={setUpdateInfo}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
             />
           ) : (
             ""

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import catHand from "./cat_hand_mike.png";
 
 const Wrap = styled.div<Position>`
   position: absolute;
@@ -56,5 +57,46 @@ export const Loading: React.FC<Position> = (props) => {
         </path>
       </svg>
     </Wrap>
+  );
+};
+
+const CatAnimation = keyframes`
+  0% {bottom: 0}
+  50% {bottom: -100px}
+  100% {
+    bottom: 0px;
+  }
+`;
+
+const CatFootContainer = styled.div`
+  height: 220px;
+  /* margin: 0 auto; */
+  position: absolute;
+  overflow: hidden;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+const CatFoot = styled.img`
+  height: 200px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: ${CatAnimation} 2s ease infinite;
+`;
+
+const LoadingText = styled.div`
+  font-size: 18px;
+  letter-spacing: 2px;
+`;
+
+export const CatLoading = () => {
+  return (
+    <CatFootContainer>
+      <LoadingText>Loading ...</LoadingText>
+      <CatFoot src={catHand} />
+    </CatFootContainer>
   );
 };

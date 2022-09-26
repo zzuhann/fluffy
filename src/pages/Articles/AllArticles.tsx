@@ -6,6 +6,7 @@ import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
 import notyetLike from "./heart.png";
 import comment from "./chat.png";
+import { CatLoading } from "../../utils/loading";
 
 const Wrap = styled.div`
   width: 100%;
@@ -132,8 +133,10 @@ const AllArticles = () => {
   const [allPetArticles, setAllPetArticles] = useState<AllPetArticlesType[]>(
     []
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getAuthorArticles() {
+    setIsLoading(true);
     const authorPetAricles: AllPetArticlesType[] = [];
     const q = query(collection(db, "petArticles"));
     const querySnapshot = await getDocs(q);
@@ -145,6 +148,9 @@ const AllArticles = () => {
     });
 
     setAllPetArticles(authorPetAricles);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }
 
   useEffect(() => {
@@ -153,23 +159,27 @@ const AllArticles = () => {
 
   return (
     <Wrap>
-      <AllArticlesContainer>
-        <PageTitle>寵物文章補給</PageTitle>
-        {allPetArticles.map((article, index) => (
-          <ArticleCard key={index} to={`/articles/${article.id}`}>
-            <ArticleCover src={article.img} />
-            <ArticleCardBottom>
-              <ArticleTitle>{article.title}</ArticleTitle>
-              <HeartAndCommentRecordContainer>
-                <RecordImg src={notyetLike} />
-                <Record>{article.likedBy.length}</Record>
-                <RecordImg src={comment} />
-                <Record>{article.commentCount}</Record>
-              </HeartAndCommentRecordContainer>
-            </ArticleCardBottom>
-          </ArticleCard>
-        ))}
-      </AllArticlesContainer>
+      {isLoading ? (
+        <CatLoading />
+      ) : (
+        <AllArticlesContainer>
+          <PageTitle>寵物文章補給</PageTitle>
+          {allPetArticles.map((article, index) => (
+            <ArticleCard key={index} to={`/articles/${article.id}`}>
+              <ArticleCover src={article.img} />
+              <ArticleCardBottom>
+                <ArticleTitle>{article.title}</ArticleTitle>
+                <HeartAndCommentRecordContainer>
+                  <RecordImg src={notyetLike} />
+                  <Record>{article.likedBy.length}</Record>
+                  <RecordImg src={comment} />
+                  <Record>{article.commentCount}</Record>
+                </HeartAndCommentRecordContainer>
+              </ArticleCardBottom>
+            </ArticleCard>
+          ))}
+        </AllArticlesContainer>
+      )}
     </Wrap>
   );
 };

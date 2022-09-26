@@ -70,6 +70,14 @@ const EditArticleLabel = styled(EditInfoLabel)`
   }
 `;
 
+const WarningText = styled.div`
+  font-size: 22px;
+  color: #b54745;
+  @media (max-width: 533px) {
+    font-size: 18px;
+  }
+`;
+
 const CoverEditArticleLabel = styled(EditArticleLabel)`
   @media (max-width: 533px) {
     display: none;
@@ -157,12 +165,16 @@ type PetArticleType = {
     title: string;
     context: string;
   };
-  // setAddArticleInfo: (value: { title: string; context: string }) => void;
   setAddArticleInfo: Dispatch<
     SetStateAction<{ title: string; context: string }>
   >;
   articleCover: { file: File | string; url: string };
-  setArticleCover: (value: { file: File | string; url: string }) => void;
+  setArticleCover: Dispatch<
+    SetStateAction<{ file: File | string; url: string }>
+  >;
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
+  incompleteInfo: boolean;
 };
 
 type EditArticleType = {
@@ -256,10 +268,13 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
     await Promise.all(promises);
     // getAuthorArticles(profile.uid);
   }
-
   async function updateArticleInfoCondition() {
-    if (!editArticleContext.context && !editArticleContext.title) {
-      window.alert("更新資料不可為空");
+    if (
+      !editArticleContext.context ||
+      !editArticleContext.title ||
+      editArticleContext.context === "<p></p>"
+    ) {
+      props.setIncompleteInfo(true);
       return;
     }
     if (
@@ -268,9 +283,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       editArticleContext.title === profile.ownArticles[ownArticleIndex].title &&
       editArticleCover.url === profile.ownArticles[ownArticleIndex].img
     ) {
-      window.alert("未更新資料");
       return;
     }
+    props.setIncompleteInfo(false);
     if (editArticleCover.url !== profile.ownArticles[ownArticleIndex].img) {
       const updateOwnPetArticle = profile.ownArticles;
       updateOwnPetArticle[ownArticleIndex] = {
@@ -280,7 +295,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         img: editArticleCover.url,
       };
       dispatch(setOwnArticle(updateOwnPetArticle));
-      window.alert("更新完成！");
+      props.setUpdateInfo("已更新寵物文章");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
       setEditArticleMode(false);
       if (editArticleCover.file) {
         await updateNewArticleDataFirebase(
@@ -296,7 +314,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         context: editArticleContext.context,
       };
       dispatch(setOwnArticle(updateOwnPetArticle));
-      window.alert("更新完成！");
+      props.setUpdateInfo("已更新寵物文章");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
       setEditArticleMode(false);
       await updateFirebaseDataMutipleWhere(
         `/petArticles`,
@@ -341,13 +362,14 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                 !props.addArticleInfo.title ||
                 !props.addArticleInfo.context
               ) {
-                window.alert("請填寫完整文章資訊");
+                props.setIncompleteInfo(true);
                 return;
               }
               if (!props.articleCover.url) {
-                window.alert("請上傳文章封面");
+                props.setIncompleteInfo(true);
                 return;
               }
+              props.setIncompleteInfo(false);
               if (props.articleCover.file instanceof File) {
                 const newArticleArr = profile.ownArticles;
                 newArticleArr.push({
@@ -361,7 +383,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                   id: "",
                 });
                 dispatch(setOwnArticle(newArticleArr));
-                window.alert("成功上傳！");
+                props.setUpdateInfo("已上傳寵物文章！");
+                setTimeout(() => {
+                  props.setUpdateInfo("");
+                }, 3000);
                 setAddArticleMode(false);
                 addDataWithUploadImage(
                   `petArticles/${props.articleCover.file.name}`,
@@ -381,6 +406,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                 context: "",
               });
               props.setArticleCover({ file: "", url: "" });
+              props.setIncompleteInfo(false);
             }}
           >
             取消
@@ -441,6 +467,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             addArticleInfo={props.addArticleInfo}
           />
           <ContextDetails addArticleInfo={props.addArticleInfo} />
+          {props.incompleteInfo && (
+            <WarningText>請填寫完整文章資訊及文章封面</WarningText>
+          )}
         </AddArticleInfoContainer>
       ) : editArticleMode ? (
         <InfoContainer>
@@ -507,7 +536,26 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           >
             更新文章
           </FinishAddArticleBtn>
-          <CancelBtn onClick={() => setEditArticleMode(false)}>取消</CancelBtn>
+          <CancelBtn
+            onClick={() => {
+              setEditArticleMode(false);
+              props.setIncompleteInfo(false);
+              setEditArticleContext({
+                ...editArticleContext,
+                title: profile.ownArticles[ownArticleIndex].title,
+                context: profile.ownArticles[ownArticleIndex].context,
+              });
+              setEditArticleCover({
+                ...editArticleCover,
+                url: profile.ownArticles[ownArticleIndex].img,
+              });
+            }}
+          >
+            取消
+          </CancelBtn>
+          {props.incompleteInfo && (
+            <WarningText>更新資料不可為空值</WarningText>
+          )}
         </InfoContainer>
       ) : detailArticleOpen && profile.ownArticles[ownArticleIndex] ? (
         <InfoContainer>
