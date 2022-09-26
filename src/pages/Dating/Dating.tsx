@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import {
   setAllCardInfrontOfUser,
   setConsiderList,
@@ -21,6 +21,24 @@ import { area } from "./constantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";
+
+const PopupAnimation = keyframes`
+  0% {right: -300px}
+  70% {right:0}
+  100% {right: -300px}
+`;
+
+const PopupHint = styled.div<{ $Top: number }>`
+  background-color: #b54745;
+  color: #fff;
+  position: absolute;
+  right: -200px;
+  top: ${(props) => props.$Top + 120}px;
+  padding: 15px 20px;
+  letter-spacing: 1.5px;
+  /* transition: 0.3s; */
+  animation: ${PopupAnimation} 3s ease infinite;
+`;
 
 const ConsiderTitle = styled(Title)`
   position: absolute;
@@ -45,6 +63,7 @@ const Wrap = styled.div`
   position: relative;
   padding-top: 120px;
   padding-bottom: 50px;
+  overflow: hidden;
 `;
 
 const Cards = styled.div`
@@ -335,6 +354,22 @@ const Pairing: React.FC = () => {
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
+  const [updateInfo, setUpdateInfo] = useState("");
+  const [scroll, setScroll] = useState<number>(0);
+
+  console.log(updateInfo);
+
+  useEffect(() => {
+    if (!updateInfo) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [updateInfo]);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
 
   useEffect(() => {
     checkChosenAndAppendNewPet(100);
@@ -595,8 +630,15 @@ const Pairing: React.FC = () => {
                 considerDetail={considerDetail}
                 nowChosenPetIndex={nowChosenPetIndex}
                 setDatingQty={setDatingQty}
+                setUpdateInfo={setUpdateInfo}
               />
             </ConsiderList>
+            {updateInfo === "已更新考慮領養清單" && (
+              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
+            )}
+            {updateInfo === "申請成功！可至「即將到來的約會」查看" && (
+              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
+            )}
           </>
         ) : (
           ""

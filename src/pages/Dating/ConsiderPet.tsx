@@ -149,6 +149,10 @@ const PetInfo = styled.div`
   line-height: 20px;
 `;
 
+const PetInfoWarning = styled(PetInfo)`
+  color: #b54745;
+`;
+
 const PetShelterAddress = styled.a`
   color: #db5452;
 `;
@@ -282,6 +286,7 @@ type ConsiderSingleCard = {
   considerDetail: Boolean;
   nowChosenPetIndex: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -334,6 +339,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           considerDetail={props.considerDetail}
           scroll={scroll}
           setDatingQty={props.setDatingQty}
+          setUpdateInfo={props.setUpdateInfo}
         />
       ) : (
         ""
@@ -348,6 +354,7 @@ const ConsiderPetDetail = (props: {
   considerDetail: Boolean;
   scroll: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -366,6 +373,8 @@ const ConsiderPetDetail = (props: {
   const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
   const [timeIndex, setTimeIndex] = useState<number>(-1);
   const [pageHigh, setPageHigh] = useState<number>(0);
+  const [repeatInvite, setRepeatInvite] = useState(false);
+  const [incompleteInfo, setIncompleteInfo] = useState(false);
 
   useEffect(() => {
     window.addEventListener("click", togglePageHeight);
@@ -432,7 +441,6 @@ const ConsiderPetDetail = (props: {
     });
     dispatch(setUpcomingDateList(upcomingDate));
   }
-
   return (
     <>
       <BlackMask
@@ -513,6 +521,11 @@ const ConsiderPetDetail = (props: {
               {dating.considerList[props.nowChosenPetIndex].shelterTel}
             </PetInfo>
           </PetInfoImgContainer>
+          {repeatInvite && (
+            <PetInfoWarning>
+              已在「即將到來的約會」清單中，無法重複申請！
+            </PetInfoWarning>
+          )}
         </PetInfoContainer>
 
         <CloseBtn
@@ -524,6 +537,15 @@ const ConsiderPetDetail = (props: {
         </CloseBtn>
         <InviteDatingBtn
           onClick={() => {
+            if (
+              dating.upcomingDateList.find(
+                (date) =>
+                  date.id === dating.considerList[props.nowChosenPetIndex].id
+              )
+            ) {
+              setRepeatInvite(true);
+              return;
+            }
             setInviteBoxOpen(true);
             setInviteDatingInfo({
               ...inviteDatingInfo,
@@ -549,7 +571,10 @@ const ConsiderPetDetail = (props: {
             newConsiderList.splice(props.nowChosenPetIndex, 1);
             dispatch(setConsiderList(newConsiderList));
             props.setConsiderDetail(false);
-            window.alert("更新完成!");
+            props.setUpdateInfo(`已更新考慮領養清單`);
+            setTimeout(() => {
+              props.setUpdateInfo("");
+            }, 3000);
           }}
         >
           不考慮領養
@@ -620,25 +645,14 @@ const ConsiderPetDetail = (props: {
                 </TimeBtn>
               ))}
             </TimeBtnContainer>
+            {incompleteInfo && (
+              <PetInfoWarning>請填寫完整資料以利進行約會申請</PetInfoWarning>
+            )}
           </InviteInfoContainer>
           <SendInviteBtn
             onClick={async () => {
               if (Object.values(inviteDatingInfo).some((item) => item === "")) {
-                window.alert("請填寫完整資料以利進行申請約會體驗！");
-                return;
-              }
-              if (
-                dating.upcomingDateList.find(
-                  (date) =>
-                    date.id === dating.considerList[props.nowChosenPetIndex].id
-                )
-              ) {
-                window.alert(
-                  `您已向 ${
-                    dating.considerList[props.nowChosenPetIndex].id
-                  } 申請過約會體驗，請至「即將到來的約會」專區查看`
-                );
-                setInviteBoxOpen(false);
+                setIncompleteInfo(true);
                 return;
               }
               updateUpcomingDate(dating.considerList[props.nowChosenPetIndex]);
@@ -647,8 +661,11 @@ const ConsiderPetDetail = (props: {
               );
               getUpcomingListData();
               props.setDatingQty((prev) => prev + 1);
-              window.alert("申請成功！可至「即將到來的約會」查看");
               setInviteBoxOpen(false);
+              props.setUpdateInfo(`申請成功！可至「即將到來的約會」查看`);
+              setTimeout(() => {
+                props.setUpdateInfo("");
+              }, 3000);
             }}
           >
             送出邀請

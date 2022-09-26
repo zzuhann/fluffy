@@ -10,7 +10,7 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -23,6 +23,7 @@ import { AllPetDiariesType } from "./AllPetDiraies";
 import { CommentType } from "../Articles/ArticleDetail";
 import { Btn } from "../ProfileSetting/UserInfos";
 import { LoginRegisterBox } from "../ProfileSetting/ProfileLoginRegister";
+import { Loading } from "../../utils/loading";
 
 const Wrap = styled.div`
   width: 100%;
@@ -251,12 +252,22 @@ const DiaryDetail = () => {
   const [diaryComments, setDiaryComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
   const [openLoginBox, setOpenLoginBox] = useState(false);
+  const commentSection = useRef<HTMLHeadingElement>(null);
+  const [commentScrollHeight, setCommentScrollHeight] = useState<number>(0);
+  const [loadingComment, setLoadingComment] = useState(false);
+
+  useEffect(() => {
+    if (commentSection.current) {
+      commentSection.current.scrollTop = commentScrollHeight;
+    }
+  }, [commentScrollHeight]);
 
   async function addDiaryComment() {
     if (!targetDiary) return;
     if (!newCommentContext) {
       return;
     }
+    setLoadingComment(true);
     await addDoc(collection(db, `petDiaries/${targetDiary.id}/comments`), {
       user: {
         name: profile.name,
@@ -271,9 +282,12 @@ const DiaryDetail = () => {
       commentCount: targetDiary.commentCount + 1,
     });
     setNewCommentContext("");
-    window.alert("留言成功");
     getDiaryComments();
     getSpecificDiary();
+    if (commentSection.current) {
+      setCommentScrollHeight(commentSection.current.scrollHeight + 100);
+    }
+    setLoadingComment(false);
   }
 
   async function getDiaryComments() {
@@ -355,7 +369,7 @@ const DiaryDetail = () => {
               {`${new Date().getFullYear() - targetDiary.birthYear}`}y)
             </AuthorName>
           </DiaryAuthorContainer>
-          <MainSection>
+          <MainSection ref={commentSection}>
             <DiaryAuthorContainerNoBorder
               to={`/profile/${targetDiary.authorUid}`}
             >
@@ -433,17 +447,27 @@ const DiaryDetail = () => {
                 setNewCommentContext(e.target.value);
               }}
             ></AddCommentTextArea>
-            <AddCommentBtn
-              onClick={() => {
-                if (!profile.isLogged) {
-                  setOpenLoginBox(true);
-                  return;
-                }
-                addDiaryComment();
-              }}
-            >
-              送出
-            </AddCommentBtn>
+            {loadingComment ? (
+              <Loading
+                $Top={"50%"}
+                $Bottom={"auto"}
+                $Right={"30px"}
+                $Left={"auto"}
+                $transform={"translateY(-50%)"}
+              />
+            ) : (
+              <AddCommentBtn
+                onClick={() => {
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addDiaryComment();
+                }}
+              >
+                送出
+              </AddCommentBtn>
+            )}
           </AddComment>
         </DiaryTextInfo>
       </DiaryContainer>
