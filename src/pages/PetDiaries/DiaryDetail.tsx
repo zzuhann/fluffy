@@ -402,7 +402,7 @@ const DiaryDetail = () => {
                     {new Date(comment.commentTime).getMonth() + 1}/
                     {new Date(comment.commentTime).getDate()}{" "}
                     {new Date(comment.commentTime).getHours() < 10
-                      ? `0${new Date(comment.commentTime).getHours() < 10}`
+                      ? `0${new Date(comment.commentTime).getHours()}`
                       : new Date(comment.commentTime).getHours()}
                     :
                     {new Date(comment.commentTime).getMinutes() < 10
