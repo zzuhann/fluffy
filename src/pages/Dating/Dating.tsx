@@ -28,7 +28,7 @@ const PopupAnimation = keyframes`
   100% {right: -300px}
 `;
 
-const PopupHint = styled.div<{ $Top: number }>`
+export const PopupHint = styled.div<{ $Top: number }>`
   background-color: #b54745;
   color: #fff;
   position: absolute;

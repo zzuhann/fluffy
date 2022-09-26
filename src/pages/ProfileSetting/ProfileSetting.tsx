@@ -14,6 +14,7 @@ import {
   DetailPetSingleInfo,
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
+import { PopupHint } from "../Dating/Dating";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -21,6 +22,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   position: relative;
   padding-top: 144px;
+  overflow: hidden;
   padding-bottom: 72px;
   @media (max-width: 1120px) {
     padding-left: 50px;
@@ -215,6 +217,8 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
     context: "",
   });
   const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
+  const [updateInfo, setUpdateInfo] = useState("");
+  const [incompleteInfo, setIncompleteInfo] = useState(false);
 
   async function getOwnPetList() {
     const allOwnPet: OwnPet[] = [];
@@ -261,17 +265,26 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         </SidebarProfileTab>
       </SideBarWrapper>
       <Wrapper>
+        {updateInfo === "已更新個人資訊" && (
+          <PopupHint $Top={70}>已更新個人資訊</PopupHint>
+        )}
         <MainInfo>
           {selectedTab === tabs[0] ? (
-            <UserInfos
-              newName={newName}
-              setNewName={setNewName}
-              setImg={setImg}
-              img={img}
-            />
+            <>
+              <UserInfos
+                newName={newName}
+                setNewName={setNewName}
+                setImg={setImg}
+                img={img}
+                setUpdateInfo={setUpdateInfo}
+                setIncompleteInfo={setIncompleteInfo}
+                incompleteInfo={incompleteInfo}
+              />
+            </>
           ) : (
             ""
           )}
+
           {selectedTab === tabs[1] && addPet ? (
             <AddPet
               setAddPet={setAddPet}

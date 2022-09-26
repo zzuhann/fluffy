@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -135,6 +135,15 @@ export const EditInfoLabel = styled.label`
     margin-left: 0;
   }
 `;
+
+const WarningText = styled.div`
+  margin-left: 20px;
+  font-size: 22px;
+  color: #b54745;
+  @media (max-width: 614px) {
+    margin-left: 0;
+  }
+`;
 export const EditInfoInput = styled.input`
   font-size: 22px;
   margin-left: 10px;
@@ -244,9 +253,12 @@ export const CancelUpdateBtn = styled(Btn)`
 
 type userInfoType = {
   newName: string;
-  setNewName: (value: string) => void;
-  setImg: (value: { file: File | string; url: string }) => void;
+  setNewName: Dispatch<SetStateAction<string>>;
+  setImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
   img: { file: File | string; url: string };
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
+  incompleteInfo: boolean;
 };
 
 const UserInfos: React.FC<userInfoType> = (props) => {
@@ -285,6 +297,10 @@ const UserInfos: React.FC<userInfoType> = (props) => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             dispatch(setName(props.newName));
             dispatch(setImage(downloadURL));
+            props.setUpdateInfo("已更新個人資訊");
+            setTimeout(() => {
+              props.setUpdateInfo("");
+            }, 3000);
             const userProfileRef = doc(db, "memberProfiles", profile.uid);
             await updateDoc(userProfileRef, {
               name: props.newName,
@@ -327,12 +343,15 @@ const UserInfos: React.FC<userInfoType> = (props) => {
               }
             );
             updateAllCommentsUserData(downloadURL);
-            window.alert("更新成功！");
           });
         }
       );
     } else {
       dispatch(setName(props.newName));
+      props.setUpdateInfo("已更新個人資訊");
+      setTimeout(() => {
+        props.setUpdateInfo("");
+      }, 3000);
       const userProfileRef = doc(db, "memberProfiles", profile.uid);
       await updateDoc(userProfileRef, {
         name: props.newName,
@@ -375,7 +394,6 @@ const UserInfos: React.FC<userInfoType> = (props) => {
         }
       );
       updateAllCommentsUserData(profile.img as string);
-      window.alert("更新成功！");
     }
   }
 
@@ -396,8 +414,6 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     });
     await Promise.all(promises);
   }
-
-  console.log(profile.img);
 
   return (
     <>
@@ -448,12 +464,16 @@ const UserInfos: React.FC<userInfoType> = (props) => {
                   }}
                 />
               </EditContainer>
+              {props.incompleteInfo && (
+                <WarningText>更新資料不可為空值</WarningText>
+              )}
             </EditModeUserInfoContainer>
             <CancelUpdateBtn
               onClick={() => {
                 setEditProfileMode(false);
                 props.setNewName(profile.name);
                 setNewImg({ ...newImg, url: profile.img as string });
+                props.setIncompleteInfo(false);
               }}
             >
               取消
@@ -461,13 +481,16 @@ const UserInfos: React.FC<userInfoType> = (props) => {
             <UpdateBtn
               onClick={async () => {
                 if (
-                  props.newName === "" ||
-                  newImg.url === "" ||
-                  (newImg.url === profile.img && props.newName === profile.name)
+                  newImg.url === profile.img &&
+                  props.newName === profile.name
                 ) {
-                  window.alert("未更新資料或更新資料不可為空值");
                   return;
                 }
+                if (props.newName === "" || newImg.url === "") {
+                  props.setIncompleteInfo(true);
+                  return;
+                }
+                props.setIncompleteInfo(false);
                 uploadProfileData();
               }}
             >
