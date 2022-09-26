@@ -647,8 +647,20 @@ const Pairing: React.FC = () => {
           <>
             <UpcomingListContainer>
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
-              <UpcomingList getUpcomingListData={getUpcomingListData} />
+              <UpcomingList
+                getUpcomingListData={getUpcomingListData}
+                setUpdateInfo={setUpdateInfo}
+              />
             </UpcomingListContainer>
+            {updateInfo === "已更新即將到來的約會清單" && (
+              <PopupHint $Top={scroll - 120}>{updateInfo}</PopupHint>
+            )}
+            {updateInfo === "已完成本次約會並更新清單" && (
+              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
+            )}
+            {updateInfo === "已將領養寵物新增至會員資料" && (
+              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
+            )}
           </>
         ) : (
           ""

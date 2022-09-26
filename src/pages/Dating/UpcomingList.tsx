@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { db, deleteFirebaseData } from "../../utils/firebase";
@@ -150,6 +150,11 @@ const ConfirmInputContainer = styled.div`
 const ConfirmLabel = styled.label`
   width: 70px;
 `;
+
+const WarningText = styled.div`
+  color: #b54745;
+`;
+
 const ConfirmInput = styled.input`
   flex: 1;
   border: solid 2px #d1cfcf;
@@ -200,6 +205,7 @@ const DatingDoneBtn = styled(Btn)`
 
 type Props = {
   getUpcomingListData: () => void;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 const UpcomingList: React.FC<Props> = (props) => {
@@ -225,6 +231,7 @@ const UpcomingList: React.FC<Props> = (props) => {
     birthYear: number;
   }>({ name: "", birthYear: 0 });
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
+  const [incompleteInfo, setIncompleteInfo] = useState(false);
 
   if (!dating.upcomingDateList) return null;
   return (
@@ -308,6 +315,8 @@ const UpcomingList: React.FC<Props> = (props) => {
                     index: index,
                   });
                   setCheckToAdoptPet(false);
+                  setAdoptAnswer(-1);
+                  setIncompleteInfo(false);
                 }}
               >
                 已完成約會
@@ -338,7 +347,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                           "id",
                           date.id
                         );
-                        window.alert("好ㄛ🙆");
+                        props.setUpdateInfo("已完成本次約會並更新清單");
+                        setTimeout(() => {
+                          props.setUpdateInfo("");
+                          setAdoptAnswer(-1);
+                        }, 3000);
                         const newUpcomingList = dating.upcomingDateList;
                         newUpcomingList.splice(datingDone.index, 1);
                         dispatch(setUpcomingDateList(newUpcomingList));
@@ -380,6 +393,9 @@ const UpcomingList: React.FC<Props> = (props) => {
                           }
                         ></ConfirmInput>
                       </ConfirmInputContainer>
+                      {incompleteInfo && (
+                        <WarningText>請填寫完整資訊</WarningText>
+                      )}
                       <AnswerBtnContainer>
                         <CheckAdoptBtn
                           onClick={async () => {
@@ -387,7 +403,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                               !adoptPetInfo.name &&
                               adoptPetInfo.birthYear === 0
                             ) {
-                              window.alert("請填寫完整資訊！");
+                              setIncompleteInfo(true);
                               return;
                             }
                             await addDoc(
@@ -431,7 +447,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                               ),
                               { id: date.id }
                             );
-                            window.alert("已將領養寵物新增至您的會員資料！");
+                            props.setUpdateInfo("已將領養寵物新增至會員資料");
+                            setTimeout(() => {
+                              props.setUpdateInfo("");
+                              setAdoptAnswer(-1);
+                            }, 3000);
                           }}
                         >
                           確認(日後可修改)
@@ -457,7 +477,10 @@ const UpcomingList: React.FC<Props> = (props) => {
                 const newUpcomingList = dating.upcomingDateList;
                 newUpcomingList.splice(index, 1);
                 dispatch(setUpcomingDateList(newUpcomingList));
-                window.alert("成功取消約會!");
+                props.setUpdateInfo("已更新即將到來的約會清單");
+                setTimeout(() => {
+                  props.setUpdateInfo("");
+                }, 3000);
               }}
             >
               取消此次約會

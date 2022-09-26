@@ -151,6 +151,7 @@ const PetInfo = styled.div`
 
 const PetInfoWarning = styled(PetInfo)`
   color: #b54745;
+  margin-left: 0;
 `;
 
 const PetShelterAddress = styled.a`
@@ -662,7 +663,7 @@ const ConsiderPetDetail = (props: {
               getUpcomingListData();
               props.setDatingQty((prev) => prev + 1);
               setInviteBoxOpen(false);
-              props.setUpdateInfo(`申請成功！可至「即將到來的約會」查看`);
+              props.setUpdateInfo("申請成功！可至「即將到來的約會」查看");
               setTimeout(() => {
                 props.setUpdateInfo("");
               }, 3000);
