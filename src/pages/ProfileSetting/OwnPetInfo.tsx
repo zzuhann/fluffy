@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -6,6 +6,7 @@ import {
   addDataWithUploadImage,
   db,
   deleteFirebaseData,
+  deleteFirebaseDataMutipleWhere,
   storage,
   updateFirebaseDataMutipleWhere,
   updateUseStateInputImage,
@@ -306,6 +307,45 @@ const DeleteBtn = styled(Btn)`
   }
 `;
 
+const DeleteCheckBox = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: solid 3px #d1cfcf;
+  padding: 20px 25px;
+  font-size: 22px;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DeleteCheckText = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+`;
+
+const DeleteCheckBoxBtnContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+
+const DeleteCheckBoxBtn = styled(Btn)`
+  font-size: 18px;
+  position: relative;
+`;
+
+const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
+  border-color: #db5452;
+  color: #db5452;
+  &:hover {
+    background-color: #db5452;
+    color: #fff;
+  }
+`;
+
 type SimplePetCardType = {
   setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   setOwnPetIndex: Dispatch<SetStateAction<number>>;
@@ -387,9 +427,10 @@ type DetailPetSingleInfoType = {
     url: string;
   };
   ownPetEdit: boolean;
-  setOwnPetEdit: (value: boolean) => void;
-  setOwnPetDetail: (value: boolean) => void;
+  setOwnPetEdit: Dispatch<SetStateAction<boolean>>;
+  setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   getOwnPetList: () => void;
+  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
@@ -398,66 +439,101 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const [openDeleteBox, setOpenDeleteBox] = useState(false);
   const dispatch = useDispatch();
 
   return (
-    <PetDeatilContainer>
-      <PetTitle>寵物資訊</PetTitle>
-      <PetSingleContainer>
-        <PetSingleImage src={props.petNewImg.url} />
-        <PetSingleDetailTextContainer>
-          <PetSingleName>
-            姓名: {props.petNewInfo.name} (
-            {profile.ownPets[props.ownPetIndex].sex === "F" ? "♀" : "♂"})
-          </PetSingleName>
-          <PetSingleName>
-            出生年: {props.petNewInfo.birthYear} 年 (
-            {new Date().getFullYear() - props.petNewInfo.birthYear}y)
-          </PetSingleName>
-          <PetSingleName>
-            種類: {profile.ownPets[props.ownPetIndex].kind}
-          </PetSingleName>
-          {profile.ownPets[props.ownPetIndex].shelterName === "false" ? (
-            ""
-          ) : (
-            <PetSingleName>
-              從{profile.ownPets[props.ownPetIndex].shelterName}領養
-            </PetSingleName>
-          )}
-        </PetSingleDetailTextContainer>
-      </PetSingleContainer>
+    <>
+      {profile.ownPets[props.ownPetIndex] && (
+        <PetDeatilContainer>
+          <PetTitle>寵物資訊</PetTitle>
+          <PetSingleContainer>
+            <PetSingleImage src={props.petNewImg.url} />
+            <PetSingleDetailTextContainer>
+              <PetSingleName>
+                姓名: {props.petNewInfo.name} (
+                {profile.ownPets[props.ownPetIndex].sex === "F" ? "♀" : "♂"})
+              </PetSingleName>
+              <PetSingleName>
+                出生年: {props.petNewInfo.birthYear} 年 (
+                {new Date().getFullYear() - props.petNewInfo.birthYear}y)
+              </PetSingleName>
+              <PetSingleName>
+                種類: {profile.ownPets[props.ownPetIndex].kind}
+              </PetSingleName>
+              {profile.ownPets[props.ownPetIndex].shelterName === "false" ? (
+                ""
+              ) : (
+                <PetSingleName>
+                  從{profile.ownPets[props.ownPetIndex].shelterName}領養
+                </PetSingleName>
+              )}
+            </PetSingleDetailTextContainer>
+          </PetSingleContainer>
 
-      <CloseDetailBtn
-        onClick={() => {
-          props.setOwnPetDetail(false);
-        }}
-      >
-        關閉
-      </CloseDetailBtn>
-      <DeleteBtn
-        onClick={async () => {
-          deleteFirebaseData(
-            `/memberProfiles/${profile.uid}/ownPets`,
-            "name",
-            profile.ownPets[props.ownPetIndex].name
-          );
-          const newOwnPets = profile.ownPets;
-          newOwnPets.splice(props.ownPetIndex, 1);
-          dispatch(setOwnPets(newOwnPets));
-          window.alert("刪除完成！");
-          props.setOwnPetDetail(false);
-        }}
-      >
-        刪除
-      </DeleteBtn>
-      <EditBtn
-        onClick={() => {
-          props.setOwnPetEdit(true);
-        }}
-      >
-        編輯
-      </EditBtn>
-    </PetDeatilContainer>
+          <CloseDetailBtn
+            onClick={() => {
+              props.setOwnPetDetail(false);
+            }}
+          >
+            關閉
+          </CloseDetailBtn>
+          <DeleteBtn
+            onClick={async () => {
+              setOpenDeleteBox(true);
+            }}
+          >
+            刪除
+          </DeleteBtn>
+          <EditBtn
+            onClick={() => {
+              props.setOwnPetEdit(true);
+            }}
+          >
+            編輯
+          </EditBtn>
+          {openDeleteBox && (
+            <DeleteCheckBox>
+              <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
+              <DeleteCheckText>
+                將會連同 {profile.ownPets[props.ownPetIndex].name}{" "}
+                的日記一起刪除
+              </DeleteCheckText>
+              <DeleteCheckBoxBtnContainer>
+                <WarningDeleteBtn
+                  onClick={async () => {
+                    await deleteFirebaseDataMutipleWhere(
+                      `/petDiaries`,
+                      "petName",
+                      profile.ownPets[props.ownPetIndex].name,
+                      "authorUid",
+                      profile.uid
+                    );
+                    await deleteFirebaseData(
+                      `/memberProfiles/${profile.uid}/ownPets`,
+                      "name",
+                      profile.ownPets[props.ownPetIndex].name
+                    );
+                    const newOwnPets = profile.ownPets;
+                    newOwnPets.splice(props.ownPetIndex, 1);
+                    dispatch(setOwnPets(newOwnPets));
+                    setOpenDeleteBox(false);
+                    props.setOwnPetDetail(false);
+                    props.setUpdateInfo("已更新寵物資訊");
+                    setTimeout(() => {
+                      props.setUpdateInfo("");
+                    }, 3000);
+                  }}
+                >
+                  確定
+                </WarningDeleteBtn>
+                <DeleteCheckBoxBtn>取消</DeleteCheckBoxBtn>
+              </DeleteCheckBoxBtnContainer>
+            </DeleteCheckBox>
+          )}
+        </PetDeatilContainer>
+      )}
+    </>
   );
 };
 

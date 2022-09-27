@@ -355,6 +355,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
               setOwnPetEdit={setOwnPetEdit}
               setOwnPetDetail={setOwnPetDetail}
               getOwnPetList={getOwnPetList}
+              setUpdateInfo={setUpdateInfo}
             />
           ) : (
             ""
