@@ -330,6 +330,7 @@ export const DeleteCheckText = styled.div`
   text-align: center;
   margin-bottom: 20px;
   letter-spacing: 1px;
+  line-height: 24px;
 `;
 
 export const DeleteCheckBoxBtnContainer = styled.div`

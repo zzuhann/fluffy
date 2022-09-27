@@ -22,6 +22,13 @@ import close from "./img/close.png";
 import { CalendarContainer } from "../ProfileSetting/PetDiary";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import {
+  DeleteCheckBox,
+  DeleteCheckText,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckBoxBtn,
+  WarningDeleteBtn,
+} from "../ProfileSetting/OwnPetInfo";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -280,6 +287,25 @@ const SendInviteBtn = styled(Btn)`
   bottom: -5px;
 `;
 
+const ConsiderDeleteBox = styled(DeleteCheckBox)`
+  width: 320px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: solid 3px #d1cfcf;
+  padding: 20px 25px;
+  font-size: 18px;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  @media (max-width: 605px) {
+    font-size: 18px;
+    width: 350px;
+  } ;
+`;
+
 type ConsiderSingleCard = {
   setNowChosenPetIndex: (value: number) => void;
   setConsiderDetail: (value: Boolean) => void;
@@ -376,6 +402,7 @@ const ConsiderPetDetail = (props: {
   const [pageHigh, setPageHigh] = useState<number>(0);
   const [repeatInvite, setRepeatInvite] = useState(false);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
+  const [openDeleteBox, setOpenDeleteBox] = useState(false);
 
   useEffect(() => {
     window.addEventListener("click", togglePageHeight);
@@ -559,27 +586,57 @@ const ConsiderPetDetail = (props: {
         </InviteDatingBtn>
         <NotCondiserBtn
           onClick={async () => {
-            deleteFirebaseData(
-              `/memberProfiles/${profile.uid}/considerLists`,
-              "id",
-              dating.considerList[props.nowChosenPetIndex].id
-            );
-            await addDoc(
-              collection(db, `/memberProfiles/${profile.uid}/notConsiderLists`),
-              { id: dating.considerList[props.nowChosenPetIndex].id }
-            );
-            const newConsiderList = dating.considerList;
-            newConsiderList.splice(props.nowChosenPetIndex, 1);
-            dispatch(setConsiderList(newConsiderList));
-            props.setConsiderDetail(false);
-            props.setUpdateInfo(`已更新考慮領養清單`);
-            setTimeout(() => {
-              props.setUpdateInfo("");
-            }, 3000);
+            setOpenDeleteBox(true);
           }}
         >
           不考慮領養
         </NotCondiserBtn>
+        {openDeleteBox && (
+          <ConsiderDeleteBox>
+            <DeleteCheckText>確定從考慮領養清單移除嗎？</DeleteCheckText>
+            <DeleteCheckText>若有約會，將會連同約會一起刪除</DeleteCheckText>
+            <DeleteCheckBoxBtnContainer>
+              <WarningDeleteBtn
+                onClick={async () => {
+                  deleteFirebaseData(
+                    `/memberProfiles/${profile.uid}/considerLists`,
+                    "id",
+                    dating.considerList[props.nowChosenPetIndex].id
+                  );
+                  deleteFirebaseData(
+                    `/memberProfiles/${profile.uid}/upcomingDates`,
+                    "id",
+                    dating.considerList[props.nowChosenPetIndex].id
+                  );
+                  await addDoc(
+                    collection(
+                      db,
+                      `/memberProfiles/${profile.uid}/notConsiderLists`
+                    ),
+                    { id: dating.considerList[props.nowChosenPetIndex].id }
+                  );
+                  const newConsiderList = dating.considerList;
+                  newConsiderList.splice(props.nowChosenPetIndex, 1);
+                  dispatch(setConsiderList(newConsiderList));
+                  props.setConsiderDetail(false);
+                  props.setUpdateInfo(`已更新考慮領養清單`);
+                  setTimeout(() => {
+                    props.setUpdateInfo("");
+                  }, 3000);
+                }}
+              >
+                確定
+              </WarningDeleteBtn>
+              <DeleteCheckBoxBtn
+                onClick={() => {
+                  setOpenDeleteBox(false);
+                }}
+              >
+                取消
+              </DeleteCheckBoxBtn>
+            </DeleteCheckBoxBtnContainer>
+          </ConsiderDeleteBox>
+        )}
       </PetCard>
       {inviteBoxOpen ? (
         <InviteDatingBox $Top={props.scroll}>
