@@ -265,27 +265,7 @@ const ProfileSetting: React.FC<profileSettingType> = (props) => {
         </SidebarProfileTab>
       </SideBarWrapper>
       <Wrapper>
-        {updateInfo === "已更新個人資訊" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "已更新寵物資訊" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "新增寵物成功！" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "新增寵物日記成功！" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "已更新寵物日記" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "已上傳寵物文章！" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
-        {updateInfo === "已更新寵物文章" && (
-          <PopupHint $Top={70}>{updateInfo}</PopupHint>
-        )}
+        {updateInfo && <PopupHint $Top={70}>{updateInfo}</PopupHint>}
         <MainInfo>
           {selectedTab === tabs[0] ? (
             <>

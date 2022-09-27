@@ -35,6 +35,13 @@ import {
   EditInfoInput,
   CancelIcon,
 } from "./UserInfos";
+import {
+  DeleteCheckBox,
+  DeleteCheckText,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckBoxBtn,
+  WarningDeleteBtn,
+} from "./OwnPetInfo";
 import parse from "html-react-parser";
 import trash from "./bin.png";
 import upload from "./upload.png";
@@ -160,6 +167,14 @@ const PetDetailInput = styled.input`
   display: none;
 `;
 
+const ArticleDeleteBox = styled(DeleteCheckBox)`
+  top: 25%;
+  z-index: 100;
+  @media (max-width: 605px) {
+    top: 20%;
+  }
+`;
+
 type PetArticleType = {
   addArticleInfo: {
     title: string;
@@ -201,6 +216,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1);
   const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>();
   const [detailArticleOpen, setDetailArticleOpen] = useState<boolean>(false);
+  const [openDeleteBox, setOpenDeleteBox] = useState(false);
 
   async function addPetArticleDoc(imgURL: string) {
     await addDoc(collection(db, `/petArticles`), {
@@ -266,7 +282,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       }
     });
     await Promise.all(promises);
-    // getAuthorArticles(profile.uid);
   }
   async function updateArticleInfoCondition() {
     if (
@@ -331,7 +346,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           context: editArticleContext.context,
         }
       );
-      // getAuthorArticles(profile.uid);
     }
   }
 
@@ -601,19 +615,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
               編輯
             </EditArticleBtn>
             <DeteleArticleBtn
-              onClick={async () => {
-                await deleteFirebaseDataMutipleWhere(
-                  `/petArticles`,
-                  "postTime",
-                  profile.ownArticles[ownArticleIndex].postTime,
-                  "authorUid",
-                  profile.uid
-                );
-                setDetailArticleOpen(false);
-                const DeleOwnPetArticle = profile.ownArticles;
-                DeleOwnPetArticle.splice(ownArticleIndex, 1);
-                dispatch(setOwnArticle(DeleOwnPetArticle));
-                window.alert("刪除完成！");
+              onClick={() => {
+                setOpenDeleteBox(true);
               }}
             >
               刪除
@@ -625,6 +628,38 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           <ArticleContext className="DetailProseMirror">
             {parse(profile.ownArticles[ownArticleIndex].context)}
           </ArticleContext>
+          {openDeleteBox && (
+            <ArticleDeleteBox>
+              <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
+              <DeleteCheckBoxBtnContainer>
+                <WarningDeleteBtn
+                  onClick={async () => {
+                    await deleteFirebaseDataMutipleWhere(
+                      `/petArticles`,
+                      "postTime",
+                      profile.ownArticles[ownArticleIndex].postTime,
+                      "authorUid",
+                      profile.uid
+                    );
+                    setDetailArticleOpen(false);
+                    const DeleOwnPetArticle = profile.ownArticles;
+                    DeleOwnPetArticle.splice(ownArticleIndex, 1);
+                    dispatch(setOwnArticle(DeleOwnPetArticle));
+                    setOpenDeleteBox(false);
+                    props.setUpdateInfo("已刪除文章");
+                    setTimeout(() => {
+                      props.setUpdateInfo("");
+                    }, 3000);
+                  }}
+                >
+                  確定
+                </WarningDeleteBtn>
+                <DeleteCheckBoxBtn onClick={() => setOpenDeleteBox(false)}>
+                  取消
+                </DeleteCheckBoxBtn>
+              </DeleteCheckBoxBtnContainer>
+            </ArticleDeleteBox>
+          )}
         </InfoContainer>
       ) : (
         <InfoContainer>

@@ -33,8 +33,14 @@ import {
   Title,
   EditContainer,
   EditInfoLabel,
-  EditInfoInput,
 } from "./UserInfos";
+import {
+  DeleteCheckBox,
+  DeleteCheckText,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckBoxBtn,
+  WarningDeleteBtn,
+} from "./OwnPetInfo";
 import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
 import trash from "./bin.png";
@@ -570,6 +576,7 @@ export const PetDiary: React.FC<{
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
+  const [openDeleteBox, setOpenDeleteBox] = useState(false);
 
   useEffect(() => {
     getAuthorPetDiary(profile.uid);
@@ -962,25 +969,7 @@ export const PetDiary: React.FC<{
           >
             關閉
           </CloseDetailBtn>
-          <DeleteBtn
-            onClick={async () => {
-              await deleteFirebaseDataMutipleWhere(
-                `/petDiaries`,
-                "postTime",
-                profile.petDiary[ownPetDiaryIndex].postTime,
-                "authorUid",
-                profile.uid
-              );
-              const newDiary = profile.petDiary;
-              newDiary.splice(ownPetDiaryIndex, 1);
-              dispatch(setOwnPetDiary(newDiary));
-              window.alert("刪除完成！");
-              setEditDiaryBoxOpen(false);
-              setDetailDiaryBoxOpen(false);
-            }}
-          >
-            刪除
-          </DeleteBtn>
+          <DeleteBtn onClick={() => setOpenDeleteBox(true)}>刪除</DeleteBtn>
           <EditBtn
             onClick={() => {
               setEditDiaryBoxOpen(true);
@@ -989,6 +978,39 @@ export const PetDiary: React.FC<{
           >
             編輯
           </EditBtn>
+          {openDeleteBox && (
+            <DeleteCheckBox>
+              <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
+              <DeleteCheckBoxBtnContainer>
+                <WarningDeleteBtn
+                  onClick={async () => {
+                    await deleteFirebaseDataMutipleWhere(
+                      `/petDiaries`,
+                      "postTime",
+                      profile.petDiary[ownPetDiaryIndex].postTime,
+                      "authorUid",
+                      profile.uid
+                    );
+                    const newDiary = profile.petDiary;
+                    newDiary.splice(ownPetDiaryIndex, 1);
+                    dispatch(setOwnPetDiary(newDiary));
+                    setEditDiaryBoxOpen(false);
+                    setDetailDiaryBoxOpen(false);
+                    setOpenDeleteBox(false);
+                    props.setUpdateInfo("已刪除寵物日記");
+                    setTimeout(() => {
+                      props.setUpdateInfo("");
+                    }, 3000);
+                  }}
+                >
+                  確定
+                </WarningDeleteBtn>
+                <DeleteCheckBoxBtn onClick={() => setOpenDeleteBox(false)}>
+                  取消
+                </DeleteCheckBoxBtn>
+              </DeleteCheckBoxBtnContainer>
+            </DeleteCheckBox>
+          )}
         </PetDeatilContainer>
       ) : editDiaryBoxOpen && !detailDiaryBoxOpen ? (
         <PetDetailCard>

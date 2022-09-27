@@ -307,7 +307,8 @@ const DeleteBtn = styled(Btn)`
   }
 `;
 
-const DeleteCheckBox = styled.div`
+export const DeleteCheckBox = styled.div`
+  width: 400px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -319,25 +320,29 @@ const DeleteCheckBox = styled.div`
   border-radius: 5px;
   display: flex;
   flex-direction: column;
+  @media (max-width: 605px) {
+    font-size: 18px;
+    width: 350px;
+  }
 `;
 
-const DeleteCheckText = styled.div`
+export const DeleteCheckText = styled.div`
   text-align: center;
   margin-bottom: 20px;
   letter-spacing: 1px;
 `;
 
-const DeleteCheckBoxBtnContainer = styled.div`
+export const DeleteCheckBoxBtnContainer = styled.div`
   display: flex;
   justify-content: space-around;
 `;
 
-const DeleteCheckBoxBtn = styled(Btn)`
+export const DeleteCheckBoxBtn = styled(Btn)`
   font-size: 18px;
   position: relative;
 `;
 
-const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
+export const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
   border-color: #db5452;
   color: #db5452;
   &:hover {
@@ -519,7 +524,7 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
                     dispatch(setOwnPets(newOwnPets));
                     setOpenDeleteBox(false);
                     props.setOwnPetDetail(false);
-                    props.setUpdateInfo("已更新寵物資訊");
+                    props.setUpdateInfo("已刪除寵物資訊");
                     setTimeout(() => {
                       props.setUpdateInfo("");
                     }, 3000);
@@ -527,7 +532,13 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
                 >
                   確定
                 </WarningDeleteBtn>
-                <DeleteCheckBoxBtn>取消</DeleteCheckBoxBtn>
+                <DeleteCheckBoxBtn
+                  onClick={() => {
+                    setOpenDeleteBox(false);
+                  }}
+                >
+                  取消
+                </DeleteCheckBoxBtn>
               </DeleteCheckBoxBtnContainer>
             </DeleteCheckBox>
           )}
