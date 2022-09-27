@@ -380,7 +380,7 @@ const Pairing: React.FC = () => {
   useEffect(() => {
     if (dating.allCards.length === 0) {
       setLoading(true);
-      checkChosenAndAppendNewPet(100);
+      checkChosenAndAppendNewPet(10);
     }
     if (dating.allCards.length > 0) {
       setLoading(false);
@@ -556,7 +556,7 @@ const Pairing: React.FC = () => {
                   <RequestMoreCardsBtn
                     onClick={() => {
                       setLoading(true);
-                      checkChosenAndAppendNewPet(200);
+                      checkChosenAndAppendNewPet(500);
                     }}
                   >
                     配對更多狗狗貓貓
