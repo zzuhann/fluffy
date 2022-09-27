@@ -357,6 +357,7 @@ const Pairing: React.FC = () => {
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
   const [updateInfo, setUpdateInfo] = useState("");
   const [scroll, setScroll] = useState<number>(0);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!updateInfo) {
@@ -371,8 +372,20 @@ const Pairing: React.FC = () => {
   }
 
   useEffect(() => {
-    checkChosenAndAppendNewPet(100);
+    if (preference.kind !== "all" || preference.location !== "0") {
+      checkChosenAndAppendNewPet(100);
+    }
   }, [preference, profile.uid]);
+
+  useEffect(() => {
+    if (dating.allCards.length === 0) {
+      setLoading(true);
+      checkChosenAndAppendNewPet(100);
+    }
+    if (dating.allCards.length > 0) {
+      setLoading(false);
+    }
+  }, [dating.allCards, profile.uid]);
 
   async function checkChosenAndAppendNewPet(quantity: number) {
     await getListsData();
@@ -437,7 +450,9 @@ const Pairing: React.FC = () => {
   }
 
   async function choosePreference(quantity: number) {
+    console.log("here");
     if (preference.kind === "all" && preference.location === "0") {
+      console.log("here");
       api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data, quantity));
     }
     if (preference.kind !== "all" && preference.location !== "0") {
@@ -531,25 +546,32 @@ const Pairing: React.FC = () => {
         {tab === "pairing" ? (
           <>
             {dating.allCards.length <= 0 ? (
-              <NoCardSWrapper>
-                <NoCardsTitle>
-                  有發現喜歡的寵物嗎？接下來您可以選擇 ...
-                </NoCardsTitle>
-                <RequestMoreCardsBtn
-                  onClick={() => checkChosenAndAppendNewPet(200)}
-                >
-                  配對更多狗狗貓貓
-                </RequestMoreCardsBtn>
-                <LookConsiderListBtn
-                  onClick={() => {
-                    setTab("considerAdopt");
-                    getListsData();
-                    setConsiderDetail(false);
-                  }}
-                >
-                  看目前考慮領養清單
-                </LookConsiderListBtn>
-              </NoCardSWrapper>
+              isLoading ? (
+                <CatLoading />
+              ) : (
+                <NoCardSWrapper>
+                  <NoCardsTitle>
+                    有發現喜歡的寵物嗎？接下來您可以選擇 ...
+                  </NoCardsTitle>
+                  <RequestMoreCardsBtn
+                    onClick={() => {
+                      setLoading(true);
+                      checkChosenAndAppendNewPet(200);
+                    }}
+                  >
+                    配對更多狗狗貓貓
+                  </RequestMoreCardsBtn>
+                  <LookConsiderListBtn
+                    onClick={() => {
+                      setTab("considerAdopt");
+                      getListsData();
+                      setConsiderDetail(false);
+                    }}
+                  >
+                    看目前考慮領養清單
+                  </LookConsiderListBtn>
+                </NoCardSWrapper>
+              )
             ) : (
               <Cards>
                 <FilterContainer onClick={() => setOpenFilterBox(true)}>
