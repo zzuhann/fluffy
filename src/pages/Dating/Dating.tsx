@@ -380,7 +380,7 @@ const Pairing: React.FC = () => {
   useEffect(() => {
     if (dating.allCards.length === 0) {
       setLoading(true);
-      checkChosenAndAppendNewPet(10);
+      checkChosenAndAppendNewPet(100);
     }
     if (dating.allCards.length > 0) {
       setLoading(false);
