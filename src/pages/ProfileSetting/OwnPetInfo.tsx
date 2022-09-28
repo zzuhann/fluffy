@@ -553,6 +553,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const [invalidBirthYear, setInvalidBirthYear] = useState(false);
 
   async function updateOwnPetInfo() {
     const storageRef = ref(
@@ -610,7 +611,6 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
       }
     });
     await Promise.all(promises);
-    // props.getOwnPetList();
   }
 
   async function updatePetInfoCondition() {
@@ -730,15 +730,38 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
               id="birthYear"
               type="number"
               min="1911"
-              max="2022"
+              max={new Date().getFullYear()}
               value={props.petNewInfo.birthYear}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "." ||
+                  e.key === "e" ||
+                  e.key === "+" ||
+                  e.key === "-"
+                ) {
+                  e.preventDefault();
+                }
+              }}
               onChange={(e) => {
                 props.setPetNewInfo({
                   ...props.petNewInfo,
                   birthYear: Number(e.target.value),
                 });
+                if (
+                  Number(e.target.value) > new Date().getFullYear() ||
+                  Number(e.target.value) < 1911
+                ) {
+                  setInvalidBirthYear(true);
+                } else {
+                  setInvalidBirthYear(false);
+                }
               }}
             />
+            {invalidBirthYear && (
+              <WarningText>
+                請輸入1911~{new Date().getFullYear()}的數字
+              </WarningText>
+            )}
           </EditContainer>
           <PetSingleName>
             種類: {profile.ownPets[props.ownPetIndex].kind}
@@ -768,6 +791,10 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         </CancelUpdateBtn>
         <UpdateBtn
           onClick={async () => {
+            if (invalidBirthYear) {
+              props.setIncompleteInfo(false);
+              return;
+            }
             updatePetInfoCondition();
           }}
         >
