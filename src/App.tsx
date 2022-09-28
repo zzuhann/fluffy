@@ -27,6 +27,21 @@ const GlobalStyle = createGlobalStyle`
   }
   * {
     box-sizing: border-box;
+    &::-webkit-scrollbar {
+      -webkit-appearance: none;
+    }
+    &::-webkit-scrollbar:vertical {
+      width: 11px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      border: 2px solid white; /* should match background, can't be transparent */
+      background-color: #efefef;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #fff;
+      border-radius: 8px;
+    }
   }
   a {
     text-decoration:none;

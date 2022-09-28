@@ -141,6 +141,7 @@ const DiaryContext = styled.div`
   margin-left: 55px;
   margin-bottom: 16px;
   margin-top: 10px;
+  white-space: pre-wrap;
 `;
 const TimeContainer = styled.div`
   display: flex;
@@ -229,6 +230,7 @@ const CommentContext = styled.div`
   margin-left: 55px;
   padding-right: 10px;
   line-height: 20px;
+  white-space: pre-wrap;
   @media (max-width: 478px) {
     margin-left: 0px;
     margin-top: 10px;

@@ -40,6 +40,11 @@ const HTMLButton = styled.button`
   &:last-child {
     margin-right: 7px;
   }
+  &:hover {
+    background: rgb(197, 197, 197);
+    padding: 2px 3px;
+    border-radius: 2px;
+  }
 `;
 
 const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
@@ -131,7 +136,7 @@ export const PetArticle: React.FC<{
   return (
     <div className="textEditor">
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} className="ProseMirror" />
+      <EditorContent editor={editor} />
     </div>
   );
 };
