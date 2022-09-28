@@ -17,6 +17,13 @@ import {
   setConsiderList,
   setUpcomingDateList,
 } from "../../functions/datingReducerFunction";
+import {
+  DeleteCheckBox,
+  DeleteCheckText,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckBoxBtn,
+  WarningDeleteBtn,
+} from "../ProfileSetting/OwnPetInfo";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -232,6 +239,7 @@ const UpcomingList: React.FC<Props> = (props) => {
   }>({ name: "", birthYear: 0 });
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
+  const [openDeleteBox, setOpenDeleteBox] = useState(false);
 
   if (!dating.upcomingDateList) return null;
   return (
@@ -469,22 +477,51 @@ const UpcomingList: React.FC<Props> = (props) => {
           ) : (
             <DatingDoneBtn
               onClick={async () => {
-                deleteFirebaseData(
-                  `/memberProfiles/${profile.uid}/upcomingDates`,
-                  "id",
-                  date.id
-                );
-                const newUpcomingList = dating.upcomingDateList;
-                newUpcomingList.splice(index, 1);
-                dispatch(setUpcomingDateList(newUpcomingList));
-                props.setUpdateInfo("已更新即將到來的約會清單");
-                setTimeout(() => {
-                  props.setUpdateInfo("");
-                }, 3000);
+                setDatingDone({
+                  ...datingDone,
+                  id: date.id,
+                });
+                setOpenDeleteBox(true);
               }}
             >
               取消此次約會
             </DatingDoneBtn>
+          )}
+          {openDeleteBox && datingDone.id === date.id && (
+            <DeleteCheckBox>
+              <DeleteCheckText>確定要取消此次約會嗎？</DeleteCheckText>
+              <DeleteCheckBoxBtnContainer>
+                <WarningDeleteBtn
+                  onClick={async () => {
+                    deleteFirebaseData(
+                      `/memberProfiles/${profile.uid}/upcomingDates`,
+                      "id",
+                      date.id
+                    );
+                    const newUpcomingList = dating.upcomingDateList;
+                    newUpcomingList.splice(index, 1);
+                    dispatch(setUpcomingDateList(newUpcomingList));
+                    props.setUpdateInfo("已更新即將到來的約會清單");
+                    setTimeout(() => {
+                      props.setUpdateInfo("");
+                    }, 3000);
+                  }}
+                >
+                  確定
+                </WarningDeleteBtn>
+                <DeleteCheckBoxBtn
+                  onClick={async () => {
+                    setDatingDone({
+                      ...datingDone,
+                      id: 0,
+                    });
+                    setOpenDeleteBox(false);
+                  }}
+                >
+                  取消
+                </DeleteCheckBoxBtn>
+              </DeleteCheckBoxBtnContainer>
+            </DeleteCheckBox>
           )}
         </UpcomingListCard>
       ))}

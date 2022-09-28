@@ -57,6 +57,9 @@ const ConsiderPetCalendarContainer = styled(CalendarContainer)`
     background-color: #fff;
     color: #ececec;
   }
+  .react-calendar__tile {
+    padding: 4px;
+  }
   .react-calendar__tile--now {
     background-color: #fff;
   }
@@ -677,7 +680,7 @@ const ConsiderPetDetail = (props: {
             </InviteInfoLabel>
             <ConsiderPetCalendarContainer>
               <Calendar
-                // minDate={new Date()}
+                minDate={new Date()}
                 onClickDay={(value) =>
                   setInviteDatingInfo({
                     ...inviteDatingInfo,

@@ -518,7 +518,7 @@ export const CalendarContainer = styled.div`
     color: #ececec;
   }
   .react-calendar__tile {
-    padding: 8px;
+    padding: 6px;
   }
   @media (max-width: 653px) {
     width: 250px;
