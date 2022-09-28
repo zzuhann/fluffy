@@ -843,6 +843,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
   ) as Profile;
   const dispatch = useDispatch();
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
+  const [invalidName, setInvalidName] = useState(false);
 
   return (
     <PetDetailCard>
@@ -891,8 +892,16 @@ export const AddPet: React.FC<AddPetType> = (props) => {
                   ...props.addPetInfo,
                   name: e.target.value,
                 });
+                profile.ownPets.forEach((pet) => {
+                  if (pet.name === e.target.value) {
+                    setInvalidName(true);
+                  } else {
+                    setInvalidName(false);
+                  }
+                });
               }}
             />
+            {invalidName && <WarningText>已存在相同名字的寵物</WarningText>}
           </EditContainer>
           <EditContainer>
             <EditInfoLabel htmlFor="kind">種類: </EditInfoLabel>
@@ -977,7 +986,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               props.setIncompleteInfo(true);
               return;
             }
-            if (invalidBirthYear) {
+            if (invalidBirthYear || invalidName) {
               props.setIncompleteInfo(false);
               return;
             }
