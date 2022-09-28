@@ -123,6 +123,7 @@ const CloseFilterBtn = styled.img`
   opacity: 0.8;
   transition: 0.2s;
   cursor: pointer;
+  z-index: 200;
   &:hover {
     opacity: 1;
   }
@@ -147,6 +148,23 @@ const FilterInsideContainer = styled.div`
     width: 280px;
   }
 `;
+
+const NomoreFilterInsideContainer = styled(FilterInsideContainer)`
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 550px;
+  @media (max-width: 1145px) {
+    top: 170px;
+  }
+  @media (max-width: 615px) {
+    width: 350px;
+  }
+  @media (max-width: 393px) {
+    width: 280px;
+  }
+`;
+
 const FilterInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -155,6 +173,10 @@ const FilterInfoContainer = styled.div`
   &:first-child {
     margin-top: 0;
   }
+`;
+
+const NomoreFilterInfoContainer = styled(FilterInfoContainer)`
+  align-items: flex-start;
 `;
 const FilterInfoTitle = styled.div``;
 const FilterOptionGroup = styled.div`
@@ -219,8 +241,17 @@ const RequestMoreCardsBtn = styled(NoCardsBtn)`
   top: 40px;
 `;
 
+const NomoreRequestMoreCardsBtn = styled(RequestMoreCardsBtn)`
+  z-index: 100;
+  width: 300px;
+`;
+
 const LookConsiderListBtn = styled(NoCardsBtn)`
   top: 70px;
+`;
+
+const NomoreLookConsiderListBtn = styled(LookConsiderListBtn)`
+  width: 300px;
 `;
 
 const ConsiderList = styled.div`
@@ -374,6 +405,7 @@ const Pairing: React.FC = () => {
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
+      setOpenFilterBox(false);
       setLoading(true);
       checkChosenAndAppendNewPet(100);
       setTimeout(() => {
@@ -384,7 +416,6 @@ const Pairing: React.FC = () => {
 
   useEffect(() => {
     if (dating.allCards.length === 0) {
-      setLoading(true);
       checkChosenAndAppendNewPet(100);
     }
     if (
@@ -393,7 +424,6 @@ const Pairing: React.FC = () => {
       preference.location === "0"
     ) {
       setLoading(false);
-      console.log("hi");
     }
   }, [dating.allCards, profile.uid]);
 
@@ -559,17 +589,16 @@ const Pairing: React.FC = () => {
               ) : (
                 <NoCardSWrapper>
                   <NoCardsTitle>
-                    有發現喜歡的寵物嗎？接下來您可以選擇 ...
+                    當前偏好設定已無動物進行配對！接下來您可以選擇 ...
                   </NoCardsTitle>
-                  <RequestMoreCardsBtn
+                  <NomoreRequestMoreCardsBtn
                     onClick={() => {
-                      setLoading(true);
-                      checkChosenAndAppendNewPet(500);
+                      setOpenFilterBox(true);
                     }}
                   >
-                    配對更多狗狗貓貓
-                  </RequestMoreCardsBtn>
-                  <LookConsiderListBtn
+                    選擇其他動物種類或地區偏好
+                  </NomoreRequestMoreCardsBtn>
+                  <NomoreLookConsiderListBtn
                     onClick={() => {
                       setTab("considerAdopt");
                       getListsData();
@@ -577,7 +606,65 @@ const Pairing: React.FC = () => {
                     }}
                   >
                     看目前考慮領養清單
-                  </LookConsiderListBtn>
+                  </NomoreLookConsiderListBtn>
+                  {openFilterBox && (
+                    <NomoreFilterInsideContainer>
+                      <CloseFilterBtn
+                        src={close}
+                        onClick={() => setOpenFilterBox(false)}
+                      />
+                      <NomoreFilterInfoContainer>
+                        <FilterInfoTitle>偏好種類</FilterInfoTitle>
+                        <FilterOptionGroup>
+                          <KindOption
+                            onClick={() => {
+                              setPreference({
+                                ...preference,
+                                kind: "%E7%8B%97",
+                              });
+                              setKindTabIndex(0);
+                            }}
+                            $isActive={kindTabIndex === 0}
+                          >
+                            狗
+                          </KindOption>
+                          <KindOption
+                            onClick={() => {
+                              setPreference({
+                                ...preference,
+                                kind: "%E8%B2%93",
+                              });
+                              setKindTabIndex(1);
+                            }}
+                            $isActive={kindTabIndex === 1}
+                          >
+                            貓
+                          </KindOption>
+                        </FilterOptionGroup>
+                      </NomoreFilterInfoContainer>
+                      <NomoreFilterInfoContainer>
+                        <FilterInfoTitle>偏好地區</FilterInfoTitle>
+                        <FilterOptionGroup>
+                          {area.map((loc, index) => (
+                            <AreaOption
+                              id={`${index + 2}`}
+                              key={index}
+                              onClick={(e) => {
+                                setPreference({
+                                  ...preference,
+                                  location: (e.target as HTMLElement).id,
+                                });
+                                setAreaTabIndex(index);
+                              }}
+                              $isActive={index === areaTabIndex}
+                            >
+                              {loc}
+                            </AreaOption>
+                          ))}
+                        </FilterOptionGroup>
+                      </NomoreFilterInfoContainer>
+                    </NomoreFilterInsideContainer>
+                  )}
                 </NoCardSWrapper>
               )
             ) : (
