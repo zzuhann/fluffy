@@ -159,6 +159,10 @@ const ProfileNavBar = styled.li`
   font-size: 18px;
   cursor: pointer;
   position: relative;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
 
   &:after {
     transition: 0.3s;

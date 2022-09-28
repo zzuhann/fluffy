@@ -8,7 +8,7 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -19,6 +19,7 @@ import {
 } from "../../reducers/profile";
 import { db } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
+import defaultProfile from "./defaultProfile.png";
 
 const Wrap = styled.div`
   width: 100%;
@@ -35,15 +36,16 @@ const Wrapper = styled.div`
 `;
 const UserInfo = styled.div`
   display: flex;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  padding: 0 30px;
 `;
-const UserImageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-`;
+// const UserImageContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   flex: 1;
+//   align-items: center;
+//   justify-content: center;
+// `;
 const UserImage = styled.img`
   width: 100px;
   height: 100px;
@@ -57,7 +59,12 @@ const UserImage = styled.img`
 `;
 const UserName = styled.div`
   font-size: 22px;
+  letter-spacing: 1px;
+  line-height: 24px;
   margin-top: 10px;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 10px;
   @media (max-width: 529px) {
     font-size: 18px;
   }
@@ -487,7 +494,10 @@ const UserProfile = () => {
       const docRef = doc(db, "memberProfiles", id as string);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setUserInfo({ name: docSnap.data().name, img: docSnap.data().img });
+        setUserInfo({
+          name: docSnap.data().name,
+          img: docSnap.data().img || defaultProfile,
+        });
       } else {
         console.log("No such document!");
       }
@@ -522,10 +532,9 @@ const UserProfile = () => {
     <Wrap>
       <Wrapper>
         <UserInfo>
-          <UserImageContainer>
-            <UserImage src={userInfo.img} />
-            <UserName>{userInfo.name}</UserName>
-          </UserImageContainer>
+          {/* <UserImageContainer> */}
+          <UserImage src={userInfo.img} />
+          {/* </UserImageContainer> */}
           <OutputCountContainer>
             <OutputTitle>日記</OutputTitle>
             <OutputCount>{userDiary.length}</OutputCount>
@@ -539,6 +548,7 @@ const UserProfile = () => {
             <OutputCount>{userPet.length}</OutputCount>
           </OutputCountContainer>
         </UserInfo>
+        <UserName>{userInfo.name}</UserName>
         <Tabs>
           {tabs.map((tab, index) => (
             <Tab

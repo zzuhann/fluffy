@@ -70,6 +70,7 @@ const SidebarProfileTab = styled.div`
 
 const UserProfileContainer = styled.div`
   display: flex;
+  align-items: center;
   @media (max-width: 953px) {
     display: none;
   }
@@ -83,14 +84,14 @@ export const ProfileImg = styled.img`
 `;
 
 const ProfileName = styled.div`
-  text-align: center;
   font-size: 22px;
   letter-spacing: 1.5px;
   margin-left: 15px;
   margin-right: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SettingTabContainer = styled.div`

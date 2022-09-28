@@ -110,6 +110,8 @@ const AuthorName = styled.div`
   font-size: 16px;
   font-weight: bold;
   color: #3c3c3c;
+  letter-spacing: 1px;
+  line-height: 20px;
 `;
 const MainSection = styled.div`
   display: flex;
@@ -138,6 +140,7 @@ const DiaryContext = styled.div`
   font-size: 16px;
   margin-left: 55px;
   margin-bottom: 16px;
+  margin-top: 10px;
 `;
 const TimeContainer = styled.div`
   display: flex;
