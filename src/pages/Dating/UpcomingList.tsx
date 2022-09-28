@@ -395,7 +395,12 @@ const UpcomingList: React.FC<Props> = (props) => {
                           max={new Date().getFullYear()}
                           step="1"
                           onKeyDown={(e) => {
-                            if (e.key === ".") {
+                            if (
+                              e.key === "." ||
+                              e.key === "e" ||
+                              e.key === "+" ||
+                              e.key === "-"
+                            ) {
                               e.preventDefault();
                             }
                           }}

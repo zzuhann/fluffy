@@ -815,6 +815,7 @@ export const AddPet: React.FC<AddPetType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const [invalidBirthYear, setInvalidBirthYear] = useState(false);
 
   return (
     <PetDetailCard>
@@ -885,14 +886,37 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               id="birthYear"
               type="number"
               min="1911"
-              max="2022"
+              max={new Date().getFullYear()}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "." ||
+                  e.key === "e" ||
+                  e.key === "+" ||
+                  e.key === "-"
+                ) {
+                  e.preventDefault();
+                }
+              }}
               onChange={(e) => {
                 props.setAddPetInfo({
                   ...props.addPetInfo,
                   birthYear: Number(e.target.value),
                 });
+                if (
+                  Number(e.target.value) > new Date().getFullYear() ||
+                  Number(e.target.value) < 1911
+                ) {
+                  setInvalidBirthYear(true);
+                } else {
+                  setInvalidBirthYear(false);
+                }
               }}
             />
+            {invalidBirthYear && (
+              <WarningText>
+                請輸入1911~{new Date().getFullYear()}的數字
+              </WarningText>
+            )}
           </EditContainer>
           <EditContainer>
             <EditInfoLabel htmlFor="sex">性別: </EditInfoLabel>
@@ -924,6 +948,10 @@ export const AddPet: React.FC<AddPetType> = (props) => {
               Object.values(props.petImg).some((info) => !info)
             ) {
               props.setIncompleteInfo(true);
+              return;
+            }
+            if (invalidBirthYear) {
+              props.setIncompleteInfo(false);
               return;
             }
             props.setIncompleteInfo(false);
