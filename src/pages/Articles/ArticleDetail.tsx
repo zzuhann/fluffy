@@ -123,6 +123,7 @@ const Record = styled.div`
 const RecordImg = styled.img`
   width: 25px;
   height: 25px;
+  cursor: pointer;
 `;
 const CommentRecordImg = styled.img`
   width: 23px;
@@ -218,7 +219,6 @@ const ArticleDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
-  const navigate = useNavigate();
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();

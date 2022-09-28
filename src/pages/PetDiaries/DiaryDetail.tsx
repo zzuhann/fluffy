@@ -117,6 +117,21 @@ const MainSection = styled.div`
   height: 300px;
   overflow-y: scroll;
   padding: 0 15px 0 15px;
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+  &::-webkit-scrollbar:vertical {
+    width: 11px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: #efefef;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 8px;
+  }
 `;
 
 const DiaryContext = styled.div`
@@ -162,6 +177,7 @@ const RecordContainer = styled.div`
 const RecordImg = styled.img`
   width: 25px;
   height: 25px;
+  cursor: pointer;
 `;
 
 const CommentRecordImg = styled.img`
@@ -237,9 +253,6 @@ const AddCommentBtn = styled(Btn)`
   transform: translateY(-50%);
   right: 25px;
   padding: 5px 10px;
-  @media (max-width: 889px) {
-    /* bottom: 100px; */
-  }
 `;
 
 const DiaryDetail = () => {
@@ -247,7 +260,6 @@ const DiaryDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
-  const navigate = useNavigate();
   const [targetDiary, setTargetDiary] = useState<AllPetDiariesType>();
   const [diaryComments, setDiaryComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();

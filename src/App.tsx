@@ -35,6 +35,22 @@ const GlobalStyle = createGlobalStyle`
     font-size:16px;
     letter-spacing:1px;
   }
+  input::placeholder {
+    font-family: NotoSansTC;
+    src: url(${NotoSansTCBold}) format('opentype');
+  }
+  input::-webkit-input-placeholder {
+    font-family: NotoSansTC;
+    src: url(${NotoSansTCBold}) format('opentype');
+  }
+  input:-moz-placeholder {
+    font-family: NotoSansTC;
+    src: url(${NotoSansTCBold}) format('opentype');
+  }
+  input::-moz-placeholder {
+    font-family: NotoSansTC;
+    src: url(${NotoSansTCBold}) format('opentype');
+  }
   body {
     font-family: NotoSansTC;
     font-weight:400;
