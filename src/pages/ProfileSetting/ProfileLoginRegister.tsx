@@ -17,6 +17,7 @@ import {
   checkIfLogged,
   afterRegisterSaveName,
   setProfileUid,
+  setNotification,
 } from "../../functions/profileReducerFunction";
 import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
@@ -218,6 +219,10 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         await setDoc(doc(db, "memberProfiles", userUid), {
           name: profile.name,
         });
+        dispatch(setNotification("註冊成功"));
+        setTimeout(() => {
+          dispatch(setNotification(""));
+        }, 3000);
         dispatch(afterRegisterSaveName());
         props.setOpenLoginBox(false);
       })
@@ -277,6 +282,10 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
+          dispatch(setNotification("登入成功"));
+          setTimeout(() => {
+            dispatch(setNotification(""));
+          }, 3000);
           dispatch(setName(docSnap.data().name));
           dispatch(setProfileUid(userCredential.user.uid));
           props.setOpenLoginBox(false);
@@ -301,6 +310,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         }
       });
   }
+
   return profile.clickLoginOrRegister === "login" ? (
     <RegisterLoginWrapper $Top={props.$Top}>
       {props.openLoginBox && (

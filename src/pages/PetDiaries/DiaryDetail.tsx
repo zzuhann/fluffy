@@ -127,7 +127,7 @@ const MainSection = styled.div`
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    border: 2px solid white; /* should match background, can't be transparent */
+    border: 2px solid white;
     background-color: #efefef;
   }
   &::-webkit-scrollbar-track {
@@ -265,6 +265,7 @@ const DiaryDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
+  const navigate = useNavigate();
   const [targetDiary, setTargetDiary] = useState<AllPetDiariesType>();
   const [diaryComments, setDiaryComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
@@ -330,7 +331,7 @@ const DiaryDetail = () => {
         ...docSnap.data(),
       } as AllPetDiariesType);
     } else {
-      console.log("No such document!");
+      navigate("/petdiary");
     }
   }
 

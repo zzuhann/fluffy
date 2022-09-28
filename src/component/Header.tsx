@@ -22,6 +22,7 @@ import {
   setOwnArticle,
   setEmail,
   clearProfileInfo,
+  setNotification,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./defaultprofile.png";
 import catHand from "./cat_hand_white.png";
@@ -428,6 +429,10 @@ const Header = () => {
       .then(() => {
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
+        dispatch(setNotification("登出成功"));
+        setTimeout(() => {
+          dispatch(setNotification(""));
+        }, 3000);
         if (nowLocation.pathname === "/dating") {
           navigate("/");
         }

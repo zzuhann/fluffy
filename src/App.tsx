@@ -7,6 +7,7 @@ import Header from "./component/Header";
 import NotoSansTCRegular from "./fonts/NotoSansTC-Regular.otf";
 import NotoSansTMedium from "./fonts/NotoSansTC-Medium.otf";
 import NotoSansTCBold from "./fonts/NotoSansTC-Bold.otf";
+import SideNotification from "./component/SideNotification";
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
@@ -70,6 +71,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: NotoSansTC;
     font-weight:400;
     color:#3C3C3C;
+    overflow-x:hidden;
   }
 `;
 
@@ -80,6 +82,7 @@ function App() {
       <GlobalStyle />
       <Header />
       <Outlet />
+      <SideNotification />
     </Provider>
   );
 }

@@ -12,6 +12,7 @@ export enum ActionType {
   setOwnPets = "setOwnPets",
   setOwnPetDiary = "setOwnPetDiary",
   setOwnArticle = "setOwnArticle",
+  setNotification = "setNotification",
 }
 
 interface setProfileName {
@@ -72,6 +73,11 @@ interface setOwnArticle {
   payload: { ownArticles: OwnArticle[] };
 }
 
+interface setNotification {
+  type: ActionType.setNotification;
+  payload: { notification: string };
+}
+
 export type ProfileActions =
   | setProfileName
   | setProfileEmail
@@ -84,7 +90,8 @@ export type ProfileActions =
   | afterRegisterSaveName
   | setOwnPets
   | setOwnPetDiary
-  | setOwnArticle;
+  | setOwnArticle
+  | setNotification;
 
 export type OwnPet = {
   name: string;
@@ -138,6 +145,7 @@ export type Profile = {
   ownPets: OwnPet[];
   petDiary: PetDiaryType[];
   ownArticles: OwnArticle[];
+  notification: string;
 };
 
 const initialState: Profile = {
@@ -151,6 +159,7 @@ const initialState: Profile = {
   ownPets: [],
   petDiary: [],
   ownArticles: [],
+  notification: "",
 };
 
 const ProfileReducer = (
@@ -207,6 +216,9 @@ const ProfileReducer = (
     }
     case ActionType.setOwnArticle: {
       return { ...state, ownArticles: action.payload.ownArticles };
+    }
+    case ActionType.setNotification: {
+      return { ...state, notification: action.payload.notification };
     }
     default:
       return state;

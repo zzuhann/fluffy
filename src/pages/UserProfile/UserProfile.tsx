@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   OwnArticle,
@@ -428,6 +428,7 @@ const UserProfile = () => {
     name: "",
   });
   const { id } = useParams();
+  const navigate = useNavigate();
   const [userDiary, setUserDiary] = useState<PetDiaryType[]>();
   const [userArticle, setUserArticle] = useState<OwnArticle[]>();
   const [userPet, setUserPet] = useState<OwnPet[]>();
@@ -479,7 +480,7 @@ const UserProfile = () => {
           img: docSnap.data().img || defaultProfile,
         });
       } else {
-        console.log("No such document!");
+        navigate("/");
       }
     }
     getUserInfo();

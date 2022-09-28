@@ -219,6 +219,7 @@ const ArticleDetail = () => {
     (state) => state.profile
   ) as Profile;
   const { id } = useParams();
+  const navigate = useNavigate();
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
@@ -298,7 +299,7 @@ const ArticleDetail = () => {
         ...docSnap.data(),
       } as AllPetArticlesType);
     } else {
-      console.log("No such document!");
+      navigate("/articles");
     }
   }
 

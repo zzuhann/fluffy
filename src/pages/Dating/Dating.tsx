@@ -37,7 +37,6 @@ export const PopupHint = styled.div<{ $Top: number }>`
   top: ${(props) => props.$Top + 120}px;
   padding: 15px 20px;
   letter-spacing: 1.5px;
-  /* transition: 0.3s; */
   z-index: 100;
   animation: ${PopupAnimation} 3s ease infinite;
 `;
