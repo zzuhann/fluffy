@@ -167,10 +167,6 @@ const MainInfo = styled.div`
   margin: 0 auto;
 `;
 
-type profileSettingType = {
-  signOutProfile: () => void;
-};
-
 type UploadImgType = { file: File | string; url: string };
 const uploadImgInitialState: UploadImgType = {
   file: "",
@@ -182,7 +178,7 @@ type AddArticleInfo = {
   context: string;
 };
 
-const ProfileSetting: React.FC<profileSettingType> = (props) => {
+const ProfileSetting = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;

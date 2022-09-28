@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import logo from "./fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
@@ -322,6 +322,7 @@ const Header = () => {
   ) as Profile;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const nowLocation = useLocation();
   const [scroll, setScroll] = useState<number>(0);
   const [pageHigh, setPageHigh] = useState<number>(0);
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
@@ -423,6 +424,9 @@ const Header = () => {
       .then(() => {
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
+        if (nowLocation.pathname === "/dating") {
+          navigate("/");
+        }
       })
       .catch((error) => {
         console.log(error);

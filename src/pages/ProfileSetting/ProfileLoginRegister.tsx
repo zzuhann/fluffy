@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -505,23 +505,12 @@ const ProfileLoginRegister = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const dispatch = useDispatch();
   const [notthing, setNotThing] = useState(false);
 
-  function signOutProfile() {
-    signOut(auth)
-      .then(() => {
-        dispatch(checkIfLogged(false));
-        dispatch(clearProfileInfo());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
   return (
     <>
       {profile.isLogged ? (
-        <ProfileSetting signOutProfile={signOutProfile} />
+        <ProfileSetting />
       ) : (
         <LoginRegisterBox
           openLoginBox={false}
