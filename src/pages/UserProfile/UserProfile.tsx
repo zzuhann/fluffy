@@ -39,13 +39,7 @@ const UserInfo = styled.div`
   justify-content: space-between;
   padding: 0 30px;
 `;
-// const UserImageContainer = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   flex: 1;
-//   align-items: center;
-//   justify-content: center;
-// `;
+
 const UserImage = styled.img`
   width: 100px;
   height: 100px;
@@ -121,8 +115,6 @@ const MainSection = styled.div`
 const AllDiariesContainer = styled.div`
   margin: 0 auto;
   padding: 70px 0 46px;
-  /* display: flex;
-  flex-wrap: wrap; */
   transition: 0.3s;
   position: relative;
   width: 100%;
@@ -259,25 +251,15 @@ const PetAge = styled.div``;
 // article style
 const AllArticlesContainer = styled.div`
   padding: 0px 0 46px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
-  /* padding: 15px; */
-
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   justify-content: space-between;
   gap: 10px;
-  /* grid-template-rows: 400px; */
   position: relative;
-  /* @media (max-width: 529px) {
-    justify-content: center;
-  } */
   @media (max-width: 640px) {
     justify-content: center;
     grid-template-columns: repeat(auto-fill, 300px);
@@ -285,8 +267,6 @@ const AllArticlesContainer = styled.div`
 `;
 
 const ArticleCard = styled(Link)`
-  /* width: 250px; */
-  /* margin: 0 auto; */
   height: 100%;
   flex-shrink: 0;
   display: flex;
@@ -503,7 +483,7 @@ const UserProfile = () => {
       }
     }
     getUserInfo();
-  }, []);
+  }, [id]);
 
   async function getOwnPetList(id: string) {
     const allOwnPet: OwnPet[] = [];
@@ -522,7 +502,7 @@ const UserProfile = () => {
       pets.push(pet.name);
     });
     setOwnPet(pets);
-  }, [userPet]);
+  }, [userPet, id]);
 
   if (!userDiary) return null;
   if (!userArticle) return null;

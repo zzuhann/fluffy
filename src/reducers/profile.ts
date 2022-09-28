@@ -176,9 +176,9 @@ const ProfileReducer = (
     case ActionType.clearProfileInfo: {
       return {
         ...state,
+        email: "",
         name: "",
         password: "",
-        email: "",
         img: "",
         uid: "",
         ownPets: [],

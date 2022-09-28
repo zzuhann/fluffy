@@ -35,7 +35,7 @@ const GlobalStyle = createGlobalStyle`
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 8px;
-      border: 2px solid white; /* should match background, can't be transparent */
+      border: 2px solid white;
       background-color: #efefef;
     }
     &::-webkit-scrollbar-track {

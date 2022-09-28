@@ -374,7 +374,11 @@ const Pairing: React.FC = () => {
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
+      setLoading(true);
       checkChosenAndAppendNewPet(100);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   }, [preference, profile.uid]);
 
@@ -383,8 +387,13 @@ const Pairing: React.FC = () => {
       setLoading(true);
       checkChosenAndAppendNewPet(100);
     }
-    if (dating.allCards.length > 0) {
+    if (
+      dating.allCards.length > 0 &&
+      preference.kind === "all" &&
+      preference.location === "0"
+    ) {
       setLoading(false);
+      console.log("hi");
     }
   }, [dating.allCards, profile.uid]);
 
@@ -451,9 +460,7 @@ const Pairing: React.FC = () => {
   }
 
   async function choosePreference(quantity: number) {
-    console.log("here");
     if (preference.kind === "all" && preference.location === "0") {
-      console.log("here");
       api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data, quantity));
     }
     if (preference.kind !== "all" && preference.location !== "0") {
@@ -633,11 +640,14 @@ const Pairing: React.FC = () => {
                 ) : (
                   ""
                 )}
-
-                <PetCardDetail
-                  setMatchSuccessQty={setMatchSuccessQty}
-                  petInfo={dating.allCards}
-                />
+                {isLoading ? (
+                  <CatLoading />
+                ) : (
+                  <PetCardDetail
+                    setMatchSuccessQty={setMatchSuccessQty}
+                    petInfo={dating.allCards}
+                  />
+                )}
               </Cards>
             )}
           </>

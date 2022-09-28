@@ -328,7 +328,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           type="text"
           placeholder="請輸入 Email"
           id="email"
-          defaultValue={profile.email}
           onChange={(e) => {
             dispatch(setEmail(e.target.value));
           }}
@@ -357,7 +356,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           type="password"
           placeholder="請輸入密碼"
           id="password"
-          defaultValue={profile.password}
           onChange={(e) => {
             dispatch(setPassword(e.target.value));
           }}
@@ -400,7 +398,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           type="text"
           placeholder="輸入使用者名稱"
           id="name"
-          defaultValue={profile.name}
           onChange={(e) => {
             dispatch(setName(e.target.value));
           }}
@@ -425,8 +422,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           type="text"
           placeholder="請輸入 email"
           id="email"
-          // value={profile.email}
-          defaultValue={profile.email}
           onChange={(e) => {
             dispatch(setEmail(e.target.value));
           }}
@@ -458,7 +453,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           type="password"
           placeholder="長度至少六位字元"
           id="password"
-          defaultValue={profile.password}
           onChange={(e) => {
             dispatch(setPassword(e.target.value));
           }}
