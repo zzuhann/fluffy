@@ -240,7 +240,7 @@ const UpcomingList: React.FC<Props> = (props) => {
   const [adoptAnswer, setAdoptAnswer] = useState<number>(-1);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
-
+  const [invalidBirthYear, setInvalidBirthYear] = useState(false);
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -391,16 +391,36 @@ const UpcomingList: React.FC<Props> = (props) => {
                         <ConfirmInput
                           type="number"
                           id="year"
-                          min="1900"
+                          min="1911"
                           max={new Date().getFullYear()}
-                          onChange={(e) =>
+                          step="1"
+                          onKeyDown={(e) => {
+                            if (e.key === ".") {
+                              e.preventDefault();
+                            }
+                          }}
+                          onChange={(e) => {
                             setAdoptPetInfo({
                               ...adoptPetInfo,
                               birthYear: Number(e.target.value),
-                            })
-                          }
+                            });
+                            if (
+                              Number(e.target.value) >
+                                new Date().getFullYear() ||
+                              Number(e.target.value) < 1911
+                            ) {
+                              setInvalidBirthYear(true);
+                            } else {
+                              setInvalidBirthYear(false);
+                            }
+                          }}
                         ></ConfirmInput>
                       </ConfirmInputContainer>
+                      {invalidBirthYear && (
+                        <WarningText>
+                          請輸入1911~{new Date().getFullYear()}的數字
+                        </WarningText>
+                      )}
                       {incompleteInfo && (
                         <WarningText>請填寫完整資訊</WarningText>
                       )}
@@ -408,10 +428,14 @@ const UpcomingList: React.FC<Props> = (props) => {
                         <CheckAdoptBtn
                           onClick={async () => {
                             if (
-                              !adoptPetInfo.name &&
+                              !adoptPetInfo.name ||
                               adoptPetInfo.birthYear === 0
                             ) {
                               setIncompleteInfo(true);
+                              return;
+                            }
+                            if (invalidBirthYear) {
+                              setIncompleteInfo(false);
                               return;
                             }
                             await addDoc(

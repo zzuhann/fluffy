@@ -26,11 +26,14 @@ const GlobalStyle = createGlobalStyle`
     font-weight: bold;
   }
   * {
-    /* outline: solid 1px black; */
     box-sizing: border-box;
   }
   a {
     text-decoration:none;
+  }
+  input {
+    font-size:16px;
+    letter-spacing:1px;
   }
   body {
     font-family: NotoSansTC;
