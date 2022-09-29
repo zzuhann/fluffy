@@ -45,7 +45,6 @@ import {
 import noPetNow from "./img/cat_fish_run.png";
 
 export const InfoContainer = styled.div`
-  /* width: 100%; */
   max-width: 1120px;
   margin: 0 auto;
   margin-top: 30px;
@@ -79,12 +78,9 @@ export const PetTitle = styled(Title)`
 `;
 
 const PetInfo = styled.div`
-  /* display: flex;
-  flex-wrap: wrap; */
   width: 100%;
   margin: 0 auto;
   position: relative;
-  /* justify-content: space-between; */
   margin-top: 30px;
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
@@ -101,11 +97,9 @@ const PetInfo = styled.div`
 `;
 
 const PetSimpleCard = styled.div`
-  /* flex-basis: 250px; */
   border-radius: 10px;
   overflow: hidden;
   position: relative;
-  /* margin-bottom: 30px; */
   transition: 0.3s;
   bottom: 0;
   cursor: pointer;
@@ -146,10 +140,23 @@ const PetSimpleInfos = styled.div`
   width: 100%;
   padding: 10px 15px;
 `;
+
+const PetSimpleNameSex = styled.div`
+  display: flex;
+  align-items: center;
+`;
 const PetSimpleInfo = styled.div`
   font-size: 22px;
   color: #fff;
   letter-spacing: 1.5px;
+`;
+
+const PetSimpleName = styled(PetSimpleInfo)`
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 30px;
+  white-space: nowrap;
 `;
 
 const PetDetailCard = styled.div`
@@ -436,9 +443,10 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
             >
               <PetSimpleImage src={pet.img} alt="" />
               <PetSimpleInfos>
-                <PetSimpleInfo>
-                  {pet.name} {pet.sex === "M" ? "♂" : "♀"}
-                </PetSimpleInfo>
+                <PetSimpleNameSex>
+                  <PetSimpleName>{pet.name}</PetSimpleName>
+                  <PetSimpleInfo>{pet.sex === "M" ? "♂" : "♀"}</PetSimpleInfo>
+                </PetSimpleNameSex>
                 <PetSimpleInfo>{`${2022 - pet.birthYear}`}Y</PetSimpleInfo>
               </PetSimpleInfos>
             </PetSimpleCard>

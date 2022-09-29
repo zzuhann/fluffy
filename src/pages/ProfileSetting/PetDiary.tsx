@@ -158,6 +158,11 @@ const PetSimpleInfo = styled.div`
   font-size: 22px;
   color: #fff;
   letter-spacing: 1.5px;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 30px;
+  white-space: nowrap;
 `;
 
 const PetDetailCard = styled.div`
@@ -222,6 +227,7 @@ const SelectGroup = styled.div`
   transition: 0.3s;
   margin-left: 10px;
   padding: 10px 15px;
+  padding-right: 40px;
   border: solid 3px #d1cfcf;
   border-radius: 5px;
   width: 200px;
@@ -235,6 +241,8 @@ const SelectGroup = styled.div`
   }
 `;
 const NowChooseOption = styled.div`
+  overflow: hidden;
+  line-height: 30px;
   &:after {
     content: "ˇ";
     position: absolute;
@@ -258,7 +266,7 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
 `;
 const OptionName = styled.li`
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   padding: 8px 10px;
   transition: 0.2s;
   &:hover {
@@ -333,6 +341,7 @@ const PetSingleName = styled.div`
   line-height: 28px;
   margin-left: 20px;
   margin-bottom: 15px;
+  word-break: break-all;
   @media (max-width: 842px) {
     margin-left: 0;
   }
@@ -452,6 +461,7 @@ const EditPetDiaryCancelUpdateBtn = styled(Btn)`
 
 const EditPetDiaryLabel = styled(EditInfoLabel)`
   width: 180px;
+  flex-shrink: 0;
   @media (max-width: 495px) {
     width: auto;
   }
@@ -469,6 +479,7 @@ const WarningText = styled.div`
 const PetDiaryName = styled.div`
   font-size: 22px;
   margin-left: 15px;
+  word-break: break-all;
 `;
 
 export const CalendarContainer = styled.div`

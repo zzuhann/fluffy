@@ -134,7 +134,13 @@ const DiaryBottom = styled.div`
   font-size: 22px;
   letter-spacing: 1.5px;
 `;
-const DiaryTitle = styled.div``;
+const DiaryTitle = styled.div`
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 30px;
+  white-space: nowrap;
+`;
 const PetAge = styled.div``;
 
 const PetDiaryNote = styled.div`

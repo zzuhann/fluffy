@@ -111,6 +111,7 @@ const AuthorName = styled.div`
   color: #3c3c3c;
   letter-spacing: 1px;
   line-height: 20px;
+  word-break: break-all;
 `;
 const MainSection = styled.div`
   display: flex;
