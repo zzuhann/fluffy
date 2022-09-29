@@ -92,6 +92,7 @@ const ProfileName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 32px;
 `;
 
 const SettingTabContainer = styled.div`

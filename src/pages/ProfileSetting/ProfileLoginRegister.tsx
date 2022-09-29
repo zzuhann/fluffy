@@ -25,6 +25,7 @@ import styled from "styled-components";
 import ProfileSetting from "./ProfileSetting";
 import defaultProfile from "./defaultprofile.png";
 import close from "./close.png";
+import { CatLoading } from "../../utils/loading";
 
 const WarningText = styled.div`
   color: #db5452;
@@ -161,6 +162,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
   });
   const [errorStatus, setErrorStatus] = useState("");
   const [loginStatus, setLoginStatus] = useState({ email: "", password: "" });
+  const [isLoading, setLoading] = useState(false);
 
   function createProfile() {
     if (
@@ -211,7 +213,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setRegisterStatus({ name: "", email: "", password: "" });
     }
-
+    setLoading(true);
     createUserWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (response) => {
         setErrorStatus("");
@@ -225,6 +227,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         }, 3000);
         dispatch(afterRegisterSaveName());
         props.setOpenLoginBox(false);
+      })
+      .then(() => {
+        setLoading(false);
       })
       .catch((error) => {
         switch (error.code) {
@@ -274,7 +279,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setLoginStatus({ email: "", password: "" });
     }
-
+    setLoading(true);
     signInWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (userCredential) => {
         setErrorStatus("");
@@ -298,6 +303,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           console.log("No such document!");
         }
       })
+      .then(() => {
+        setLoading(false);
+      })
       .catch((error) => {
         switch (error.code) {
           case "auth/user-not-found":
@@ -311,7 +319,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       });
   }
 
-  return profile.clickLoginOrRegister === "login" ? (
+  return isLoading ? (
+    <CatLoading />
+  ) : profile.clickLoginOrRegister === "login" ? (
     <RegisterLoginWrapper
       $Top={props.$Top}
       onKeyDown={(e) => {
