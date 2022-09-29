@@ -43,6 +43,8 @@ const GlobalStyle = createGlobalStyle`
       background-color: #fff;
       border-radius: 8px;
     }
+    scrollbar-color: #efefef;
+    scrollbar-width: thin !important;
   }
   a {
     text-decoration:none;

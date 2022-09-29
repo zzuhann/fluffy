@@ -24,6 +24,7 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/OwnPetInfo";
+import { setNotification } from "../../functions/profileReducerFunction";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -212,7 +213,6 @@ const DatingDoneBtn = styled(Btn)`
 
 type Props = {
   getUpcomingListData: () => void;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 const UpcomingList: React.FC<Props> = (props) => {
@@ -355,9 +355,9 @@ const UpcomingList: React.FC<Props> = (props) => {
                           "id",
                           date.id
                         );
-                        props.setUpdateInfo("已完成本次約會並更新清單");
+                        dispatch(setNotification("已完成本次約會並更新清單"));
                         setTimeout(() => {
-                          props.setUpdateInfo("");
+                          dispatch(setNotification(""));
                           setAdoptAnswer(-1);
                         }, 3000);
                         const newUpcomingList = dating.upcomingDateList;
@@ -484,9 +484,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                               ),
                               { id: date.id }
                             );
-                            props.setUpdateInfo("已將領養寵物新增至會員資料");
+                            dispatch(
+                              setNotification("已將領養寵物新增至會員資料")
+                            );
                             setTimeout(() => {
-                              props.setUpdateInfo("");
+                              dispatch(setNotification(""));
                               setAdoptAnswer(-1);
                             }, 3000);
                           }}
@@ -530,9 +532,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                     const newUpcomingList = dating.upcomingDateList;
                     newUpcomingList.splice(index, 1);
                     dispatch(setUpcomingDateList(newUpcomingList));
-                    props.setUpdateInfo("已更新即將到來的約會清單");
+                    dispatch(
+                      setNotification("已更新即將到來的約會清單")
+                    );
                     setTimeout(() => {
-                      props.setUpdateInfo("");
+                      dispatch(setNotification(""));
                     }, 3000);
                   }}
                 >

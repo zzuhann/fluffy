@@ -22,7 +22,10 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { setOwnPetDiary } from "../../functions/profileReducerFunction";
+import {
+  setNotification,
+  setOwnPetDiary,
+} from "../../functions/profileReducerFunction";
 import {
   CancelIcon,
   EditModeContainer,
@@ -544,7 +547,6 @@ type UploadDiary = {
 
 export const PetDiary: React.FC<{
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
   incompleteInfo: boolean;
 }> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
@@ -678,9 +680,9 @@ export const PetDiary: React.FC<{
         img: newDiaryImg.url,
       };
       props.setIncompleteInfo(false);
-      props.setUpdateInfo("已更新寵物日記");
+      dispatch(setNotification("已更新寵物日記"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
       setDetailDiaryBoxOpen(true);
       if (newDiaryImg.file) {
@@ -697,9 +699,9 @@ export const PetDiary: React.FC<{
         context: newDiaryContext.context,
       };
       props.setIncompleteInfo(false);
-      props.setUpdateInfo("已更新寵物日記");
+      dispatch(setNotification("已更新寵物日記"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
       setDetailDiaryBoxOpen(true);
       await updateFirebaseDataMutipleWhere(
@@ -903,9 +905,9 @@ export const PetDiary: React.FC<{
                   id: "",
                 });
                 dispatch(setOwnPetDiary(addNewPet));
-                props.setUpdateInfo("新增寵物日記成功！");
+                dispatch(setNotification("新增寵物日記成功！"));
                 setTimeout(() => {
-                  props.setUpdateInfo("");
+                  dispatch(setNotification(""));
                 }, 3000);
                 setNowChoosePetName("");
                 setWriteDiaryBoxOpen(false);
@@ -997,9 +999,9 @@ export const PetDiary: React.FC<{
                     setEditDiaryBoxOpen(false);
                     setDetailDiaryBoxOpen(false);
                     setOpenDeleteBox(false);
-                    props.setUpdateInfo("已刪除寵物日記");
+                    dispatch(setNotification("已刪除寵物日記"));
                     setTimeout(() => {
-                      props.setUpdateInfo("");
+                      dispatch(setNotification(""));
                     }, 3000);
                   }}
                 >

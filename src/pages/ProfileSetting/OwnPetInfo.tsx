@@ -38,7 +38,10 @@ import {
   EditInfoLabel,
   EditInfoInput,
 } from "./UserInfos";
-import { setOwnPets } from "../../functions/profileReducerFunction";
+import {
+  setNotification,
+  setOwnPets,
+} from "../../functions/profileReducerFunction";
 
 export const InfoContainer = styled.div`
   /* width: 100%; */
@@ -421,7 +424,6 @@ type DetailPetCardType = {
   ownPetEdit: boolean;
   setOwnPetEdit: Dispatch<SetStateAction<boolean>>;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
   incompleteInfo: boolean;
 };
 
@@ -436,7 +438,6 @@ type DetailPetSingleInfoType = {
   setOwnPetEdit: Dispatch<SetStateAction<boolean>>;
   setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   getOwnPetList: () => void;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
@@ -525,9 +526,9 @@ export const DetailPetSingleInfo: React.FC<DetailPetSingleInfoType> = (
                     dispatch(setOwnPets(newOwnPets));
                     setOpenDeleteBox(false);
                     props.setOwnPetDetail(false);
-                    props.setUpdateInfo("已刪除寵物資訊");
+                    dispatch(setNotification("已刪除寵物資訊"));
                     setTimeout(() => {
-                      props.setUpdateInfo("");
+                      dispatch(setNotification(""));
                     }, 3000);
                   }}
                 >
@@ -553,6 +554,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
+  const dispatch = useDispatch();
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
 
   async function updateOwnPetInfo() {
@@ -646,9 +648,9 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         birthYear: props.petNewInfo.birthYear,
         img: props.petNewImg.url,
       };
-      props.setUpdateInfo("已更新寵物資訊");
+      dispatch(setNotification("已更新寵物資訊"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
     } else {
       await updatePetInfo("");
@@ -668,9 +670,9 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
         name: props.petNewInfo.name,
         birthYear: props.petNewInfo.birthYear,
       };
-      props.setUpdateInfo("已更新寵物資訊");
+      dispatch(setNotification("已更新寵物資訊"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
     }
   }
@@ -833,7 +835,6 @@ type AddPetType = {
   petNewImg: { file: File | string; url: string };
   setPetNewImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
   incompleteInfo: boolean;
 };
 
@@ -1000,9 +1001,9 @@ export const AddPet: React.FC<AddPetType> = (props) => {
             const addNewPet = profile.ownPets;
             addNewPet.push({ ...props.addPetInfo, img: props.petImg.url });
             dispatch(setOwnPets(addNewPet));
-            props.setUpdateInfo("新增寵物成功！");
+            dispatch(setNotification("新增寵物成功！"));
             setTimeout(() => {
-              props.setUpdateInfo("");
+              dispatch(setNotification(""));
             }, 3000);
             props.setPetImg({ file: "", url: "" });
           }}

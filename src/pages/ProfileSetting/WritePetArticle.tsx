@@ -19,7 +19,10 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { setOwnArticle } from "../../functions/profileReducerFunction";
+import {
+  setNotification,
+  setOwnArticle,
+} from "../../functions/profileReducerFunction";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import {
   ContextDetails,
@@ -188,7 +191,6 @@ type PetArticleType = {
     SetStateAction<{ file: File | string; url: string }>
   >;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
   incompleteInfo: boolean;
 };
 
@@ -310,9 +312,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         img: editArticleCover.url,
       };
       dispatch(setOwnArticle(updateOwnPetArticle));
-      props.setUpdateInfo("已更新寵物文章");
+      dispatch(setNotification("已更新寵物文章"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
       setEditArticleMode(false);
       if (editArticleCover.file) {
@@ -329,9 +331,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         context: editArticleContext.context,
       };
       dispatch(setOwnArticle(updateOwnPetArticle));
-      props.setUpdateInfo("已更新寵物文章");
+      dispatch(setNotification("已更新寵物文章"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
       setEditArticleMode(false);
       await updateFirebaseDataMutipleWhere(
@@ -397,9 +399,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                   id: "",
                 });
                 dispatch(setOwnArticle(newArticleArr));
-                props.setUpdateInfo("已上傳寵物文章！");
+                dispatch(setNotification("已上傳寵物文章！"));
                 setTimeout(() => {
-                  props.setUpdateInfo("");
+                  dispatch(setNotification(""));
                 }, 3000);
                 setAddArticleMode(false);
                 addDataWithUploadImage(
@@ -646,9 +648,9 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                     DeleOwnPetArticle.splice(ownArticleIndex, 1);
                     dispatch(setOwnArticle(DeleOwnPetArticle));
                     setOpenDeleteBox(false);
-                    props.setUpdateInfo("已刪除文章");
+                    dispatch(setNotification("已刪除文章"));
                     setTimeout(() => {
-                      props.setUpdateInfo("");
+                      dispatch(setNotification(""));
                     }, 3000);
                   }}
                 >

@@ -214,7 +214,6 @@ const ProfileSetting = () => {
     context: "",
   });
   const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
-  const [updateInfo, setUpdateInfo] = useState("");
   const [incompleteInfo, setIncompleteInfo] = useState(false);
 
   async function getOwnPetList() {
@@ -262,7 +261,6 @@ const ProfileSetting = () => {
         </SidebarProfileTab>
       </SideBarWrapper>
       <Wrapper>
-        {updateInfo && <PopupHint $Top={70}>{updateInfo}</PopupHint>}
         <MainInfo>
           {selectedTab === tabs[0] ? (
             <>
@@ -271,7 +269,6 @@ const ProfileSetting = () => {
                 setNewName={setNewName}
                 setImg={setImg}
                 img={img}
-                setUpdateInfo={setUpdateInfo}
                 setIncompleteInfo={setIncompleteInfo}
                 incompleteInfo={incompleteInfo}
               />
@@ -291,7 +288,6 @@ const ProfileSetting = () => {
               setOwnPetDetail={setOwnPetDetail}
               addDocOwnPets={addDocOwnPets}
               setPetNewImg={setPetNewImg}
-              setUpdateInfo={setUpdateInfo}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
@@ -319,7 +315,6 @@ const ProfileSetting = () => {
               getOwnPetList={getOwnPetList}
               ownPetEdit={ownPetEdit}
               setOwnPetEdit={setOwnPetEdit}
-              setUpdateInfo={setUpdateInfo}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
@@ -332,14 +327,12 @@ const ProfileSetting = () => {
               setOwnPetEdit={setOwnPetEdit}
               setOwnPetDetail={setOwnPetDetail}
               getOwnPetList={getOwnPetList}
-              setUpdateInfo={setUpdateInfo}
             />
           ) : (
             ""
           )}
           {selectedTab === tabs[2] ? (
             <PetDiary
-              setUpdateInfo={setUpdateInfo}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
@@ -352,7 +345,6 @@ const ProfileSetting = () => {
               setAddArticleInfo={setAddArticleInfo}
               articleCover={articleCover}
               setArticleCover={setArticleCover}
-              setUpdateInfo={setUpdateInfo}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />

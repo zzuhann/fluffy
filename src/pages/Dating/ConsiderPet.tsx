@@ -29,6 +29,7 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/OwnPetInfo";
+import { setNotification } from "../../functions/profileReducerFunction";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -316,7 +317,6 @@ type ConsiderSingleCard = {
   considerDetail: Boolean;
   nowChosenPetIndex: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -369,7 +369,6 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           considerDetail={props.considerDetail}
           scroll={scroll}
           setDatingQty={props.setDatingQty}
-          setUpdateInfo={props.setUpdateInfo}
         />
       ) : (
         ""
@@ -384,7 +383,6 @@ const ConsiderPetDetail = (props: {
   considerDetail: Boolean;
   scroll: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -622,9 +620,9 @@ const ConsiderPetDetail = (props: {
                   newConsiderList.splice(props.nowChosenPetIndex, 1);
                   dispatch(setConsiderList(newConsiderList));
                   props.setConsiderDetail(false);
-                  props.setUpdateInfo(`已更新考慮領養清單`);
+                  dispatch(setNotification("已更新考慮領養清單"));
                   setTimeout(() => {
-                    props.setUpdateInfo("");
+                    dispatch(setNotification(""));
                   }, 3000);
                 }}
               >
@@ -723,9 +721,9 @@ const ConsiderPetDetail = (props: {
               getUpcomingListData();
               props.setDatingQty((prev) => prev + 1);
               setInviteBoxOpen(false);
-              props.setUpdateInfo("申請成功！可至「即將到來的約會」查看");
+              dispatch(setNotification("申請成功！可至「即將到來的約會」查看"));
               setTimeout(() => {
-                props.setUpdateInfo("");
+                dispatch(setNotification(""));
               }, 3000);
             }}
           >

@@ -16,7 +16,11 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { setImage, setName } from "../../functions/profileReducerFunction";
+import {
+  setImage,
+  setName,
+  setNotification,
+} from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
 import trash from "./bin.png";
 import defaultProfile from "./defaultprofile.png";
@@ -256,7 +260,6 @@ type userInfoType = {
   setNewName: Dispatch<SetStateAction<string>>;
   setImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
   img: { file: File | string; url: string };
-  setUpdateInfo: Dispatch<SetStateAction<string>>;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
   incompleteInfo: boolean;
 };
@@ -297,9 +300,9 @@ const UserInfos: React.FC<userInfoType> = (props) => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             dispatch(setName(props.newName));
             dispatch(setImage(downloadURL));
-            props.setUpdateInfo("已更新個人資訊");
+            dispatch(setNotification("已更新個人資訊"));
             setTimeout(() => {
-              props.setUpdateInfo("");
+              dispatch(setNotification(""));
             }, 3000);
             const userProfileRef = doc(db, "memberProfiles", profile.uid);
             await updateDoc(userProfileRef, {
@@ -348,9 +351,9 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       );
     } else {
       dispatch(setName(props.newName));
-      props.setUpdateInfo("已更新個人資訊");
+      dispatch(setNotification("已更新個人資訊"));
       setTimeout(() => {
-        props.setUpdateInfo("");
+        dispatch(setNotification(""));
       }, 3000);
       const userProfileRef = doc(db, "memberProfiles", profile.uid);
       await updateDoc(userProfileRef, {

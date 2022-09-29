@@ -386,21 +386,7 @@ const Pairing: React.FC = () => {
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
-  const [updateInfo, setUpdateInfo] = useState("");
-  const [scroll, setScroll] = useState<number>(0);
   const [isLoading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!updateInfo) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [updateInfo]);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
@@ -415,6 +401,7 @@ const Pairing: React.FC = () => {
 
   useEffect(() => {
     if (dating.allCards.length === 0) {
+      setLoading(true);
       checkChosenAndAppendNewPet(100);
     }
     if (
@@ -751,15 +738,8 @@ const Pairing: React.FC = () => {
                 considerDetail={considerDetail}
                 nowChosenPetIndex={nowChosenPetIndex}
                 setDatingQty={setDatingQty}
-                setUpdateInfo={setUpdateInfo}
               />
             </ConsiderList>
-            {updateInfo === "已更新考慮領養清單" && (
-              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
-            )}
-            {updateInfo === "申請成功！可至「即將到來的約會」查看" && (
-              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
-            )}
           </>
         ) : (
           ""
@@ -768,20 +748,8 @@ const Pairing: React.FC = () => {
           <>
             <UpcomingListContainer>
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
-              <UpcomingList
-                getUpcomingListData={getUpcomingListData}
-                setUpdateInfo={setUpdateInfo}
-              />
+              <UpcomingList getUpcomingListData={getUpcomingListData} />
             </UpcomingListContainer>
-            {updateInfo === "已更新即將到來的約會清單" && (
-              <PopupHint $Top={scroll - 120}>{updateInfo}</PopupHint>
-            )}
-            {updateInfo === "已完成本次約會並更新清單" && (
-              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
-            )}
-            {updateInfo === "已將領養寵物新增至會員資料" && (
-              <PopupHint $Top={scroll}>{updateInfo}</PopupHint>
-            )}
           </>
         ) : (
           ""
