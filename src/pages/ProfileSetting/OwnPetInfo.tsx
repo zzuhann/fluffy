@@ -556,6 +556,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
   ) as Profile;
   const dispatch = useDispatch();
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
+  const [invalidName, setInvalidName] = useState(false);
 
   async function updateOwnPetInfo() {
     const storageRef = ref(
@@ -723,8 +724,16 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
                   ...props.petNewInfo,
                   name: e.target.value,
                 });
+                if (
+                  profile.ownPets.some((pet) => pet.name === e.target.value)
+                ) {
+                  setInvalidName(true);
+                } else {
+                  setInvalidName(false);
+                }
               }}
             />
+            {invalidName && <WarningText>已存在相同名字的寵物</WarningText>}
           </EditContainer>
           <EditContainer>
             <EditInfoLabel htmlFor="birthYear">出生年: </EditInfoLabel>
@@ -771,6 +780,7 @@ export const EditAddedPetInfo: React.FC<DetailPetCardType> = (props) => {
           <PetSingleName>
             性別: {profile.ownPets[props.ownPetIndex].sex === "M" ? "公" : "母"}
           </PetSingleName>
+
           {props.incompleteInfo && (
             <WarningText>更新資料不可為空值</WarningText>
           )}
@@ -893,13 +903,13 @@ export const AddPet: React.FC<AddPetType> = (props) => {
                   ...props.addPetInfo,
                   name: e.target.value,
                 });
-                profile.ownPets.forEach((pet) => {
-                  if (pet.name === e.target.value) {
-                    setInvalidName(true);
-                  } else {
-                    setInvalidName(false);
-                  }
-                });
+                if (
+                  profile.ownPets.some((pet) => pet.name === e.target.value)
+                ) {
+                  setInvalidName(true);
+                } else {
+                  setInvalidName(false);
+                }
               }}
             />
             {invalidName && <WarningText>已存在相同名字的寵物</WarningText>}

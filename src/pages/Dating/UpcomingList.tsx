@@ -241,6 +241,7 @@ const UpcomingList: React.FC<Props> = (props) => {
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
+  const [invalidName, setInvalidName] = useState(false);
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -378,12 +379,21 @@ const UpcomingList: React.FC<Props> = (props) => {
                         <ConfirmInput
                           type="text"
                           id="name"
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setAdoptPetInfo({
                               ...adoptPetInfo,
                               name: e.target.value,
-                            })
-                          }
+                            });
+                            if (
+                              profile.ownPets.some(
+                                (pet) => pet.name === e.target.value
+                              )
+                            ) {
+                              setInvalidName(true);
+                            } else {
+                              setInvalidName(false);
+                            }
+                          }}
                         ></ConfirmInput>
                       </ConfirmInputContainer>
                       <ConfirmInputContainer>
@@ -428,6 +438,9 @@ const UpcomingList: React.FC<Props> = (props) => {
                       )}
                       {incompleteInfo && (
                         <WarningText>請填寫完整資訊</WarningText>
+                      )}
+                      {invalidName && (
+                        <WarningText>已存在相同名字的寵物</WarningText>
                       )}
                       <AnswerBtnContainer>
                         <CheckAdoptBtn
@@ -532,9 +545,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                     const newUpcomingList = dating.upcomingDateList;
                     newUpcomingList.splice(index, 1);
                     dispatch(setUpcomingDateList(newUpcomingList));
-                    dispatch(
-                      setNotification("已更新即將到來的約會清單")
-                    );
+                    dispatch(setNotification("已更新即將到來的約會清單"));
                     setTimeout(() => {
                       dispatch(setNotification(""));
                     }, 3000);
