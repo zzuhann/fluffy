@@ -1,6 +1,6 @@
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import "./petArticle.css";
 import parse from "html-react-parser";

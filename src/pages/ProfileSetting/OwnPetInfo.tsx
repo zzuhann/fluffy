@@ -21,9 +21,9 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Title } from "./UserInfos";
-import trash from "./bin.png";
-import upload from "./upload.png";
-import defaultProfile from "./defaultprofile.png";
+import trash from "./img/bin.png";
+import upload from "./img/upload.png";
+import defaultProfile from "./img/defaultprofile.png";
 import {
   Btn,
   EditModeContainer,
@@ -42,7 +42,7 @@ import {
   setNotification,
   setOwnPets,
 } from "../../functions/profileReducerFunction";
-import noPetNow from "./cat_fish_run.png";
+import noPetNow from "./img/cat_fish_run.png";
 
 export const InfoContainer = styled.div`
   /* width: 100%; */

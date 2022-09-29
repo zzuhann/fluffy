@@ -10,8 +10,8 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -20,9 +20,9 @@ import { useParams } from "react-router-dom";
 import { AllPetArticlesType } from "./AllArticles";
 import parse from "html-react-parser";
 import "./ArticleDetail.css";
-import notyetLike from "./heart.png";
-import alreadyLike from "./love.png";
-import comment from "./chat.png";
+import notyetLike from "./img/heart.png";
+import alreadyLike from "./img/love.png";
+import comment from "./img/chat.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import { LoginRegisterBox } from "../ProfileSetting/ProfileLoginRegister";
 import { Loading } from "../../utils/loading";

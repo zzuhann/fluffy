@@ -22,9 +22,9 @@ import {
   setNotification,
 } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
-import trash from "./bin.png";
-import defaultProfile from "./defaultprofile.png";
-import upload from "./upload.png";
+import trash from "./img/bin.png";
+import defaultProfile from "./img/defaultprofile.png";
+import upload from "./img/upload.png";
 
 export const Btn = styled.div`
   position: absolute;

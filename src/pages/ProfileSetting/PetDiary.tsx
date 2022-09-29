@@ -49,10 +49,10 @@ import {
 } from "./OwnPetInfo";
 import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
-import trash from "./bin.png";
-import upload from "./upload.png";
-import defaultProfile from "./defaultprofile.png";
-import noPetDiary from "./pet_dog_woman.png";
+import trash from "./img/bin.png";
+import upload from "./img/upload.png";
+import defaultProfile from "./img/defaultprofile.png";
+import noPetDiary from "./img/pet_dog_woman.png";
 
 const DiaryLabel = styled(EditInfoLabel)`
   width: 180px;

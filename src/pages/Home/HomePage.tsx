@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { Btn } from "../ProfileSetting/UserInfos";
-import cover from "./indexcover.jpg";
-import pairingcover from "./pairingcover.jpg";
-import diarycover from "./diarycover.jpg";
-import articlecover from "./articlecover.jpg";
-import cliniccover from "./cliniccover.jpg";
+import cover from "./img/indexcover.jpg";
+import pairingcover from "./img/pairingcover.jpg";
+import diarycover from "./img/diarycover.jpg";
+import articlecover from "./img/articlecover.jpg";
+import cliniccover from "./img/cliniccover.jpg";
 import {
   PopImg,
   PopUpMessage,
@@ -16,7 +16,7 @@ import {
   PopUpText,
   BlackMask,
 } from "../../component/Header";
-import catHand from "./cat_hand_white.png";
+import catHand from "./img/cat_hand_white.png";
 
 const PopupTopMessage = styled(PopUpMessage)<{ $Top: number }>`
   top: ${(props) => props.$Top + 300}px;

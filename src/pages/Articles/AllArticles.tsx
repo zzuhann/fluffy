@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
-import notyetLike from "./heart.png";
-import comment from "./chat.png";
+import notyetLike from "./img/heart.png";
+import comment from "./img/chat.png";
 import { CatLoading } from "../../utils/loading";
 
 const Wrap = styled.div`

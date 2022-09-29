@@ -24,8 +24,8 @@ import {
 } from "./../ProfileSetting/OwnPetInfo";
 import { db } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
-import defaultProfile from "./defaultProfile.png";
-import noDiary from "./pet_darui_cat.png";
+import defaultProfile from "./img/defaultProfile.png";
+import noDiary from "./img/pet_darui_cat.png";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -363,11 +363,9 @@ const PetInfo = styled.div`
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  /* margin-top: 30px; */
   padding: 15px;
   position: relative;
   min-height: 346px;
-
   display: grid;
   grid-template-columns: repeat(auto-fill, 230px);
   justify-content: space-between;

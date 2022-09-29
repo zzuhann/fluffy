@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { Profile } from "../reducers/profile";
 

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import logo from "./fluffylogo.png";
+import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -24,9 +24,8 @@ import {
   clearProfileInfo,
   setNotification,
 } from "../functions/profileReducerFunction";
-import defaultProfile from "./defaultprofile.png";
-import catHand from "./cat_hand_white.png";
-
+import defaultProfile from "./img/defaultprofile.png";
+import catHand from "./img/cat_hand_white.png";
 import {
   checkIfLogged,
   targetRegisterOrLogin,
@@ -34,7 +33,7 @@ import {
   setOwnPets,
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
-import burgerMenu from "./bar.png";
+import burgerMenu from "./img/bar.png";
 
 const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;
@@ -156,7 +155,6 @@ const NavBar = styled.li`
 `;
 
 const ProfileNavBar = styled.li`
-  /* margin-right: 20px; */
   font-size: 18px;
   cursor: pointer;
   position: relative;

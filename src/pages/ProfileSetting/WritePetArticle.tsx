@@ -49,9 +49,9 @@ import {
   NowNoInfoText,
 } from "./OwnPetInfo";
 import parse from "html-react-parser";
-import trash from "./bin.png";
-import upload from "./upload.png";
-import noarticle from "./shigoto_zaitaku_cat_man.png";
+import trash from "./img/bin.png";
+import upload from "./img/upload.png";
+import noarticle from "./img/shigoto_zaitaku_cat_man.png";
 
 const FinishAddArticleBtn = styled(Btn)`
   bottom: 15px;

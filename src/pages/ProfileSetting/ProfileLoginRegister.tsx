@@ -1,9 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
 } from "firebase/auth";
 import { auth, db } from "../../utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -14,7 +12,6 @@ import {
   setImage,
   clearProfileInfo,
   targetRegisterOrLogin,
-  checkIfLogged,
   afterRegisterSaveName,
   setProfileUid,
   setNotification,
@@ -23,8 +20,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
 import styled from "styled-components";
 import ProfileSetting from "./ProfileSetting";
-import defaultProfile from "./defaultprofile.png";
-import close from "./close.png";
+import defaultProfile from "./img/defaultprofile.png";
+import close from "./img/close.png";
 import { CatLoading } from "../../utils/loading";
 
 const WarningText = styled.div`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Profile, OwnPet } from "../../reducers/profile";
@@ -14,7 +14,6 @@ import {
   DetailPetSingleInfo,
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
-import { PopupHint } from "../Dating/Dating";
 
 const Wrapper = styled.div`
   width: 100%;
