@@ -47,7 +47,6 @@ const DiaryContainer = styled.div`
   max-width: 1120px;
   margin: 0 auto;
   position: relative;
-  /* top: 120px; */
   border: solid 1px #dbdbdb;
   border-radius: 10px;
   overflow: hidden;
@@ -300,8 +299,19 @@ const DiaryDetail = () => {
       commentCount: targetDiary.commentCount + 1,
     });
     setNewCommentContext("");
-    getDiaryComments();
-    getSpecificDiary();
+    const newCommentCount = targetDiary.commentCount + 1;
+    setTargetDiary({ ...targetDiary, commentCount: newCommentCount });
+    const newCommentArray = [...diaryComments];
+    newCommentArray.push({
+      user: {
+        name: profile.name,
+        img: profile.img as string,
+      },
+      useruid: profile.uid,
+      context: newCommentContext,
+      commentTime: Date.now(),
+    });
+    setDiaryComments(newCommentArray);
     if (commentSection.current) {
       setCommentScrollHeight(commentSection.current.scrollHeight + 100);
     }
@@ -318,7 +328,6 @@ const DiaryDetail = () => {
     diariesSnapshot.forEach((info) => {
       diaryComments.push(info.data() as CommentType);
     });
-
     setDiaryComments(diaryComments);
   }
 

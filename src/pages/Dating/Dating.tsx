@@ -22,6 +22,23 @@ import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";
 import { CatLoading } from "../../utils/loading";
+import {
+  NowNoInfoInHere,
+  NowNoInfoImg,
+  NowNoInfoText,
+} from "./../ProfileSetting/OwnPetInfo";
+import noConsiderCard from "./img/dog_family.png";
+import noUpcomingDate from "./img/kataomoi_woman-01.png";
+
+export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
+  flex-direction: column;
+  top: 100px;
+`;
+
+export const NowNoInfoTextConsider = styled(NowNoInfoText)`
+  line-height: 30px;
+  text-align: center;
+`;
 
 const PopupAnimation = keyframes`
   0% {right: -300px}
@@ -279,6 +296,7 @@ const UpcomingListContainer = styled.div`
   position: relative;
   padding: 20px;
   padding-top: 70px;
+  min-height: 340px;
 `;
 
 const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
@@ -731,14 +749,25 @@ const Pairing: React.FC = () => {
           <>
             <ConsiderList>
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
-              <ConsiderEverySinglePetCard
-                setNowChosenPetIndex={setNowChosenPetIndex}
-                setConsiderDetail={setConsiderDetail}
-                tab={tab}
-                considerDetail={considerDetail}
-                nowChosenPetIndex={nowChosenPetIndex}
-                setDatingQty={setDatingQty}
-              />
+              {dating.considerList.length === 0 ? (
+                <NowNoInfoInHereConsider>
+                  <NowNoInfoImg src={noConsiderCard} />
+                  <NowNoInfoTextConsider>
+                    目前考慮領養清單無任何貓狗，
+                    <br />
+                    到配對系統選擇心儀的寵物吧！
+                  </NowNoInfoTextConsider>
+                </NowNoInfoInHereConsider>
+              ) : (
+                <ConsiderEverySinglePetCard
+                  setNowChosenPetIndex={setNowChosenPetIndex}
+                  setConsiderDetail={setConsiderDetail}
+                  tab={tab}
+                  considerDetail={considerDetail}
+                  nowChosenPetIndex={nowChosenPetIndex}
+                  setDatingQty={setDatingQty}
+                />
+              )}
             </ConsiderList>
           </>
         ) : (
@@ -748,7 +777,18 @@ const Pairing: React.FC = () => {
           <>
             <UpcomingListContainer>
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
-              <UpcomingList getUpcomingListData={getUpcomingListData} />
+              {dating.upcomingDateList.length === 0 ? (
+                <NowNoInfoInHereConsider>
+                  <NowNoInfoImg src={noUpcomingDate} />
+                  <NowNoInfoTextConsider>
+                    目前沒有即將到來的約會，
+                    <br />
+                    到考慮領養清單邀請心儀的寵物來場約會吧！
+                  </NowNoInfoTextConsider>
+                </NowNoInfoInHereConsider>
+              ) : (
+                <UpcomingList getUpcomingListData={getUpcomingListData} />
+              )}
             </UpcomingListContainer>
           </>
         ) : (

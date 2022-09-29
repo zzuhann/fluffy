@@ -17,9 +17,36 @@ import {
   PetDiaryType,
   Profile,
 } from "../../reducers/profile";
+import {
+  NowNoInfoInHere,
+  NowNoInfoImg,
+  NowNoInfoText,
+} from "./../ProfileSetting/OwnPetInfo";
 import { db } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
 import defaultProfile from "./defaultProfile.png";
+import noDiary from "./pet_darui_cat.png";
+
+export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
+  flex-direction: column;
+`;
+
+export const NowNoInfoTextConsider = styled(NowNoInfoText)`
+  text-align: center;
+  @media (max-width: 913px) {
+    font-size: 22px;
+  }
+  @media (max-width: 465px) {
+    font-size: 22px;
+  }
+  @media (max-width: 387px) {
+    font-size: 22px;
+  }
+`;
+
+const NowNoInfoImgUserProfile = styled(NowNoInfoImg)`
+  height: 70%;
+`;
 
 const Wrap = styled.div`
   width: 100%;
@@ -250,11 +277,12 @@ const PetAge = styled.div``;
 
 // article style
 const AllArticlesContainer = styled.div`
+  min-height: 346px;
   padding: 0px 0 46px;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  margin-top: 30px;
+  /* margin-top: 30px; */
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   justify-content: space-between;
@@ -335,9 +363,10 @@ const PetInfo = styled.div`
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  margin-top: 30px;
+  /* margin-top: 30px; */
   padding: 15px;
   position: relative;
+  min-height: 346px;
 
   display: grid;
   grid-template-columns: repeat(auto-fill, 230px);
@@ -513,9 +542,7 @@ const UserProfile = () => {
     <Wrap>
       <Wrapper>
         <UserInfo>
-          {/* <UserImageContainer> */}
           <UserImage src={userInfo.img} />
-          {/* </UserImageContainer> */}
           <OutputCountContainer>
             <OutputTitle>日記</OutputTitle>
             <OutputCount>{userDiary.length}</OutputCount>
@@ -546,52 +573,82 @@ const UserProfile = () => {
         <MainSection>
           {tabIndex === 0 ? (
             <>
-              <SelectGroup>
-                <NowChooseOption
-                  onMouseEnter={() => {
-                    setOptionBoxOpen(true);
-                  }}
-                  onClick={() => {
-                    optionBoxOpen
-                      ? setOptionBoxOpen(false)
-                      : setOptionBoxOpen(true);
-                  }}
-                >
-                  {nowChoosePet}
-                </NowChooseOption>
-                <OptionGroup
-                  $isActive={optionBoxOpen === true}
-                  onMouseLeave={() => {
-                    setOptionBoxOpen(false);
-                  }}
-                >
-                  <OptionName
-                    key="all"
-                    value="全部"
-                    onClick={(e) => {
-                      setNowChoosePet("全部");
+              {profile.ownPets.length !== 0 && (
+                <SelectGroup>
+                  <NowChooseOption
+                    onMouseEnter={() => {
+                      setOptionBoxOpen(true);
+                    }}
+                    onClick={() => {
+                      optionBoxOpen
+                        ? setOptionBoxOpen(false)
+                        : setOptionBoxOpen(true);
                     }}
                   >
-                    全部
-                  </OptionName>
-                  {profile.ownPets.map((pet, index) => (
+                    {nowChoosePet}
+                  </NowChooseOption>
+                  <OptionGroup
+                    $isActive={optionBoxOpen === true}
+                    onMouseLeave={() => {
+                      setOptionBoxOpen(false);
+                    }}
+                  >
                     <OptionName
-                      key={index}
-                      value={pet.name}
+                      key="all"
+                      value="全部"
                       onClick={(e) => {
-                        setNowChoosePet(
-                          (e.target as HTMLInputElement).innerText
-                        );
+                        setNowChoosePet("全部");
                       }}
                     >
-                      {pet.name}
+                      全部
                     </OptionName>
-                  ))}
-                </OptionGroup>
-              </SelectGroup>
+                    {profile.ownPets.map((pet, index) => (
+                      <OptionName
+                        key={index}
+                        value={pet.name}
+                        onClick={(e) => {
+                          setNowChoosePet(
+                            (e.target as HTMLInputElement).innerText
+                          );
+                        }}
+                      >
+                        {pet.name}
+                      </OptionName>
+                    ))}
+                  </OptionGroup>
+                </SelectGroup>
+              )}
               <AllDiariesContainer>
-                {nowChoosePet === "全部"
-                  ? userDiary.map((diary, index) => (
+                {userDiary.length === 0 ? (
+                  <NowNoInfoInHereConsider>
+                    <NowNoInfoTextConsider>尚無日記</NowNoInfoTextConsider>
+                    <NowNoInfoImgUserProfile src={noDiary} />
+                  </NowNoInfoInHereConsider>
+                ) : nowChoosePet === "全部" ? (
+                  userDiary.map((diary, index) => (
+                    <DiaryCard
+                      key={index}
+                      to={`/petdiary/${diary.id}`}
+                      likecount={diary.likedBy.length}
+                      commentcount={diary.commentCount}
+                    >
+                      <DiaryImg src={diary.img} />
+                      <DiaryBottom>
+                        <DiaryTitle>{diary.petName}</DiaryTitle>
+                        <PetAge>
+                          {`${
+                            new Date(diary.takePhotoTime).getFullYear() -
+                            diary.birthYear
+                          }`}
+                          y
+                        </PetAge>
+                      </DiaryBottom>
+                    </DiaryCard>
+                  ))
+                ) : (
+                  userDiary
+                    .filter((diary) => diary.petName === nowChoosePet)
+                    .map((diary, index) => (
                       <DiaryCard
                         key={index}
                         to={`/petdiary/${diary.id}`}
@@ -606,65 +663,58 @@ const UserProfile = () => {
                               new Date(diary.takePhotoTime).getFullYear() -
                               diary.birthYear
                             }`}
-                            y
+                            Y
                           </PetAge>
                         </DiaryBottom>
                       </DiaryCard>
                     ))
-                  : userDiary
-                      .filter((diary) => diary.petName === nowChoosePet)
-                      .map((diary, index) => (
-                        <DiaryCard
-                          key={index}
-                          to={`/petdiary/${diary.id}`}
-                          likecount={diary.likedBy.length}
-                          commentcount={diary.commentCount}
-                        >
-                          <DiaryImg src={diary.img} />
-                          <DiaryBottom>
-                            <DiaryTitle>{diary.petName}</DiaryTitle>
-                            <PetAge>
-                              {`${
-                                new Date(diary.takePhotoTime).getFullYear() -
-                                diary.birthYear
-                              }`}
-                              Y
-                            </PetAge>
-                          </DiaryBottom>
-                        </DiaryCard>
-                      ))}
+                )}
               </AllDiariesContainer>
             </>
           ) : tabIndex === 1 ? (
             <AllArticlesContainer>
-              {userArticle.map((article, index) => (
-                <ArticleCard key={index} to={`/articles/${article.id}`}>
-                  <ArticleCover src={article.img} />
-                  <ArticleCardBottom>
-                    <ArticleTitle>{article.title}</ArticleTitle>
-                    <HeartAndCommentRecordContainer>
-                      <Record>喜歡 {article.likedBy.length}</Record>
-                      <Record>留言 {article.commentCount}</Record>
-                    </HeartAndCommentRecordContainer>
-                  </ArticleCardBottom>
-                </ArticleCard>
-              ))}
+              {userArticle.length === 0 ? (
+                <NowNoInfoInHereConsider>
+                  <NowNoInfoTextConsider>尚無文章</NowNoInfoTextConsider>
+                  <NowNoInfoImgUserProfile src={noDiary} />
+                </NowNoInfoInHereConsider>
+              ) : (
+                userArticle.map((article, index) => (
+                  <ArticleCard key={index} to={`/articles/${article.id}`}>
+                    <ArticleCover src={article.img} />
+                    <ArticleCardBottom>
+                      <ArticleTitle>{article.title}</ArticleTitle>
+                      <HeartAndCommentRecordContainer>
+                        <Record>喜歡 {article.likedBy.length}</Record>
+                        <Record>留言 {article.commentCount}</Record>
+                      </HeartAndCommentRecordContainer>
+                    </ArticleCardBottom>
+                  </ArticleCard>
+                ))
+              )}
             </AllArticlesContainer>
           ) : (
             <PetInfo>
-              {userPet.map((pet, index) => (
-                <PetSimpleCard key={index}>
-                  <PetSimpleImage src={pet.img} alt="" />
-                  <PetSimpleInfos>
-                    <PetSimpleInfo>
-                      {pet.name} {pet.sex === "M" ? "♂" : "♀"}
-                    </PetSimpleInfo>
-                    <PetYearAge>
-                      {`${new Date().getFullYear() - pet.birthYear}`}Y
-                    </PetYearAge>
-                  </PetSimpleInfos>
-                </PetSimpleCard>
-              ))}
+              {userPet.length === 0 ? (
+                <NowNoInfoInHereConsider>
+                  <NowNoInfoTextConsider>尚無寵物</NowNoInfoTextConsider>
+                  <NowNoInfoImgUserProfile src={noDiary} />
+                </NowNoInfoInHereConsider>
+              ) : (
+                userPet.map((pet, index) => (
+                  <PetSimpleCard key={index}>
+                    <PetSimpleImage src={pet.img} alt="" />
+                    <PetSimpleInfos>
+                      <PetSimpleInfo>
+                        {pet.name} {pet.sex === "M" ? "♂" : "♀"}
+                      </PetSimpleInfo>
+                      <PetYearAge>
+                        {`${new Date().getFullYear() - pet.birthYear}`}Y
+                      </PetYearAge>
+                    </PetSimpleInfos>
+                  </PetSimpleCard>
+                ))
+              )}
             </PetInfo>
           )}
         </MainSection>

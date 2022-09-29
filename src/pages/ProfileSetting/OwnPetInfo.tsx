@@ -42,6 +42,7 @@ import {
   setNotification,
   setOwnPets,
 } from "../../functions/profileReducerFunction";
+import noPetNow from "./cat_fish_run.png";
 
 export const InfoContainer = styled.div`
   /* width: 100%; */
@@ -355,6 +356,45 @@ export const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
   }
 `;
 
+export const NowNoInfoInHere = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @media (max-width: 913px) {
+    flex-direction: column;
+  }
+`;
+export const NowNoInfoImg = styled.img`
+  height: 100%;
+  @media (max-width: 913px) {
+    height: 70%;
+  }
+`;
+
+export const NowNoInfoText = styled.div`
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  font-weight: bold;
+  margin-left: 30px;
+  @media (max-width: 913px) {
+    margin-left: 0px;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  @media (max-width: 465px) {
+    font-size: 16px;
+  }
+  @media (max-width: 387px) {
+    font-size: 14px;
+  }
+`;
+
 type SimplePetCardType = {
   setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
   setOwnPetIndex: Dispatch<SetStateAction<number>>;
@@ -376,32 +416,39 @@ export const SimpleSinglePetCard: React.FC<SimplePetCardType> = (props) => {
     <InfoContainer>
       <PetTitle>寵物資料</PetTitle>
       <PetInfo>
-        {profile.ownPets.map((pet, index) => (
-          <PetSimpleCard
-            key={index}
-            onClick={() => {
-              props.setOwnPetDetail(true);
-              props.setAddPet(false);
-              props.setOwnPetIndex(index);
-              props.setPetNewImg({
-                ...props.petNewImg,
-                url: profile.ownPets[index].img,
-              });
-              props.setPetNewInfo({
-                name: profile.ownPets[index].name,
-                birthYear: profile.ownPets[index].birthYear,
-              });
-            }}
-          >
-            <PetSimpleImage src={pet.img} alt="" />
-            <PetSimpleInfos>
-              <PetSimpleInfo>
-                {pet.name} {pet.sex === "M" ? "♂" : "♀"}
-              </PetSimpleInfo>
-              <PetSimpleInfo>{`${2022 - pet.birthYear}`}Y</PetSimpleInfo>
-            </PetSimpleInfos>
-          </PetSimpleCard>
-        ))}
+        {profile.ownPets.length !== 0 ? (
+          profile.ownPets.map((pet, index) => (
+            <PetSimpleCard
+              key={index}
+              onClick={() => {
+                props.setOwnPetDetail(true);
+                props.setAddPet(false);
+                props.setOwnPetIndex(index);
+                props.setPetNewImg({
+                  ...props.petNewImg,
+                  url: profile.ownPets[index].img,
+                });
+                props.setPetNewInfo({
+                  name: profile.ownPets[index].name,
+                  birthYear: profile.ownPets[index].birthYear,
+                });
+              }}
+            >
+              <PetSimpleImage src={pet.img} alt="" />
+              <PetSimpleInfos>
+                <PetSimpleInfo>
+                  {pet.name} {pet.sex === "M" ? "♂" : "♀"}
+                </PetSimpleInfo>
+                <PetSimpleInfo>{`${2022 - pet.birthYear}`}Y</PetSimpleInfo>
+              </PetSimpleInfos>
+            </PetSimpleCard>
+          ))
+        ) : (
+          <NowNoInfoInHere>
+            <NowNoInfoImg src={noPetNow} />
+            <NowNoInfoText>\ 目前沒有寵物 點擊右上角可以新增 /</NowNoInfoText>
+          </NowNoInfoInHere>
+        )}
       </PetInfo>
       <AddBtnSimple onClick={() => props.setAddPet(true)}>
         新增寵物 +

@@ -269,8 +269,19 @@ const ArticleDetail = () => {
     });
     setNewCommentContext("");
     setMainPageScrollHeight(document.documentElement.scrollHeight + 100);
-    getArticleComments();
-    getSpecificArticle();
+    const newCommentCount = targetArticle.commentCount + 1;
+    setTargetArticle({ ...targetArticle, commentCount: newCommentCount });
+    const newCommentArray = [...articleComments];
+    newCommentArray.push({
+      user: {
+        name: profile.name,
+        img: profile.img as string,
+      },
+      useruid: profile.uid,
+      context: newCommentContext,
+      commentTime: Date.now(),
+    });
+    setArticleComments(newCommentArray);
     setLoadingComment(false);
   }
 
@@ -287,7 +298,6 @@ const ArticleDetail = () => {
     articlesSnapshot.forEach((info) => {
       articleComments.push(info.data() as CommentType);
     });
-
     setArticleComments(articleComments);
   }
 

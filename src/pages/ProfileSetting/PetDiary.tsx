@@ -43,12 +43,16 @@ import {
   DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
+  NowNoInfoInHere,
+  NowNoInfoImg,
+  NowNoInfoText,
 } from "./OwnPetInfo";
 import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
 import trash from "./bin.png";
 import upload from "./upload.png";
 import defaultProfile from "./defaultprofile.png";
+import noPetDiary from "./pet_dog_woman.png";
 
 const DiaryLabel = styled(EditInfoLabel)`
   width: 180px;
@@ -1115,36 +1119,53 @@ export const PetDiary: React.FC<{
         <InfoContainer>
           <PetTitle>寵物日記</PetTitle>
           <PetInfo>
-            {profile.petDiary.map((diary, index) => (
-              <PetSimpleCard
-                key={index}
-                onClick={() => {
-                  setDetailDiaryBoxOpen(true);
-                  setEditDiaryBoxOpen(true);
-                  setInitialDiaryTimeStamp(diary.postTime);
-                  setOwnPetDiaryIndex(index);
-                  setNewDiaryImg({
-                    ...newDiaryImg,
-                    url: profile.petDiary[index].img,
-                  });
-                  setNewDiaryContext({
-                    ...newDiaryContext,
-                    petName: profile.petDiary[index].petName,
-                    context: profile.petDiary[index].context,
-                    takePhotoTime: profile.petDiary[index].takePhotoTime,
-                  });
-                }}
-              >
-                <PetSimpleImage src={diary.img} alt="" />
-                <PetSimpleInfos>
-                  <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
-                </PetSimpleInfos>
-              </PetSimpleCard>
-            ))}
+            {profile.petDiary.length !== 0 ? (
+              profile.petDiary.map((diary, index) => (
+                <PetSimpleCard
+                  key={index}
+                  onClick={() => {
+                    setDetailDiaryBoxOpen(true);
+                    setEditDiaryBoxOpen(true);
+                    setInitialDiaryTimeStamp(diary.postTime);
+                    setOwnPetDiaryIndex(index);
+                    setNewDiaryImg({
+                      ...newDiaryImg,
+                      url: profile.petDiary[index].img,
+                    });
+                    setNewDiaryContext({
+                      ...newDiaryContext,
+                      petName: profile.petDiary[index].petName,
+                      context: profile.petDiary[index].context,
+                      takePhotoTime: profile.petDiary[index].takePhotoTime,
+                    });
+                  }}
+                >
+                  <PetSimpleImage src={diary.img} alt="" />
+                  <PetSimpleInfos>
+                    <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
+                  </PetSimpleInfos>
+                </PetSimpleCard>
+              ))
+            ) : (
+              <NowNoInfoInHere>
+                <NowNoInfoImg src={noPetDiary} />
+                {profile.ownPets.length === 0 ? (
+                  <NowNoInfoText>\ 新增日記前須先新增寵物資料 /</NowNoInfoText>
+                ) : (
+                  <NowNoInfoText>
+                    \ 目前沒有日記 點擊右上角可以新增 /
+                  </NowNoInfoText>
+                )}
+              </NowNoInfoInHere>
+            )}
           </PetInfo>
-          <AddBtnSimple onClick={() => setWriteDiaryBoxOpen(true)}>
-            新增日記 +
-          </AddBtnSimple>
+          {profile.ownPets.length !== 0 ? (
+            <AddBtnSimple onClick={() => setWriteDiaryBoxOpen(true)}>
+              新增日記 +
+            </AddBtnSimple>
+          ) : (
+            ""
+          )}
         </InfoContainer>
       )}
     </>

@@ -44,10 +44,14 @@ import {
   DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
+  NowNoInfoInHere,
+  NowNoInfoImg,
+  NowNoInfoText,
 } from "./OwnPetInfo";
 import parse from "html-react-parser";
 import trash from "./bin.png";
 import upload from "./upload.png";
+import noarticle from "./shigoto_zaitaku_cat_man.png";
 
 const FinishAddArticleBtn = styled(Btn)`
   bottom: 15px;
@@ -692,6 +696,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                 <UserArticleTitle>{article.title}</UserArticleTitle>
               </UserArticle>
             ))}
+            <NowNoInfoInHere>
+              <NowNoInfoImg src={noarticle} />
+              <NowNoInfoText>\ 目前沒有文章 點擊右上角可以新增 /</NowNoInfoText>
+            </NowNoInfoInHere>
           </UserArticleContainer>
         </InfoContainer>
       )}
@@ -757,6 +765,7 @@ const UserArticleContainer = styled.div`
   position: relative;
   justify-content: space-between;
   margin-top: 30px;
+  min-height: 250px;
   @media (max-width: 742px) {
     flex-direction: column;
   }
