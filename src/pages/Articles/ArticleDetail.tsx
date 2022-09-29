@@ -197,6 +197,7 @@ const CommentContext = styled.div`
   margin-left: 55px;
   padding-right: 10px;
   line-height: 20px;
+  white-space: pre-wrap;
   @media (max-width: 440px) {
     margin-left: 0;
     margin-top: 10px;
@@ -394,6 +395,16 @@ const ArticleDetail = () => {
               placeholder="新增留言 ..."
               onChange={(e) => {
                 setNewCommentContext(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addArticleComment();
+                }
               }}
             />
             {loadingComment ? (

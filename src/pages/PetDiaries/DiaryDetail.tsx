@@ -464,6 +464,16 @@ const DiaryDetail = () => {
               onChange={(e) => {
                 setNewCommentContext(e.target.value);
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addDiaryComment();
+                }
+              }}
             ></AddCommentTextArea>
             {loadingComment ? (
               <Loading

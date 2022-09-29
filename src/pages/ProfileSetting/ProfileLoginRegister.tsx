@@ -312,7 +312,14 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
   }
 
   return profile.clickLoginOrRegister === "login" ? (
-    <RegisterLoginWrapper $Top={props.$Top}>
+    <RegisterLoginWrapper
+      $Top={props.$Top}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          logInProfile();
+        }
+      }}
+    >
       {props.openLoginBox && (
         <LoginPopupCancel
           src={close}
@@ -393,7 +400,14 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
     </RegisterLoginWrapper>
   ) : (
-    <RegisterLoginWrapper $Top={props.$Top}>
+    <RegisterLoginWrapper
+      $Top={props.$Top}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          createProfile();
+        }
+      }}
+    >
       {props.openLoginBox && (
         <LoginPopupCancel
           src={close}
