@@ -674,32 +674,37 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             新增文章
           </AddArticleBtn>
           <UserArticleContainer>
-            {profile.ownArticles.map((article, index) => (
-              <UserArticle
-                key={index}
-                onClick={() => {
-                  setDetailArticleOpen(true);
-                  setInitialDiaryTimeStamp(article.postTime);
-                  setOwnArticleIndex(index);
-                  setEditArticleCover({
-                    ...editArticleCover,
-                    url: profile.ownArticles[index].img,
-                  });
-                  setEditArticleContext({
-                    ...editArticleContext,
-                    title: profile.ownArticles[index].title,
-                    context: profile.ownArticles[index].context,
-                  });
-                }}
-              >
-                <UserArticleImg src={article.img} />
-                <UserArticleTitle>{article.title}</UserArticleTitle>
-              </UserArticle>
-            ))}
-            <NowNoInfoInHere>
-              <NowNoInfoImg src={noarticle} />
-              <NowNoInfoText>\ 目前沒有文章 點擊右上角可以新增 /</NowNoInfoText>
-            </NowNoInfoInHere>
+            {profile.ownArticles.length === 0 ? (
+              <NowNoInfoInHere>
+                <NowNoInfoImg src={noarticle} />
+                <NowNoInfoText>
+                  \ 目前沒有文章 點擊右上角可以新增 /
+                </NowNoInfoText>
+              </NowNoInfoInHere>
+            ) : (
+              profile.ownArticles.map((article, index) => (
+                <UserArticle
+                  key={index}
+                  onClick={() => {
+                    setDetailArticleOpen(true);
+                    setInitialDiaryTimeStamp(article.postTime);
+                    setOwnArticleIndex(index);
+                    setEditArticleCover({
+                      ...editArticleCover,
+                      url: profile.ownArticles[index].img,
+                    });
+                    setEditArticleContext({
+                      ...editArticleContext,
+                      title: profile.ownArticles[index].title,
+                      context: profile.ownArticles[index].context,
+                    });
+                  }}
+                >
+                  <UserArticleImg src={article.img} />
+                  <UserArticleTitle>{article.title}</UserArticleTitle>
+                </UserArticle>
+              ))
+            )}
           </UserArticleContainer>
         </InfoContainer>
       )}

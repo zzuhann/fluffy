@@ -1,7 +1,7 @@
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
 import notyetLike from "./img/heart.png";
@@ -94,6 +94,7 @@ const ArticleTitle = styled.div`
   width: 100%;
   overflow: hidden;
   display: -webkit-box;
+  height: 50px;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 `;
@@ -102,6 +103,7 @@ const HeartAndCommentRecordContainer = styled.div`
   display: flex;
   font-size: 18px;
   color: #3c3c3c;
+  justify-self: flex-end;
 `;
 
 const RecordImg = styled.img`
@@ -112,6 +114,51 @@ const RecordImg = styled.img`
 const Record = styled.div`
   flex-shrink: 0;
   margin-right: 15px;
+`;
+
+const slide = keyframes`
+from {
+  left: -120%;
+}
+to {
+  left: 100%;
+}
+`;
+
+const SkeletonDiaryCard = styled.div`
+  margin-bottom: 30px;
+  bottom: 0;
+  flex-shrink: 0;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  background: #eee;
+  width: calc((100% - 150px) / 2);
+  height: 250px;
+  &:last-child {
+    margin-right: 0;
+  }
+  &:before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 120px;
+    top: 0px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      #ffffff99 50%,
+      transparent 100%
+    );
+    animation: ${slide} 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    box-shadow: 0 4px 10px 0 #ffffff33;
+  }
+  @media (max-width: 860px) {
+    width: calc((100% - 100px));
+  }
+  @media (max-width: 556px) {
+    width: 100%;
+  }
 `;
 
 export type AllPetArticlesType = {
@@ -133,10 +180,8 @@ const AllArticles = () => {
   const [allPetArticles, setAllPetArticles] = useState<AllPetArticlesType[]>(
     []
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   async function getAuthorArticles() {
-    setIsLoading(true);
     const authorPetAricles: AllPetArticlesType[] = [];
     const q = query(collection(db, "petArticles"));
     const querySnapshot = await getDocs(q);
@@ -146,11 +191,7 @@ const AllArticles = () => {
         ...info.data(),
       } as AllPetArticlesType);
     });
-
     setAllPetArticles(authorPetAricles);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
   }
 
   useEffect(() => {
@@ -159,12 +200,17 @@ const AllArticles = () => {
 
   return (
     <Wrap>
-      {isLoading ? (
-        <CatLoading />
-      ) : (
-        <AllArticlesContainer>
-          <PageTitle>寵物文章補給</PageTitle>
-          {allPetArticles.map((article, index) => (
+      <AllArticlesContainer>
+        <PageTitle>寵物文章補給</PageTitle>
+        {allPetArticles.length === 0 ? (
+          <>
+            <SkeletonDiaryCard />
+            <SkeletonDiaryCard />
+            <SkeletonDiaryCard />
+            <SkeletonDiaryCard />
+          </>
+        ) : (
+          allPetArticles.map((article, index) => (
             <ArticleCard key={index} to={`/articles/${article.id}`}>
               <ArticleCover src={article.img} />
               <ArticleCardBottom>
@@ -177,9 +223,9 @@ const AllArticles = () => {
                 </HeartAndCommentRecordContainer>
               </ArticleCardBottom>
             </ArticleCard>
-          ))}
-        </AllArticlesContainer>
-      )}
+          ))
+        )}
+      </AllArticlesContainer>
     </Wrap>
   );
 };
