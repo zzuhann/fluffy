@@ -11,6 +11,7 @@ import ArticleDetail from "./pages/Articles/ArticleDetail";
 import AllPetDiaries from "./pages/PetDiaries/AllPetDiraies";
 import DiaryDetail from "./pages/PetDiaries/DiaryDetail";
 import UserProfile from "./pages/UserProfile/UserProfile";
+import LostPet from "./pages/LostPet/LostPet";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
@@ -26,6 +27,7 @@ root.render(
         <Route path="dating" element={<Pairing />} />
         <Route path="profile/:id" element={<UserProfile />} />
         <Route path="profile" element={<ProfileLoginRegister />} />
+        <Route path="lostpet" element={<LostPet />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
