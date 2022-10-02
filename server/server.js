@@ -1,32 +1,27 @@
 const express = require("express");
-const http = require("http");
-const app = express();
-const server = http.createServer(app);
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
+const SocketServer = require("ws").Server;
 
-io.on("connection", (socket) => {
-  socket.emit("me", socket.id);
+const PORT = 3000;
 
-  socket.on("disconnect", () => {
-    socket.broadcast.emit("callEnded");
-  });
+const server = express().listen(PORT, () =>
+  console.log(`Listening on ${PORT}`)
+);
 
-  socket.on("callUser", (data) => {
-    io.to(data.userToCall).emit("callUser", {
-      signal: data.signalData,
-      from: data.from,
-      name: data.name,
+const wss = new SocketServer({ server });
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+  ws.on("message", (data) => {
+    // @ts-ignore
+    data = data.toString();
+    console.log(data);
+
+    wss.clients.forEach(function (client) {
+      client.send(data);
     });
   });
 
-  socket.on("answerCall", (data) => {
-    io.to(data.to).emit("callAccepted", data.signal);
+  ws.on("close", () => {
+    console.log("Close connected");
   });
 });
-
-server.listen(5000, () => console.log("server is running on port 5000"));
