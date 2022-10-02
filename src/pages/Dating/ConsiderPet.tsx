@@ -9,7 +9,6 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
 import {
   setConsiderList,
-  setUpcomingDateList,
 } from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
@@ -192,6 +191,23 @@ const NotCondiserBtn = styled(Btn)`
   right: 10px;
   padding: 5px 5px;
   font-size: 16px;
+`;
+const MeetingBtnContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const MeetingWayBtn = styled(Btn)<{ $isActive: boolean }>`
+  position: relative;
+  flex: 1;
+  margin-right: 20px;
+  padding: 5px 10px;
+  background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
+  color: ${(props) => (props.$isActive ? "#3c3c3c" : "#737373")};
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const InviteDatingBox = styled.div<{ $Top: number }>`
@@ -396,7 +412,9 @@ const ConsiderPetDetail = (props: {
     email: string;
     date: Date | string;
     time: string;
-  }>({ name: "", email: "", date: "", time: "" });
+    dateAndTime: number;
+    way: string;
+  }>({ name: "", email: "", date: "", time: "", dateAndTime: 0, way: "實體" });
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
   const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
   const [timeIndex, setTimeIndex] = useState<number>(-1);
@@ -404,7 +422,9 @@ const ConsiderPetDetail = (props: {
   const [repeatInvite, setRepeatInvite] = useState(false);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
+  const [meetingWay, setMeetingWay] = useState("實體");
 
+  console.log(inviteDatingInfo.dateAndTime);
   useEffect(() => {
     window.addEventListener("click", togglePageHeight);
     return () => window.removeEventListener("scroll", togglePageHeight);
@@ -433,6 +453,8 @@ const ConsiderPetDetail = (props: {
         datingDate: inviteDatingInfo.date,
         inviter: inviteDatingInfo.name,
         time: inviteDatingInfo.time,
+        way: inviteDatingInfo.way,
+        dateAndTime: inviteDatingInfo.dateAndTime,
       }
     );
   }
@@ -461,15 +483,6 @@ const ConsiderPetDetail = (props: {
     );
   }
 
-  async function getUpcomingListData() {
-    let upcomingDate: InviteDating[] = [];
-    const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push(info.data() as InviteDating);
-    });
-    dispatch(setUpcomingDateList(upcomingDate));
-  }
   return (
     <>
       <BlackMask
@@ -672,6 +685,26 @@ const ConsiderPetDetail = (props: {
               }
             />
           </InviteInfoContainer>
+          <MeetingBtnContainer>
+            <MeetingWayBtn
+              $isActive={meetingWay === "實體"}
+              onClick={() => {
+                setMeetingWay("實體");
+                setInviteDatingInfo({ ...inviteDatingInfo, way: "實體" });
+              }}
+            >
+              實體
+            </MeetingWayBtn>
+            <MeetingWayBtn
+              $isActive={meetingWay === "視訊"}
+              onClick={() => {
+                setMeetingWay("視訊");
+                setInviteDatingInfo({ ...inviteDatingInfo, way: "視訊" });
+              }}
+            >
+              視訊
+            </MeetingWayBtn>
+          </MeetingBtnContainer>
           <InviteInfoContainer>
             <InviteInfoLabel htmlFor="datingTime">
               申請日期與時間：
@@ -687,23 +720,30 @@ const ConsiderPetDetail = (props: {
                 }
               />
             </ConsiderPetCalendarContainer>
-            <TimeBtnContainer>
-              {timeSelect.map((time, index) => (
-                <TimeBtn
-                  $isActive={timeIndex === index}
-                  key={index}
-                  onClick={() => {
-                    setTimeIndex(index);
-                    setInviteDatingInfo({
-                      ...inviteDatingInfo,
-                      time: timeSelect[index],
-                    });
-                  }}
-                >
-                  {time}
-                </TimeBtn>
-              ))}
-            </TimeBtnContainer>
+            {inviteDatingInfo.date && (
+              <TimeBtnContainer>
+                {timeSelect.map((time, index) => (
+                  <TimeBtn
+                    $isActive={timeIndex === index}
+                    key={index}
+                    onClick={() => {
+                      setTimeIndex(index);
+                      setInviteDatingInfo({
+                        ...inviteDatingInfo,
+                        time: timeSelect[index],
+                        dateAndTime: (inviteDatingInfo.date as Date).setHours(
+                          Number(timeSelect[index].split(":")[0]),
+                          0
+                        ),
+                      });
+                    }}
+                  >
+                    {time}
+                  </TimeBtn>
+                ))}
+              </TimeBtnContainer>
+            )}
+
             {incompleteInfo && (
               <PetInfoWarning>請填寫完整資料以利進行約會申請</PetInfoWarning>
             )}
@@ -718,7 +758,6 @@ const ConsiderPetDetail = (props: {
               sendEmailToNotifyUser(
                 dating.considerList[props.nowChosenPetIndex]
               );
-              getUpcomingListData();
               props.setDatingQty((prev) => prev + 1);
               setInviteBoxOpen(false);
               dispatch(setNotification("申請成功！可至「即將到來的約會」查看"));

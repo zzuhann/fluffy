@@ -524,7 +524,7 @@ const Pairing: React.FC = () => {
     querySnapshot.forEach((info) => {
       upcomingDate.push({
         ...info.data(),
-        datingDate: info.data().datingDate.seconds,
+        datingDate: info.data().dateAndTime,
       } as InviteDating);
     });
     dispatch(setUpcomingDateList(upcomingDate));

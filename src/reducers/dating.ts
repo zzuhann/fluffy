@@ -61,6 +61,7 @@ export type InviteDating = {
   datingDate: Date | number;
   inviter: string;
   time: string;
+  way: string;
 };
 
 export type Card = {

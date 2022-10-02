@@ -1,7 +1,7 @@
 const express = require("express");
 const SocketServer = require("ws").Server;
 
-const PORT = 3000;
+const PORT = 4000;
 
 const server = express().listen(PORT, () =>
   console.log(`Listening on ${PORT}`)
