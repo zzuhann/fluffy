@@ -7,9 +7,7 @@ import { Dating } from "../../reducers/dating";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
-import {
-  setConsiderList,
-} from "../../functions/datingReducerFunction";
+import { setConsiderList } from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import findplace from "./img/loupe.png";
@@ -455,6 +453,7 @@ const ConsiderPetDetail = (props: {
         time: inviteDatingInfo.time,
         way: inviteDatingInfo.way,
         dateAndTime: inviteDatingInfo.dateAndTime,
+        doneWithMeeting: false,
       }
     );
   }

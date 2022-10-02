@@ -29,6 +29,7 @@ import {
 } from "./../ProfileSetting/OwnPetInfo";
 import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
+import Meeting from "../../component/Meeting";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -383,6 +384,19 @@ const TutorialContext = styled.div`
   margin-bottom: 5px;
 `;
 
+export const BlackMask = styled.div`
+  opacity: 0.5;
+  overflow-y: hidden;
+  transition: 0.3s;
+  position: fixed;
+  background-color: black;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1;
+`;
+
 const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -405,6 +419,13 @@ const Pairing: React.FC = () => {
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
   const [isLoading, setLoading] = useState(false);
+  const [openMeeting, setOpenMeeting] = useState(false);
+  const [nowMeetingShelter, setNowMeetingShelter] = useState<{
+    petId: number;
+    shelterName: string;
+    userName: string;
+    index: number;
+  }>({ petId: 0, shelterName: "", userName: "", index: -1 });
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
@@ -775,6 +796,12 @@ const Pairing: React.FC = () => {
         )}
         {tab === "upcomingDate" ? (
           <>
+            {openMeeting && (
+              <Meeting
+                nowMeetingShelter={nowMeetingShelter}
+                setOpenMeeting={setOpenMeeting}
+              />
+            )}
             <UpcomingListContainer>
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
               {dating.upcomingDateList.length === 0 ? (
@@ -787,7 +814,13 @@ const Pairing: React.FC = () => {
                   </NowNoInfoTextConsider>
                 </NowNoInfoInHereConsider>
               ) : (
-                <UpcomingList getUpcomingListData={getUpcomingListData} />
+                <>
+                  <UpcomingList
+                    getUpcomingListData={getUpcomingListData}
+                    setOpenMeeting={setOpenMeeting}
+                    setNowMeetingShelter={setNowMeetingShelter}
+                  />
+                </>
               )}
             </UpcomingListContainer>
           </>

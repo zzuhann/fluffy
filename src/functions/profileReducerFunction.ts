@@ -94,4 +94,9 @@ export function setNotification(notification: string) {
   };
 }
 
-// notification吃不到!
+export function setShelter(isShelter: boolean) {
+  return {
+    type: ActionType.setShelter,
+    payload: { isShelter },
+  };
+}

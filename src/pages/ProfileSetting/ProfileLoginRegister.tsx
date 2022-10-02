@@ -15,6 +15,7 @@ import {
   afterRegisterSaveName,
   setProfileUid,
   setNotification,
+  setShelter,
 } from "../../functions/profileReducerFunction";
 import { useSelector, useDispatch } from "react-redux";
 import { Profile } from "../../reducers/profile";
@@ -289,6 +290,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
             dispatch(setNotification(""));
           }, 3000);
           dispatch(setName(docSnap.data().name));
+          if (docSnap.data().shelter === "true") {
+            dispatch(setShelter(true));
+          }
           dispatch(setProfileUid(userCredential.user.uid));
           props.setOpenLoginBox(false);
           if (docSnap.data().img) {

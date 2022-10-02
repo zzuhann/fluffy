@@ -23,6 +23,7 @@ import {
   setEmail,
   clearProfileInfo,
   setNotification,
+  setShelter,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./img/defaultprofile.png";
 import catHand from "./img/cat_hand_white.png";
@@ -398,6 +399,9 @@ const Header = () => {
         if (docSnap.exists()) {
           dispatch(setName(docSnap.data().name));
           dispatch(setEmail(user.email as string));
+          if (docSnap.data().shelter === "true") {
+            dispatch(setShelter(true));
+          }
           if (docSnap.data().img) {
             dispatch(setImage(docSnap.data().img));
           } else {
@@ -457,7 +461,7 @@ const Header = () => {
       });
     }, 1000);
   }
-
+  console.log(profile);
   return (
     <>
       <BlackMask
@@ -512,6 +516,15 @@ const Header = () => {
           >
             24 小時動物醫院
           </NavBar>
+          {profile.isShelter && (
+            <NavBar
+              onClick={() => {
+                navigate("/shelter");
+              }}
+            >
+              民眾視訊申請
+            </NavBar>
+          )}
         </NavBarContainer>
         {openPopupBox && (
           <>

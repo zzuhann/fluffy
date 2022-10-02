@@ -1,7 +1,10 @@
 const express = require("express");
 const SocketServer = require("ws").Server;
+const cors = require("cors");
+const app = express();
+app.use(cors());
 
-const PORT = 4000;
+const PORT = process.env.PORT || 3000;
 
 const server = express().listen(PORT, () =>
   console.log(`Listening on ${PORT}`)
