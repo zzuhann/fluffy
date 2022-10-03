@@ -22,6 +22,16 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import close from "./img/close.png";
+
+const CloseBtn = styled.img`
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+`;
 
 const MeetingContainer = styled.div`
   width: 70vw;
@@ -139,10 +149,10 @@ const Meeting: React.FC<MeetingType> = (props) => {
 
   const wsOnMessage = (e: MessageEvent) => {
     const wsData = JSON.parse(e.data);
-    console.log("wsData", wsData);
+    // console.log("wsData", wsData);
 
     const wsType = wsData["type"];
-    console.log(wsType);
+    // console.log(wsType);
 
     if (wsType === "leave") {
       if (pc.current) {
@@ -155,7 +165,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
     const wsUsername = wsData["username"];
     console.log("username", profile.uid);
     if (profile.uid === wsUsername) {
-      console.log("跳過處理本條訊息");
+      // console.log("跳過處理本條訊息");
       return;
     }
 
@@ -177,7 +187,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
     if (wsType === "candidate") {
       const wsCandidate = JSON.parse(wsData["data"]);
       pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate));
-      console.log("添加候選成功", wsCandidate);
+      // console.log("添加候選成功", wsCandidate);
     }
   };
 
@@ -197,7 +207,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
       video: true,
       audio: false,
     });
-    console.log("stream", stream);
+    // console.log("stream", stream);
     localVideoRef.current!.srcObject = stream;
     localStreamRef.current = stream;
   };
@@ -250,7 +260,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
       remoteVideoRef.current!.srcObject = e.streams[0];
     };
     pc.current = _pc;
-    console.log("rtc連接創建成功", _pc);
+    // console.log("rtc連接創建成功", _pc);
   };
 
   const addLocalStreamToRtcConnection = () => {
@@ -258,7 +268,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
     localStream.getTracks().forEach((track) => {
       pc.current!.addTrack(track, localStream);
     });
-    console.log("將本地視頻流添加到 RTC 連接成功");
+    // console.log("將本地視頻流添加到 RTC 連接成功");
   };
 
   const hangup = () => {
@@ -346,6 +356,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
             結束視訊
           </PhoneBtn>
         )}
+        <CloseBtn src={close} onClick={() => props.setOpenMeeting(false)} />
       </MeetingContainer>
     </>
   );

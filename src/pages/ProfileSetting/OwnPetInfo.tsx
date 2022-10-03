@@ -159,6 +159,13 @@ const PetSimpleName = styled(PetSimpleInfo)`
   white-space: nowrap;
 `;
 
+const PetName = styled.div`
+  word-break: break-all;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 1.5px;
+`;
+
 const PetDetailCard = styled.div`
   width: 100%;
   max-width: 1120px;
@@ -263,6 +270,7 @@ const PetSingleName = styled.div`
   font-size: 22px;
   margin-left: 20px;
   margin-bottom: 15px;
+  word-break: break-all;
   @media (max-width: 614px) {
     margin-left: 0;
   }

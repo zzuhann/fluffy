@@ -567,7 +567,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                 取消此次約會
               </DatingDoneBtn>
             ) : Date.parse(`${new Date()}`) - (date.datingDate as number) <=
-              6000000 ? (
+              7200000 ? (
               !date.doneWithMeeting ? (
                 <DatingDoneBtn
                   onClick={() => {

@@ -113,6 +113,10 @@ const ShelterMeeting = () => {
     const wsType = wsData["type"];
     console.log(wsType);
 
+    if (wsType === "dontdisconnect") {
+      console.log("hi");
+    }
+
     if (wsType === "leave") {
       if (pc.current) {
         pc.current.close();
@@ -242,6 +246,12 @@ const ShelterMeeting = () => {
       createRtcConnection();
       addLocalStreamToRtcConnection();
     });
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      wsSend("dontdisconnect", "please");
+    }, 10000);
   }, []);
 
   return (
