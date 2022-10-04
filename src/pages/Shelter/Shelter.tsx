@@ -63,6 +63,7 @@ const BlackMask = styled.div`
 `;
 
 const Shelter = () => {
+  useEffect(() => {}, []);
   return (
     <Wrap>
       <BlackMask />

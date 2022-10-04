@@ -624,6 +624,15 @@ const Header = () => {
         >
           24 小時動物醫院
         </NavBar>
+        {profile.isShelter && (
+          <NavBar
+            onClick={() => {
+              navigate("/shelter");
+            }}
+          >
+            民眾視訊申請
+          </NavBar>
+        )}
       </SidebarContainer>
     </>
   );
