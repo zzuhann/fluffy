@@ -341,25 +341,21 @@ const Header = () => {
       name: "配對專區",
       targetLink: "/dating",
       needToLogin: true,
-      needShelter: false,
     },
     {
       name: "寵物日記",
       targetLink: "/petdiary",
       needToLogin: false,
-      needShelter: false,
     },
     {
       name: "寵物文章補給",
       targetLink: "/articles",
       needToLogin: false,
-      needShelter: false,
     },
     {
       name: "24 小時動物醫院",
       targetLink: "/clinic",
       needToLogin: false,
-      needShelter: false,
     },
   ];
 

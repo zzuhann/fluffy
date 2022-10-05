@@ -14,6 +14,7 @@ import {
   DetailPetSingleInfo,
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
+import Topbar from "./Topbar";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -235,46 +236,23 @@ const ProfileSetting = () => {
 
   return (
     <>
-      <SideBarWrapper>
-        <SidebarProfileTab>
-          <UserProfileContainer>
-            <ProfileImg src={profile.img as string} alt="" />
-            <ProfileName>{profile.name}</ProfileName>
-          </UserProfileContainer>
-          <SettingTabContainer>
-            {tabs.map((tab, index) => (
-              <SettingTab
-                key={index}
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  setSelectedTab(target.innerText);
-                  if (index === 1) {
-                    getOwnPetList();
-                  }
-                }}
-                $isActive={selectedTab === tabs[index]}
-              >
-                {tab}
-              </SettingTab>
-            ))}
-          </SettingTabContainer>
-        </SidebarProfileTab>
-      </SideBarWrapper>
+      <Topbar
+        tabs={tabs}
+        setSelectedTab={setSelectedTab}
+        selectedTab={selectedTab}
+      />
+
       <Wrapper>
         <MainInfo>
-          {selectedTab === tabs[0] ? (
-            <>
-              <UserInfos
-                newName={newName}
-                setNewName={setNewName}
-                setImg={setImg}
-                img={img}
-                setIncompleteInfo={setIncompleteInfo}
-                incompleteInfo={incompleteInfo}
-              />
-            </>
-          ) : (
-            ""
+          {selectedTab === tabs[0] && (
+            <UserInfos
+              newName={newName}
+              setNewName={setNewName}
+              setImg={setImg}
+              img={img}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
+            />
           )}
 
           {selectedTab === tabs[1] && addPet ? (
