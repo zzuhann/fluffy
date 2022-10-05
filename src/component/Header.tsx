@@ -23,6 +23,7 @@ import {
   setEmail,
   clearProfileInfo,
   setNotification,
+  setShelter,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./img/defaultprofile.png";
 import catHand from "./img/cat_hand_white.png";
@@ -34,6 +35,8 @@ import {
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 import burgerMenu from "./img/bar.png";
+import { InviteDating } from "../reducers/dating";
+import { setUpcomingDateList } from "../functions/datingReducerFunction";
 
 const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;
@@ -393,11 +396,15 @@ const Header = () => {
         dispatch(checkIfLogged(true));
         getAuthorPetDiary(user.uid);
         getAuthorArticles(user.uid);
+        getUpcomingListData(user.uid);
         const docRef = doc(db, "memberProfiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           dispatch(setName(docSnap.data().name));
           dispatch(setEmail(user.email as string));
+          if (docSnap.data().shelter === "true") {
+            dispatch(setShelter(true));
+          }
           if (docSnap.data().img) {
             dispatch(setImage(docSnap.data().img));
           } else {
@@ -412,6 +419,22 @@ const Header = () => {
       }
     });
   }, []);
+
+  async function getUpcomingListData(uid: string) {
+    let upcomingDate: InviteDating[] = [];
+    const q = query(
+      collection(db, "memberProfiles", uid, "upcomingDates"),
+      orderBy("datingDate")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      upcomingDate.push({
+        ...info.data(),
+        datingDate: info.data().dateAndTime,
+      } as InviteDating);
+    });
+    dispatch(setUpcomingDateList(upcomingDate));
+  }
 
   async function getOwnPetList(id: string) {
     const allOwnPet: OwnPet[] = [];
@@ -512,6 +535,15 @@ const Header = () => {
           >
             24 小時動物醫院
           </NavBar>
+          {profile.isShelter && (
+            <NavBar
+              onClick={() => {
+                navigate("/shelter");
+              }}
+            >
+              所有視訊申請
+            </NavBar>
+          )}
         </NavBarContainer>
         {openPopupBox && (
           <>
@@ -611,6 +643,15 @@ const Header = () => {
         >
           24 小時動物醫院
         </NavBar>
+        {profile.isShelter && (
+          <NavBar
+            onClick={() => {
+              navigate("/shelter");
+            }}
+          >
+            所有視訊申請
+          </NavBar>
+        )}
       </SidebarContainer>
     </>
   );

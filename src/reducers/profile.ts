@@ -1,6 +1,7 @@
 export enum ActionType {
   setProfileLogin = "setProfileLogin",
   setProfileName = "setProfileName",
+  setShelter = "setShelter",
   setProfileEmail = "setProfileEmail",
   setProfilePassword = "setProfilePassword",
   setProfileImage = "setProfileImage",
@@ -18,6 +19,11 @@ export enum ActionType {
 interface setProfileName {
   type: ActionType.setProfileName;
   payload: { name: string };
+}
+
+interface setShelter {
+  type: ActionType.setShelter;
+  payload: { isShelter: boolean };
 }
 
 interface setProfileEmail {
@@ -91,7 +97,8 @@ export type ProfileActions =
   | setOwnPets
   | setOwnPetDiary
   | setOwnArticle
-  | setNotification;
+  | setNotification
+  | setShelter;
 
 export type OwnPet = {
   name: string;
@@ -146,6 +153,7 @@ export type Profile = {
   petDiary: PetDiaryType[];
   ownArticles: OwnArticle[];
   notification: string;
+  isShelter: boolean;
 };
 
 const initialState: Profile = {
@@ -160,6 +168,7 @@ const initialState: Profile = {
   petDiary: [],
   ownArticles: [],
   notification: "",
+  isShelter: false,
 };
 
 const ProfileReducer = (
@@ -219,6 +228,9 @@ const ProfileReducer = (
     }
     case ActionType.setNotification: {
       return { ...state, notification: action.payload.notification };
+    }
+    case ActionType.setShelter: {
+      return { ...state, isShelter: action.payload.isShelter };
     }
     default:
       return state;

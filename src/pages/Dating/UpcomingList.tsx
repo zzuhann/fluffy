@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { db, deleteFirebaseData } from "../../utils/firebase";
@@ -12,6 +12,7 @@ import googlemap from "./img/placeholder.png";
 import tel from "./img/telephone.png";
 import clock from "./img/clock.png";
 import close from "./img/close.png";
+import meetingWay from "./img/chat.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import {
   setConsiderList,
@@ -213,6 +214,15 @@ const DatingDoneBtn = styled(Btn)`
 
 type Props = {
   getUpcomingListData: () => void;
+  setOpenMeeting: Dispatch<SetStateAction<boolean>>;
+  setNowMeetingShelter: Dispatch<
+    SetStateAction<{
+      petId: number;
+      shelterName: string;
+      userName: string;
+      index: number;
+    }>
+  >;
 };
 
 const UpcomingList: React.FC<Props> = (props) => {
@@ -242,6 +252,7 @@ const UpcomingList: React.FC<Props> = (props) => {
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
   const [invalidName, setInvalidName] = useState(false);
+
   if (!dating.upcomingDateList) return null;
   return (
     <>
@@ -295,18 +306,23 @@ const UpcomingList: React.FC<Props> = (props) => {
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
+              <UpcomingInfoImg src={meetingWay} />
+              <UpcomingInfo>約會形式：{date.way}</UpcomingInfo>
+            </UpcomingInfoImgContainer>
+
+            <UpcomingInfoImgContainer>
               <UpcomingInfoImg src={clock} />
               {typeof date.datingDate === "number" ? (
                 <UpcomingInfo>
                   預約時間：
-                  {new Date(date.datingDate * 1000).getFullYear()}/
-                  {new Date(date.datingDate * 1000).getMonth() + 1 < 10
-                    ? `0${new Date(date.datingDate * 1000).getMonth() + 1}`
-                    : new Date(date.datingDate * 1000).getMonth() + 1}
+                  {new Date(date.datingDate).getFullYear()}/
+                  {new Date(date.datingDate).getMonth() + 1 < 10
+                    ? `0${new Date(date.datingDate).getMonth() + 1}`
+                    : new Date(date.datingDate).getMonth() + 1}
                   /
-                  {new Date(date.datingDate * 1000).getDate() < 10
-                    ? `0${new Date(date.datingDate * 1000).getDate()}`
-                    : new Date(date.datingDate * 1000).getDate()}{" "}
+                  {new Date(date.datingDate).getDate() < 10
+                    ? `0${new Date(date.datingDate).getDate()}`
+                    : new Date(date.datingDate).getDate()}{" "}
                   {date.time}
                 </UpcomingInfo>
               ) : (
@@ -314,223 +330,668 @@ const UpcomingList: React.FC<Props> = (props) => {
               )}
             </UpcomingInfoImgContainer>
           </UpcomingInfoContainer>
-          {(date.datingDate as number) * 1000 < Date.parse(`${new Date()}`) ? (
-            <>
+          {date.way === "實體" ? (
+            (date.datingDate as number) < Date.parse(`${new Date()}`) ? (
+              <>
+                <DatingDoneBtn
+                  onClick={() => {
+                    setDatingDone({
+                      id: date.id,
+                      open: !datingDone.open,
+                      index: index,
+                    });
+                    setCheckToAdoptPet(false);
+                    setAdoptAnswer(-1);
+                    setIncompleteInfo(false);
+                  }}
+                >
+                  已完成約會
+                </DatingDoneBtn>
+                {datingDone.id === date.id && datingDone.open ? (
+                  <AskIfAdoptPetBox>
+                    <CloseAdoptBtn
+                      src={close}
+                      onClick={() =>
+                        setDatingDone({ id: 0, open: false, index: -1 })
+                      }
+                    />
+                    <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
+                    <AnswerBtnContainer>
+                      <AnswerBtn
+                        onClick={() => {
+                          setCheckToAdoptPet(true);
+                          setAdoptAnswer(0);
+                        }}
+                        $isActive={adoptAnswer === 0}
+                      >
+                        是
+                      </AnswerBtn>
+                      <AnswerBtn
+                        onClick={async () => {
+                          deleteFirebaseData(
+                            `/memberProfiles/${profile.uid}/upcomingDates`,
+                            "id",
+                            date.id
+                          );
+                          dispatch(setNotification("已完成本次約會並更新清單"));
+                          setTimeout(() => {
+                            dispatch(setNotification(""));
+                            setAdoptAnswer(-1);
+                          }, 3000);
+                          const newUpcomingList = dating.upcomingDateList;
+                          newUpcomingList.splice(datingDone.index, 1);
+                          dispatch(setUpcomingDateList(newUpcomingList));
+                          setAdoptAnswer(1);
+                        }}
+                        $isActive={adoptAnswer === 1}
+                      >
+                        否
+                      </AnswerBtn>
+                    </AnswerBtnContainer>
+                    {checkToAdoptPet ? (
+                      <ConfirmToAdoptPetContainer>
+                        <ConfirmTitle>為他定一個名字和生日年吧！</ConfirmTitle>
+                        <ConfirmInputContainer>
+                          <ConfirmLabel htmlFor="name">名字</ConfirmLabel>
+                          <ConfirmInput
+                            type="text"
+                            id="name"
+                            onChange={(e) => {
+                              setAdoptPetInfo({
+                                ...adoptPetInfo,
+                                name: e.target.value,
+                              });
+                              if (
+                                profile.ownPets.some(
+                                  (pet) => pet.name === e.target.value
+                                )
+                              ) {
+                                setInvalidName(true);
+                              } else {
+                                setInvalidName(false);
+                              }
+                            }}
+                          ></ConfirmInput>
+                        </ConfirmInputContainer>
+                        <ConfirmInputContainer>
+                          <ConfirmLabel htmlFor="year">出生年</ConfirmLabel>
+                          <ConfirmInput
+                            type="number"
+                            id="year"
+                            min="1911"
+                            max={new Date().getFullYear()}
+                            step="1"
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "." ||
+                                e.key === "e" ||
+                                e.key === "+" ||
+                                e.key === "-"
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onChange={(e) => {
+                              setAdoptPetInfo({
+                                ...adoptPetInfo,
+                                birthYear: Number(e.target.value),
+                              });
+                              if (
+                                Number(e.target.value) >
+                                  new Date().getFullYear() ||
+                                Number(e.target.value) < 1911
+                              ) {
+                                setInvalidBirthYear(true);
+                              } else {
+                                setInvalidBirthYear(false);
+                              }
+                            }}
+                          ></ConfirmInput>
+                        </ConfirmInputContainer>
+                        {invalidBirthYear && (
+                          <WarningText>
+                            請輸入1911~{new Date().getFullYear()}的數字
+                          </WarningText>
+                        )}
+                        {incompleteInfo && (
+                          <WarningText>請填寫完整資訊</WarningText>
+                        )}
+                        {invalidName && (
+                          <WarningText>已存在相同名字的寵物</WarningText>
+                        )}
+                        <AnswerBtnContainer>
+                          <CheckAdoptBtn
+                            onClick={async () => {
+                              if (
+                                !adoptPetInfo.name ||
+                                adoptPetInfo.birthYear === 0
+                              ) {
+                                setIncompleteInfo(true);
+                                return;
+                              }
+                              if (invalidBirthYear) {
+                                setIncompleteInfo(false);
+                                return;
+                              }
+                              await addDoc(
+                                collection(
+                                  db,
+                                  `/memberProfiles/${profile.uid}/ownPets`
+                                ),
+                                {
+                                  id: date.id,
+                                  shelterName: date.shelterName,
+                                  kind: date.kind,
+                                  img: date.image,
+                                  sex: date.sex,
+                                  name: adoptPetInfo.name,
+                                  birthYear: adoptPetInfo.birthYear,
+                                }
+                              );
+                              deleteFirebaseData(
+                                `/memberProfiles/${profile.uid}/upcomingDates`,
+                                "id",
+                                date.id
+                              );
+                              const newUpcomingList = dating.upcomingDateList;
+                              newUpcomingList.splice(index, 1);
+                              dispatch(setUpcomingDateList(newUpcomingList));
+                              const newConsiderList =
+                                dating.considerList.filter((pet) => {
+                                  return pet.id !== date.id;
+                                });
+                              dispatch(setConsiderList(newConsiderList));
+                              deleteFirebaseData(
+                                `/memberProfiles/${profile.uid}/considerLists`,
+                                "id",
+                                date.id
+                              );
+                              await addDoc(
+                                collection(
+                                  db,
+                                  `/memberProfiles/${profile.uid}/notConsiderLists`
+                                ),
+                                { id: date.id }
+                              );
+                              dispatch(
+                                setNotification("已將領養寵物新增至會員資料")
+                              );
+                              setTimeout(() => {
+                                dispatch(setNotification(""));
+                                setAdoptAnswer(-1);
+                              }, 3000);
+                            }}
+                          >
+                            確認(日後可修改)
+                          </CheckAdoptBtn>
+                        </AnswerBtnContainer>
+                      </ConfirmToAdoptPetContainer>
+                    ) : (
+                      ""
+                    )}
+                  </AskIfAdoptPetBox>
+                ) : (
+                  ""
+                )}
+              </>
+            ) : (
               <DatingDoneBtn
-                onClick={() => {
+                onClick={async () => {
                   setDatingDone({
+                    ...datingDone,
                     id: date.id,
-                    open: !datingDone.open,
-                    index: index,
                   });
-                  setCheckToAdoptPet(false);
-                  setAdoptAnswer(-1);
-                  setIncompleteInfo(false);
+                  setOpenDeleteBox(true);
                 }}
               >
-                已完成約會
+                取消此次約會
               </DatingDoneBtn>
-              {datingDone.id === date.id && datingDone.open ? (
-                <AskIfAdoptPetBox>
-                  <CloseAdoptBtn
-                    src={close}
-                    onClick={() =>
-                      setDatingDone({ id: 0, open: false, index: -1 })
-                    }
-                  />
-                  <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
-                  <AnswerBtnContainer>
-                    <AnswerBtn
-                      onClick={() => {
-                        setCheckToAdoptPet(true);
-                        setAdoptAnswer(0);
-                      }}
-                      $isActive={adoptAnswer === 0}
-                    >
-                      是
-                    </AnswerBtn>
-                    <AnswerBtn
-                      onClick={async () => {
-                        deleteFirebaseData(
-                          `/memberProfiles/${profile.uid}/upcomingDates`,
-                          "id",
-                          date.id
-                        );
-                        dispatch(setNotification("已完成本次約會並更新清單"));
-                        setTimeout(() => {
-                          dispatch(setNotification(""));
-                          setAdoptAnswer(-1);
-                        }, 3000);
-                        const newUpcomingList = dating.upcomingDateList;
-                        newUpcomingList.splice(datingDone.index, 1);
-                        dispatch(setUpcomingDateList(newUpcomingList));
-                        setAdoptAnswer(1);
-                      }}
-                      $isActive={adoptAnswer === 1}
-                    >
-                      否
-                    </AnswerBtn>
-                  </AnswerBtnContainer>
-                  {checkToAdoptPet ? (
-                    <ConfirmToAdoptPetContainer>
-                      <ConfirmTitle>為他定一個名字和生日年吧！</ConfirmTitle>
-                      <ConfirmInputContainer>
-                        <ConfirmLabel htmlFor="name">名字</ConfirmLabel>
-                        <ConfirmInput
-                          type="text"
-                          id="name"
-                          onChange={(e) => {
-                            setAdoptPetInfo({
-                              ...adoptPetInfo,
-                              name: e.target.value,
-                            });
-                            if (
-                              profile.ownPets.some(
-                                (pet) => pet.name === e.target.value
-                              )
-                            ) {
-                              setInvalidName(true);
-                            } else {
-                              setInvalidName(false);
-                            }
-                          }}
-                        ></ConfirmInput>
-                      </ConfirmInputContainer>
-                      <ConfirmInputContainer>
-                        <ConfirmLabel htmlFor="year">出生年</ConfirmLabel>
-                        <ConfirmInput
-                          type="number"
-                          id="year"
-                          min="1911"
-                          max={new Date().getFullYear()}
-                          step="1"
-                          onKeyDown={(e) => {
-                            if (
-                              e.key === "." ||
-                              e.key === "e" ||
-                              e.key === "+" ||
-                              e.key === "-"
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                          onChange={(e) => {
-                            setAdoptPetInfo({
-                              ...adoptPetInfo,
-                              birthYear: Number(e.target.value),
-                            });
-                            if (
-                              Number(e.target.value) >
-                                new Date().getFullYear() ||
-                              Number(e.target.value) < 1911
-                            ) {
-                              setInvalidBirthYear(true);
-                            } else {
-                              setInvalidBirthYear(false);
-                            }
-                          }}
-                        ></ConfirmInput>
-                      </ConfirmInputContainer>
-                      {invalidBirthYear && (
-                        <WarningText>
-                          請輸入1911~{new Date().getFullYear()}的數字
-                        </WarningText>
-                      )}
-                      {incompleteInfo && (
-                        <WarningText>請填寫完整資訊</WarningText>
-                      )}
-                      {invalidName && (
-                        <WarningText>已存在相同名字的寵物</WarningText>
-                      )}
+            )
+          ) : (
+            ""
+          )}
+
+          {date.way === "視訊" &&
+            ((date.datingDate as number) > Date.parse(`${new Date()}`) ? (
+              <DatingDoneBtn
+                onClick={async () => {
+                  setDatingDone({
+                    ...datingDone,
+                    id: date.id,
+                  });
+                  setOpenDeleteBox(true);
+                }}
+              >
+                取消此次約會
+              </DatingDoneBtn>
+            ) : Date.parse(`${new Date()}`) - (date.datingDate as number) <=
+              7200000 ? (
+              !date.doneWithMeeting ? (
+                <DatingDoneBtn
+                  onClick={() => {
+                    props.setOpenMeeting(true);
+                    props.setNowMeetingShelter({
+                      petId: date.id,
+                      shelterName: date.shelterName,
+                      userName: profile.name,
+                      index: index,
+                    });
+                  }}
+                >
+                  點擊開始視訊
+                </DatingDoneBtn>
+              ) : (
+                <>
+                  <DatingDoneBtn
+                    onClick={() => {
+                      setDatingDone({
+                        id: date.id,
+                        open: !datingDone.open,
+                        index: index,
+                      });
+                      setCheckToAdoptPet(false);
+                      setAdoptAnswer(-1);
+                      setIncompleteInfo(false);
+                    }}
+                  >
+                    已完成約會
+                  </DatingDoneBtn>
+                  {datingDone.id === date.id && datingDone.open ? (
+                    <AskIfAdoptPetBox>
+                      <CloseAdoptBtn
+                        src={close}
+                        onClick={() =>
+                          setDatingDone({ id: 0, open: false, index: -1 })
+                        }
+                      />
+                      <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
                       <AnswerBtnContainer>
-                        <CheckAdoptBtn
+                        <AnswerBtn
+                          onClick={() => {
+                            setCheckToAdoptPet(true);
+                            setAdoptAnswer(0);
+                          }}
+                          $isActive={adoptAnswer === 0}
+                        >
+                          是
+                        </AnswerBtn>
+                        <AnswerBtn
                           onClick={async () => {
-                            if (
-                              !adoptPetInfo.name ||
-                              adoptPetInfo.birthYear === 0
-                            ) {
-                              setIncompleteInfo(true);
-                              return;
-                            }
-                            if (invalidBirthYear) {
-                              setIncompleteInfo(false);
-                              return;
-                            }
-                            await addDoc(
-                              collection(
-                                db,
-                                `/memberProfiles/${profile.uid}/ownPets`
-                              ),
-                              {
-                                id: date.id,
-                                shelterName: date.shelterName,
-                                kind: date.kind,
-                                img: date.image,
-                                sex: date.sex,
-                                name: adoptPetInfo.name,
-                                birthYear: adoptPetInfo.birthYear,
-                              }
-                            );
                             deleteFirebaseData(
                               `/memberProfiles/${profile.uid}/upcomingDates`,
                               "id",
                               date.id
                             );
-                            const newUpcomingList = dating.upcomingDateList;
-                            newUpcomingList.splice(index, 1);
-                            dispatch(setUpcomingDateList(newUpcomingList));
-                            const newConsiderList = dating.considerList.filter(
-                              (pet) => {
-                                return pet.id !== date.id;
-                              }
-                            );
-                            dispatch(setConsiderList(newConsiderList));
-                            deleteFirebaseData(
-                              `/memberProfiles/${profile.uid}/considerLists`,
-                              "id",
-                              date.id
-                            );
-                            await addDoc(
-                              collection(
-                                db,
-                                `/memberProfiles/${profile.uid}/notConsiderLists`
-                              ),
-                              { id: date.id }
-                            );
                             dispatch(
-                              setNotification("已將領養寵物新增至會員資料")
+                              setNotification("已完成本次約會並更新清單")
                             );
                             setTimeout(() => {
                               dispatch(setNotification(""));
                               setAdoptAnswer(-1);
                             }, 3000);
+                            const newUpcomingList = dating.upcomingDateList;
+                            newUpcomingList.splice(datingDone.index, 1);
+                            dispatch(setUpcomingDateList(newUpcomingList));
+                            setAdoptAnswer(1);
                           }}
+                          $isActive={adoptAnswer === 1}
                         >
-                          確認(日後可修改)
-                        </CheckAdoptBtn>
+                          否
+                        </AnswerBtn>
                       </AnswerBtnContainer>
-                    </ConfirmToAdoptPetContainer>
+                      {checkToAdoptPet ? (
+                        <ConfirmToAdoptPetContainer>
+                          <ConfirmTitle>
+                            為他定一個名字和生日年吧！
+                          </ConfirmTitle>
+                          <ConfirmInputContainer>
+                            <ConfirmLabel htmlFor="name">名字</ConfirmLabel>
+                            <ConfirmInput
+                              type="text"
+                              id="name"
+                              onChange={(e) => {
+                                setAdoptPetInfo({
+                                  ...adoptPetInfo,
+                                  name: e.target.value,
+                                });
+                                if (
+                                  profile.ownPets.some(
+                                    (pet) => pet.name === e.target.value
+                                  )
+                                ) {
+                                  setInvalidName(true);
+                                } else {
+                                  setInvalidName(false);
+                                }
+                              }}
+                            ></ConfirmInput>
+                          </ConfirmInputContainer>
+                          <ConfirmInputContainer>
+                            <ConfirmLabel htmlFor="year">出生年</ConfirmLabel>
+                            <ConfirmInput
+                              type="number"
+                              id="year"
+                              min="1911"
+                              max={new Date().getFullYear()}
+                              step="1"
+                              onKeyDown={(e) => {
+                                if (
+                                  e.key === "." ||
+                                  e.key === "e" ||
+                                  e.key === "+" ||
+                                  e.key === "-"
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              onChange={(e) => {
+                                setAdoptPetInfo({
+                                  ...adoptPetInfo,
+                                  birthYear: Number(e.target.value),
+                                });
+                                if (
+                                  Number(e.target.value) >
+                                    new Date().getFullYear() ||
+                                  Number(e.target.value) < 1911
+                                ) {
+                                  setInvalidBirthYear(true);
+                                } else {
+                                  setInvalidBirthYear(false);
+                                }
+                              }}
+                            ></ConfirmInput>
+                          </ConfirmInputContainer>
+                          {invalidBirthYear && (
+                            <WarningText>
+                              請輸入1911~{new Date().getFullYear()}的數字
+                            </WarningText>
+                          )}
+                          {incompleteInfo && (
+                            <WarningText>請填寫完整資訊</WarningText>
+                          )}
+                          {invalidName && (
+                            <WarningText>已存在相同名字的寵物</WarningText>
+                          )}
+                          <AnswerBtnContainer>
+                            <CheckAdoptBtn
+                              onClick={async () => {
+                                if (
+                                  !adoptPetInfo.name ||
+                                  adoptPetInfo.birthYear === 0
+                                ) {
+                                  setIncompleteInfo(true);
+                                  return;
+                                }
+                                if (invalidBirthYear) {
+                                  setIncompleteInfo(false);
+                                  return;
+                                }
+                                await addDoc(
+                                  collection(
+                                    db,
+                                    `/memberProfiles/${profile.uid}/ownPets`
+                                  ),
+                                  {
+                                    id: date.id,
+                                    shelterName: date.shelterName,
+                                    kind: date.kind,
+                                    img: date.image,
+                                    sex: date.sex,
+                                    name: adoptPetInfo.name,
+                                    birthYear: adoptPetInfo.birthYear,
+                                  }
+                                );
+                                deleteFirebaseData(
+                                  `/memberProfiles/${profile.uid}/upcomingDates`,
+                                  "id",
+                                  date.id
+                                );
+                                const newUpcomingList = dating.upcomingDateList;
+                                newUpcomingList.splice(index, 1);
+                                dispatch(setUpcomingDateList(newUpcomingList));
+                                const newConsiderList =
+                                  dating.considerList.filter((pet) => {
+                                    return pet.id !== date.id;
+                                  });
+                                dispatch(setConsiderList(newConsiderList));
+                                deleteFirebaseData(
+                                  `/memberProfiles/${profile.uid}/considerLists`,
+                                  "id",
+                                  date.id
+                                );
+                                await addDoc(
+                                  collection(
+                                    db,
+                                    `/memberProfiles/${profile.uid}/notConsiderLists`
+                                  ),
+                                  { id: date.id }
+                                );
+                                dispatch(
+                                  setNotification("已將領養寵物新增至會員資料")
+                                );
+                                setTimeout(() => {
+                                  dispatch(setNotification(""));
+                                  setAdoptAnswer(-1);
+                                }, 3000);
+                              }}
+                            >
+                              確認(日後可修改)
+                            </CheckAdoptBtn>
+                          </AnswerBtnContainer>
+                        </ConfirmToAdoptPetContainer>
+                      ) : (
+                        ""
+                      )}
+                    </AskIfAdoptPetBox>
                   ) : (
                     ""
                   )}
-                </AskIfAdoptPetBox>
-              ) : (
-                ""
-              )}
-            </>
-          ) : (
-            <DatingDoneBtn
-              onClick={async () => {
-                setDatingDone({
-                  ...datingDone,
-                  id: date.id,
-                });
-                setOpenDeleteBox(true);
-              }}
-            >
-              取消此次約會
-            </DatingDoneBtn>
-          )}
+                </>
+              )
+            ) : (
+              <>
+                <DatingDoneBtn
+                  onClick={() => {
+                    setDatingDone({
+                      id: date.id,
+                      open: !datingDone.open,
+                      index: index,
+                    });
+                    setCheckToAdoptPet(false);
+                    setAdoptAnswer(-1);
+                    setIncompleteInfo(false);
+                  }}
+                >
+                  已完成約會
+                </DatingDoneBtn>
+                {datingDone.id === date.id && datingDone.open ? (
+                  <AskIfAdoptPetBox>
+                    <CloseAdoptBtn
+                      src={close}
+                      onClick={() =>
+                        setDatingDone({ id: 0, open: false, index: -1 })
+                      }
+                    />
+                    <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
+                    <AnswerBtnContainer>
+                      <AnswerBtn
+                        onClick={() => {
+                          setCheckToAdoptPet(true);
+                          setAdoptAnswer(0);
+                        }}
+                        $isActive={adoptAnswer === 0}
+                      >
+                        是
+                      </AnswerBtn>
+                      <AnswerBtn
+                        onClick={async () => {
+                          deleteFirebaseData(
+                            `/memberProfiles/${profile.uid}/upcomingDates`,
+                            "id",
+                            date.id
+                          );
+                          dispatch(setNotification("已完成本次約會並更新清單"));
+                          setTimeout(() => {
+                            dispatch(setNotification(""));
+                            setAdoptAnswer(-1);
+                          }, 3000);
+                          const newUpcomingList = dating.upcomingDateList;
+                          newUpcomingList.splice(datingDone.index, 1);
+                          dispatch(setUpcomingDateList(newUpcomingList));
+                          setAdoptAnswer(1);
+                        }}
+                        $isActive={adoptAnswer === 1}
+                      >
+                        否
+                      </AnswerBtn>
+                    </AnswerBtnContainer>
+                    {checkToAdoptPet ? (
+                      <ConfirmToAdoptPetContainer>
+                        <ConfirmTitle>為他定一個名字和生日年吧！</ConfirmTitle>
+                        <ConfirmInputContainer>
+                          <ConfirmLabel htmlFor="name">名字</ConfirmLabel>
+                          <ConfirmInput
+                            type="text"
+                            id="name"
+                            onChange={(e) => {
+                              setAdoptPetInfo({
+                                ...adoptPetInfo,
+                                name: e.target.value,
+                              });
+                              if (
+                                profile.ownPets.some(
+                                  (pet) => pet.name === e.target.value
+                                )
+                              ) {
+                                setInvalidName(true);
+                              } else {
+                                setInvalidName(false);
+                              }
+                            }}
+                          ></ConfirmInput>
+                        </ConfirmInputContainer>
+                        <ConfirmInputContainer>
+                          <ConfirmLabel htmlFor="year">出生年</ConfirmLabel>
+                          <ConfirmInput
+                            type="number"
+                            id="year"
+                            min="1911"
+                            max={new Date().getFullYear()}
+                            step="1"
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "." ||
+                                e.key === "e" ||
+                                e.key === "+" ||
+                                e.key === "-"
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onChange={(e) => {
+                              setAdoptPetInfo({
+                                ...adoptPetInfo,
+                                birthYear: Number(e.target.value),
+                              });
+                              if (
+                                Number(e.target.value) >
+                                  new Date().getFullYear() ||
+                                Number(e.target.value) < 1911
+                              ) {
+                                setInvalidBirthYear(true);
+                              } else {
+                                setInvalidBirthYear(false);
+                              }
+                            }}
+                          ></ConfirmInput>
+                        </ConfirmInputContainer>
+                        {invalidBirthYear && (
+                          <WarningText>
+                            請輸入1911~{new Date().getFullYear()}的數字
+                          </WarningText>
+                        )}
+                        {incompleteInfo && (
+                          <WarningText>請填寫完整資訊</WarningText>
+                        )}
+                        {invalidName && (
+                          <WarningText>已存在相同名字的寵物</WarningText>
+                        )}
+                        <AnswerBtnContainer>
+                          <CheckAdoptBtn
+                            onClick={async () => {
+                              if (
+                                !adoptPetInfo.name ||
+                                adoptPetInfo.birthYear === 0
+                              ) {
+                                setIncompleteInfo(true);
+                                return;
+                              }
+                              if (invalidBirthYear) {
+                                setIncompleteInfo(false);
+                                return;
+                              }
+                              await addDoc(
+                                collection(
+                                  db,
+                                  `/memberProfiles/${profile.uid}/ownPets`
+                                ),
+                                {
+                                  id: date.id,
+                                  shelterName: date.shelterName,
+                                  kind: date.kind,
+                                  img: date.image,
+                                  sex: date.sex,
+                                  name: adoptPetInfo.name,
+                                  birthYear: adoptPetInfo.birthYear,
+                                }
+                              );
+                              deleteFirebaseData(
+                                `/memberProfiles/${profile.uid}/upcomingDates`,
+                                "id",
+                                date.id
+                              );
+                              const newUpcomingList = dating.upcomingDateList;
+                              newUpcomingList.splice(index, 1);
+                              dispatch(setUpcomingDateList(newUpcomingList));
+                              const newConsiderList =
+                                dating.considerList.filter((pet) => {
+                                  return pet.id !== date.id;
+                                });
+                              dispatch(setConsiderList(newConsiderList));
+                              deleteFirebaseData(
+                                `/memberProfiles/${profile.uid}/considerLists`,
+                                "id",
+                                date.id
+                              );
+                              await addDoc(
+                                collection(
+                                  db,
+                                  `/memberProfiles/${profile.uid}/notConsiderLists`
+                                ),
+                                { id: date.id }
+                              );
+                              dispatch(
+                                setNotification("已將領養寵物新增至會員資料")
+                              );
+                              setTimeout(() => {
+                                dispatch(setNotification(""));
+                                setAdoptAnswer(-1);
+                              }, 3000);
+                            }}
+                          >
+                            確認(日後可修改)
+                          </CheckAdoptBtn>
+                        </AnswerBtnContainer>
+                      </ConfirmToAdoptPetContainer>
+                    ) : (
+                      ""
+                    )}
+                  </AskIfAdoptPetBox>
+                ) : (
+                  ""
+                )}
+              </>
+            ))}
           {openDeleteBox && datingDone.id === date.id && (
             <DeleteCheckBox>
               <DeleteCheckText>確定要取消此次約會嗎？</DeleteCheckText>

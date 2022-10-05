@@ -61,6 +61,8 @@ export type InviteDating = {
   datingDate: Date | number;
   inviter: string;
   time: string;
+  way: string;
+  doneWithMeeting: boolean;
 };
 
 export type Card = {

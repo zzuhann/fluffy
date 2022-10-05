@@ -1,16 +1,25 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { area, shelterInfo } from "./constantInfo";
 import { Dating } from "../../reducers/dating";
 import { db, deleteFirebaseData } from "../../utils/firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { Card, InviteDating } from "../../reducers/dating";
 import {
-  setConsiderList,
-  setUpcomingDateList,
-} from "../../functions/datingReducerFunction";
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { Card, InviteDating } from "../../reducers/dating";
+import { setConsiderList } from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import findplace from "./img/loupe.png";
@@ -92,6 +101,9 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   &:nth-child(2n) {
     margin-right: 0;
   }
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const PetCard = styled.div<{ $Top: number }>`
@@ -158,6 +170,7 @@ const PetInfo = styled.div`
   font-size: 16px;
   margin-left: 5px;
   line-height: 20px;
+  word-break: break-all;
 `;
 
 const PetInfoWarning = styled(PetInfo)`
@@ -192,6 +205,23 @@ const NotCondiserBtn = styled(Btn)`
   right: 10px;
   padding: 5px 5px;
   font-size: 16px;
+`;
+const MeetingBtnContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const MeetingWayBtn = styled(Btn)<{ $isActive: boolean }>`
+  position: relative;
+  flex: 1;
+  margin-right: 20px;
+  padding: 5px 10px;
+  background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
+  color: ${(props) => (props.$isActive ? "#3c3c3c" : "#737373")};
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const InviteDatingBox = styled.div<{ $Top: number }>`
@@ -396,23 +426,88 @@ const ConsiderPetDetail = (props: {
     email: string;
     date: Date | string;
     time: string;
-  }>({ name: "", email: "", date: "", time: "" });
+    dateAndTime: number;
+    way: string;
+  }>({ name: "", email: "", date: "", time: "", dateAndTime: 0, way: "實體" });
   const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
-  const timeSelect = ["14:00", "14:30", "15:00", "15:30"];
+  const [timeSelect, setTimeSelect] = useState([
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+  ]);
   const [timeIndex, setTimeIndex] = useState<number>(-1);
   const [pageHigh, setPageHigh] = useState<number>(0);
   const [repeatInvite, setRepeatInvite] = useState(false);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
+  const [meetingWay, setMeetingWay] = useState("實體");
+  const [shelterDates, setShelterDates] = useState<InviteDating[]>();
+  const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false);
 
   useEffect(() => {
     window.addEventListener("click", togglePageHeight);
     return () => window.removeEventListener("scroll", togglePageHeight);
   }, []);
 
+  useEffect(() => {
+    getShelterUpcomingDates();
+  }, []);
+
+  function isSameDate(year: number, month: number, day: number) {
+    const sameDate: InviteDating[] = [];
+    shelterDates?.forEach((date) => {
+      if (
+        new Date(date.datingDate).getFullYear() === year &&
+        new Date(date.datingDate).getMonth() + 1 === month &&
+        new Date(date.datingDate).getDate() === day
+      ) {
+        sameDate.push(date);
+      }
+    });
+
+    filterDateTime(sameDate);
+    return sameDate;
+  }
+
+  function filterDateTime(thatDayDate: InviteDating[]) {
+    const dateTime: string[] = [];
+    thatDayDate.forEach((date) => {
+      dateTime.push(date.time);
+    });
+
+    if (dateTime.length > 0) {
+      const newTimeSelect = timeSelect.filter((e) =>
+        dateTime.indexOf(e) > -1 ? false : true
+      );
+      setTimeSelect(newTimeSelect);
+      if (dateTime.length === 4) {
+        setNowNoTimeSelect(true);
+      }
+    } else {
+      setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+    }
+  }
+
   function togglePageHeight() {
     let pageHeight = document.documentElement.offsetHeight;
     setPageHigh(pageHeight);
+  }
+
+  async function getShelterUpcomingDates() {
+    let upcomingDate: InviteDating[] = [];
+    const q = query(
+      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+      orderBy("datingDate")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      upcomingDate.push({
+        ...info.data(),
+        datingDate: info.data().dateAndTime,
+      } as InviteDating);
+    });
+    setShelterDates(upcomingDate);
   }
 
   async function updateUpcomingDate(list: Card) {
@@ -433,6 +528,34 @@ const ConsiderPetDetail = (props: {
         datingDate: inviteDatingInfo.date,
         inviter: inviteDatingInfo.name,
         time: inviteDatingInfo.time,
+        way: inviteDatingInfo.way,
+        dateAndTime: inviteDatingInfo.dateAndTime,
+        doneWithMeeting: false,
+      }
+    );
+  }
+
+  async function updateShelterUpcomingDate(list: Card) {
+    await addDoc(
+      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+      {
+        id: list.id,
+        area: list.area,
+        shleterPkid: list.shleterPkid,
+        shelterName: list.shelterName,
+        shelterAddress: list.shelterAddress,
+        shelterTel: list.shelterTel,
+        kind: list.kind,
+        sex: list.sex,
+        color: list.color,
+        sterilization: list.sterilization,
+        image: list.image,
+        datingDate: inviteDatingInfo.date,
+        inviter: inviteDatingInfo.name,
+        time: inviteDatingInfo.time,
+        way: inviteDatingInfo.way,
+        dateAndTime: inviteDatingInfo.dateAndTime,
+        doneWithMeeting: false,
       }
     );
   }
@@ -461,15 +584,6 @@ const ConsiderPetDetail = (props: {
     );
   }
 
-  async function getUpcomingListData() {
-    let upcomingDate: InviteDating[] = [];
-    const q = collection(db, "memberProfiles", profile.uid, "upcomingDates");
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push(info.data() as InviteDating);
-    });
-    dispatch(setUpcomingDateList(upcomingDate));
-  }
   return (
     <>
       <BlackMask
@@ -672,63 +786,129 @@ const ConsiderPetDetail = (props: {
               }
             />
           </InviteInfoContainer>
+          {dating.considerList[props.nowChosenPetIndex].shelterName ===
+            "臺北市動物之家" && (
+            <MeetingBtnContainer>
+              <MeetingWayBtn
+                $isActive={meetingWay === "實體"}
+                onClick={() => {
+                  setMeetingWay("實體");
+                  setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+                  setInviteDatingInfo({ ...inviteDatingInfo, way: "實體" });
+                  setNowNoTimeSelect(false);
+                }}
+              >
+                實體
+              </MeetingWayBtn>
+              <MeetingWayBtn
+                $isActive={meetingWay === "視訊"}
+                onClick={() => {
+                  setMeetingWay("視訊");
+                  setInviteDatingInfo({ ...inviteDatingInfo, way: "視訊" });
+                  if (inviteDatingInfo.date) {
+                    setNowNoTimeSelect(false);
+                    isSameDate(
+                      new Date(inviteDatingInfo.date).getFullYear(),
+                      new Date(inviteDatingInfo.date).getMonth() + 1,
+                      new Date(inviteDatingInfo.date).getDate()
+                    );
+                  }
+                }}
+              >
+                視訊
+              </MeetingWayBtn>
+            </MeetingBtnContainer>
+          )}
+
           <InviteInfoContainer>
             <InviteInfoLabel htmlFor="datingTime">
               申請日期與時間：
             </InviteInfoLabel>
             <ConsiderPetCalendarContainer>
               <Calendar
-                // minDate={new Date()}
-                onClickDay={(value) =>
+                minDate={new Date()}
+                onClickDay={(value) => {
+                  setNowNoTimeSelect(false);
                   setInviteDatingInfo({
                     ...inviteDatingInfo,
                     date: value,
-                  })
-                }
+                  });
+                  if (meetingWay === "視訊") {
+                    isSameDate(
+                      value.getFullYear(),
+                      value.getMonth() + 1,
+                      value.getDate()
+                    );
+                  }
+                }}
               />
             </ConsiderPetCalendarContainer>
-            <TimeBtnContainer>
-              {timeSelect.map((time, index) => (
-                <TimeBtn
-                  $isActive={timeIndex === index}
-                  key={index}
-                  onClick={() => {
-                    setTimeIndex(index);
-                    setInviteDatingInfo({
-                      ...inviteDatingInfo,
-                      time: timeSelect[index],
-                    });
-                  }}
-                >
-                  {time}
-                </TimeBtn>
-              ))}
-            </TimeBtnContainer>
+            {inviteDatingInfo.date && (
+              <TimeBtnContainer>
+                {timeSelect.map((time, index) => (
+                  <TimeBtn
+                    $isActive={timeIndex === index}
+                    key={index}
+                    onClick={() => {
+                      setTimeIndex(index);
+                      setInviteDatingInfo({
+                        ...inviteDatingInfo,
+                        time: timeSelect[index],
+                        dateAndTime: (inviteDatingInfo.date as Date).setHours(
+                          Number(timeSelect[index].split(":")[0]),
+                          0
+                        ),
+                      });
+                    }}
+                  >
+                    {time}
+                  </TimeBtn>
+                ))}
+              </TimeBtnContainer>
+            )}
+
             {incompleteInfo && (
               <PetInfoWarning>請填寫完整資料以利進行約會申請</PetInfoWarning>
             )}
           </InviteInfoContainer>
-          <SendInviteBtn
-            onClick={async () => {
-              if (Object.values(inviteDatingInfo).some((item) => item === "")) {
-                setIncompleteInfo(true);
-                return;
-              }
-              updateUpcomingDate(dating.considerList[props.nowChosenPetIndex]);
-              sendEmailToNotifyUser(
-                dating.considerList[props.nowChosenPetIndex]
-              );
-              getUpcomingListData();
-              props.setDatingQty((prev) => prev + 1);
-              setInviteBoxOpen(false);
-              dispatch(setNotification("申請成功！可至「即將到來的約會」查看"));
-              setTimeout(() => {
-                dispatch(setNotification(""));
-              }, 3000);
-            }}
-          >
-            送出邀請
-          </SendInviteBtn>
+          {nowNoTimeSelect ? (
+            <PetInfoWarning>
+              此日期已無可預約時間，請選擇其他日期
+            </PetInfoWarning>
+          ) : (
+            <SendInviteBtn
+              onClick={async () => {
+                if (
+                  Object.values(inviteDatingInfo).some((item) => item === "")
+                ) {
+                  setIncompleteInfo(true);
+                  return;
+                }
+                updateUpcomingDate(
+                  dating.considerList[props.nowChosenPetIndex]
+                );
+                if (meetingWay === "視訊") {
+                  updateShelterUpcomingDate(
+                    dating.considerList[props.nowChosenPetIndex]
+                  );
+                }
+                sendEmailToNotifyUser(
+                  dating.considerList[props.nowChosenPetIndex]
+                );
+                props.setDatingQty((prev) => prev + 1);
+                setInviteBoxOpen(false);
+                dispatch(
+                  setNotification("申請成功！可至「即將到來的約會」查看")
+                );
+                setTimeout(() => {
+                  dispatch(setNotification(""));
+                }, 3000);
+              }}
+            >
+              送出邀請
+            </SendInviteBtn>
+          )}
+
           <CloseInviteBoxBtn
             onClick={() => {
               setInviteBoxOpen(false);
