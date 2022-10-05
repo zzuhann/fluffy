@@ -22,7 +22,7 @@ import trash from "./img/bin.png";
 import defaultProfile from "./img/defaultprofile.png";
 import upload from "./img/upload.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import { imgType } from "../../utils/type";
+import { imgType } from "../../functions/commonFunctionAndType";
 
 export const Btn = styled.div`
   position: absolute;

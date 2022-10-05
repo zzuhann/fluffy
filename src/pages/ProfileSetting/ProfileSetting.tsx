@@ -15,6 +15,7 @@ import {
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
 import Topbar from "./Topbar";
+import UserPetInfo from "./UserPetInfo";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -254,9 +255,10 @@ const ProfileSetting = () => {
               incompleteInfo={incompleteInfo}
             />
           )}
-
-          {selectedTab === tabs[1] && addPet ? (
-            <AddPet
+          {selectedTab === tabs[1] && (
+            <UserPetInfo
+              addPet={addPet}
+              ownPetDetail={ownPetDetail}
               setAddPet={setAddPet}
               petNewImg={petNewImg}
               petImg={petImg}
@@ -268,47 +270,16 @@ const ProfileSetting = () => {
               setPetNewImg={setPetNewImg}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
-            />
-          ) : selectedTab === tabs[1] && !ownPetDetail ? (
-            <SimpleSinglePetCard
-              setOwnPetDetail={setOwnPetDetail}
               setOwnPetIndex={setOwnPetIndex}
-              petNewImg={petNewImg}
-              setPetNewImg={setPetNewImg}
               setPetNewInfo={setPetNewInfo}
               getOwnPetList={getOwnPetList}
-              setAddPet={setAddPet}
-            />
-          ) : (
-            ""
-          )}
-          {selectedTab === tabs[1] && ownPetDetail && ownPetEdit ? (
-            <EditAddedPetInfo
-              setOwnPetDetail={setOwnPetDetail}
-              petNewImg={petNewImg}
-              setPetNewImg={setPetNewImg}
-              setPetNewInfo={setPetNewInfo}
+              ownPetEdit={ownPetEdit}
               petNewInfo={petNewInfo}
               ownPetIndex={ownPetIndex}
-              getOwnPetList={getOwnPetList}
-              ownPetEdit={ownPetEdit}
               setOwnPetEdit={setOwnPetEdit}
-              setIncompleteInfo={setIncompleteInfo}
-              incompleteInfo={incompleteInfo}
             />
-          ) : selectedTab === tabs[1] && ownPetDetail && !ownPetEdit ? (
-            <DetailPetSingleInfo
-              petNewImg={petNewImg}
-              petNewInfo={petNewInfo}
-              ownPetIndex={ownPetIndex}
-              ownPetEdit={ownPetEdit}
-              setOwnPetEdit={setOwnPetEdit}
-              setOwnPetDetail={setOwnPetDetail}
-              getOwnPetList={getOwnPetList}
-            />
-          ) : (
-            ""
           )}
+
           {selectedTab === tabs[2] ? (
             <PetDiary
               setIncompleteInfo={setIncompleteInfo}
