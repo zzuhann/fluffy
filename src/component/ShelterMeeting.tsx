@@ -1,10 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Btn } from "../pages/ProfileSetting/UserInfos";
+import { InviteDating } from "../reducers/dating";
 import { Profile } from "../reducers/profile";
+import { db } from "../utils/firebase";
 import meetingBanner from "./img/meetingBanner.png";
-import phoneCall from "./img/phone-call.png";
+import close from "./img/close.png";
+
+const CloseBtn = styled.img`
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+`;
 
 const MeetingContainer = styled.div`
   width: 70vw;
@@ -24,12 +49,15 @@ const MeetingContainer = styled.div`
 const MeetingPerson = styled.video`
   height: 75%;
   width: 80%;
-  /* border: solid 1px black; */
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 5px;
+  @media (max-width: 780px) {
+    height: 35vh;
+    width: auto;
+  }
 `;
 
 const MeetingMe = styled.video`
@@ -37,34 +65,27 @@ const MeetingMe = styled.video`
   position: absolute;
   bottom: 70px;
   right: 30px;
-  /* border: solid 1px black; */
   border-radius: 5px;
+  @media (max-width: 780px) {
+    height: 15vh;
+  }
+  @media (max-width: 600px) {
+    height: 10vh;
+    right: 15px;
+    bottom: 100px;
+  }
 `;
 
 const PhoneBtn = styled(Btn)`
   left: 50%;
   bottom: 15px;
   transform: translateX(-50%);
-`;
-
-const ImgBtn = styled.img`
-  width: 15px;
-  height: 15px;
-`;
-
-const TextInfoBtn = styled.div`
-  position: absolute;
-  font-size: 18px;
-  color: #737373;
-  letter-spacing: 1.5px;
-  text-align: center;
-  border: solid 3px #d1cfcf;
-  border-radius: 5px;
-  padding: 10px;
-  transition: 0.3s;
-  left: 50%;
-  bottom: 15px;
-  transform: translateX(-50%);
+  @media (max-width: 700px) {
+    font-size: 16px;
+  }
+  @media (max-width: 600px) {
+    font-size: 14px;
+  }
 `;
 
 const BlackMask = styled.div`
@@ -88,14 +109,32 @@ const NowStatus = styled.div`
   font-size: 18px;
   background-color: #d8b2ad;
   border-radius: 3px;
+  @media (max-width: 600px) {
+    font-size: 16px;
+    padding: 5px 10px;
+    width: 200px;
+  }
 `;
 
-const ShelterMeeting = () => {
+type MeetingType = {
+  nowMeetingShelter: {
+    petId: number;
+    shelterName: string;
+    userName: string;
+    index: number;
+  };
+  setOpenMeeting: Dispatch<SetStateAction<boolean>>;
+  shelterUpcomingList: InviteDating[];
+  setShelterUpcomingList: Dispatch<SetStateAction<InviteDating[] | undefined>>;
+};
+
+const ShelterMeeting: React.FC<MeetingType> = (props) => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const pc = useRef<RTCPeerConnection>();
   const localStreamRef = useRef<MediaStream>();
   const wsRef = useRef(new WebSocket("wss://fluffyserver.herokuapp.com"));
+
   const [status, setStatus] = useState("開始通話");
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -106,34 +145,56 @@ const ShelterMeeting = () => {
     wsRef.current.onmessage = wsOnMessage;
   };
 
-  const wsOnMessage = (e: MessageEvent) => {
+  const wsOnMessage = async (e: MessageEvent) => {
     const wsData = JSON.parse(e.data);
-    console.log("wsData", wsData);
-
     const wsType = wsData["type"];
-    console.log(wsType);
-
-    if (wsType === "dontdisconnect") {
-      console.log("hi");
-    }
 
     if (wsType === "leave") {
       if (pc.current) {
         pc.current.close();
         pc.current = undefined;
         remoteVideoRef.current!.srcObject = null;
+        props.setOpenMeeting(false);
+        const allUpcomingList = [...props.shelterUpcomingList];
+        allUpcomingList[props.nowMeetingShelter.index] = {
+          ...allUpcomingList[props.nowMeetingShelter.index],
+          doneWithMeeting: true,
+        };
+        props.setShelterUpcomingList(allUpcomingList);
+
+        const q = query(
+          collection(
+            db,
+            `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`
+          ),
+          where("id", "==", allUpcomingList[props.nowMeetingShelter.index].id)
+        );
+        const querySnapshot = await getDocs(q);
+        const promises: any[] = [];
+        querySnapshot.forEach(async (d) => {
+          const updatingRef = doc(
+            db,
+            `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`,
+            d.id
+          );
+
+          promises.push(
+            updateDoc(
+              updatingRef,
+              allUpcomingList[props.nowMeetingShelter.index]
+            )
+          );
+        });
+        await Promise.all(promises);
       }
     }
 
     const wsUsername = wsData["username"];
-    console.log("username", profile.uid);
     if (profile.uid === wsUsername) {
-      console.log("跳過處理本條訊息");
       return;
     }
 
     if (wsType === "offer") {
-      console.log("進offer");
       const wsOffer = wsData["data"];
       pc.current?.setRemoteDescription(
         new RTCSessionDescription(JSON.parse(wsOffer))
@@ -150,7 +211,6 @@ const ShelterMeeting = () => {
     if (wsType === "candidate") {
       const wsCandidate = JSON.parse(wsData["data"]);
       pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate));
-      console.log("添加候選成功", wsCandidate);
     }
   };
 
@@ -164,24 +224,20 @@ const ShelterMeeting = () => {
     );
   };
 
-  // 詢問攝影機與音訊權限
   const getMediaDevices = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,
     });
-    console.log("stream", stream);
     localVideoRef.current!.srcObject = stream;
     localStreamRef.current = stream;
   };
 
-  // 交換 sdp
-  // 設置為當前連接的本地描述
   const createOffer = () => {
     pc.current
       ?.createOffer({
         offerToReceiveAudio: true,
-        offerToReceiveVideo: true, // 接收視頻接收音頻
+        offerToReceiveVideo: true,
       })
       .then((sdp) => {
         console.log("offer", JSON.stringify(sdp));
@@ -223,7 +279,6 @@ const ShelterMeeting = () => {
       remoteVideoRef.current!.srcObject = e.streams[0];
     };
     pc.current = _pc;
-    console.log("rtc連接創建成功", _pc);
   };
 
   const addLocalStreamToRtcConnection = () => {
@@ -231,7 +286,6 @@ const ShelterMeeting = () => {
     localStream.getTracks().forEach((track) => {
       pc.current!.addTrack(track, localStream);
     });
-    console.log("將本地視頻流添加到 RTC 連接成功");
   };
 
   const hangup = () => {
@@ -258,6 +312,12 @@ const ShelterMeeting = () => {
     <>
       <BlackMask />
       <MeetingContainer>
+        {props.nowMeetingShelter && (
+          <NowStatus>
+            申請人：{props.nowMeetingShelter.userName} / 寵物編號：
+            {props.nowMeetingShelter.petId}
+          </NowStatus>
+        )}
         <MeetingPerson
           ref={remoteVideoRef}
           autoPlay
@@ -265,18 +325,13 @@ const ShelterMeeting = () => {
         ></MeetingPerson>
         <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
         {status === "開始通話" && (
-          <PhoneBtn onClick={() => createOffer()}>
-            <ImgBtn src={phoneCall} />
-            {"  "}撥打電話給收容所
-          </PhoneBtn>
-        )}
-        {status === "等待對方接聽" && (
-          <TextInfoBtn>等待對方接聽 ...</TextInfoBtn>
+          <PhoneBtn>等待 {props.nowMeetingShelter.userName} 來電</PhoneBtn>
         )}
         {status === "電話響起" && (
-          <PhoneBtn onClick={createAnswer}>接聽電話</PhoneBtn>
+          <PhoneBtn onClick={createAnswer}>點擊接聽電話</PhoneBtn>
         )}
         {status === "通話中" && <PhoneBtn onClick={hangup}>結束視訊</PhoneBtn>}
+        <CloseBtn src={close} onClick={() => props.setOpenMeeting(false)} />
       </MeetingContainer>
     </>
   );

@@ -35,6 +35,8 @@ import {
 } from "../functions/profileReducerFunction";
 import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 import burgerMenu from "./img/bar.png";
+import { InviteDating } from "../reducers/dating";
+import { setUpcomingDateList } from "../functions/datingReducerFunction";
 
 const Wrapper = styled.div<{ $isActive: boolean }>`
   display: flex;
@@ -394,6 +396,7 @@ const Header = () => {
         dispatch(checkIfLogged(true));
         getAuthorPetDiary(user.uid);
         getAuthorArticles(user.uid);
+        getUpcomingListData(user.uid);
         const docRef = doc(db, "memberProfiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -416,6 +419,22 @@ const Header = () => {
       }
     });
   }, []);
+
+  async function getUpcomingListData(uid: string) {
+    let upcomingDate: InviteDating[] = [];
+    const q = query(
+      collection(db, "memberProfiles", uid, "upcomingDates"),
+      orderBy("datingDate")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      upcomingDate.push({
+        ...info.data(),
+        datingDate: info.data().dateAndTime,
+      } as InviteDating);
+    });
+    dispatch(setUpcomingDateList(upcomingDate));
+  }
 
   async function getOwnPetList(id: string) {
     const allOwnPet: OwnPet[] = [];
@@ -461,7 +480,7 @@ const Header = () => {
       });
     }, 1000);
   }
-  console.log(profile);
+
   return (
     <>
       <BlackMask
@@ -522,7 +541,7 @@ const Header = () => {
                 navigate("/shelter");
               }}
             >
-              民眾視訊申請
+              所有視訊申請
             </NavBar>
           )}
         </NavBarContainer>
@@ -630,7 +649,7 @@ const Header = () => {
               navigate("/shelter");
             }}
           >
-            民眾視訊申請
+            所有視訊申請
           </NavBar>
         )}
       </SidebarContainer>

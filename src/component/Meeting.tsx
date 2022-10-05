@@ -51,12 +51,15 @@ const MeetingContainer = styled.div`
 const MeetingPerson = styled.video`
   height: 75%;
   width: 80%;
-  /* border: solid 1px black; */
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 5px;
+  @media (max-width: 780px) {
+    height: 35vh;
+    width: auto;
+  }
 `;
 
 const MeetingMe = styled.video`
@@ -64,14 +67,24 @@ const MeetingMe = styled.video`
   position: absolute;
   bottom: 70px;
   right: 30px;
-  /* border: solid 1px black; */
   border-radius: 5px;
+  @media (max-width: 780px) {
+    height: 15vh;
+  }
+  @media (max-width: 600px) {
+    height: 10vh;
+    right: 15px;
+    bottom: 100px;
+  }
 `;
 
 const PhoneBtn = styled(Btn)`
   left: 50%;
   bottom: 15px;
   transform: translateX(-50%);
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
 `;
 
 const ImgBtn = styled.img`
@@ -92,6 +105,12 @@ const TextInfoBtn = styled.div`
   left: 50%;
   bottom: 15px;
   transform: translateX(-50%);
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
+  @media (max-width: 453px) {
+    font-size: 14px;
+  }
 `;
 
 const BlackMask = styled.div`
@@ -110,11 +129,16 @@ const BlackMask = styled.div`
 const NowStatus = styled.div`
   position: absolute;
   left: -3px;
-  top: 30px;
+  top: 20px;
   padding: 10px 15px;
   font-size: 18px;
   background-color: #d8b2ad;
   border-radius: 3px;
+  @media (max-width: 600px) {
+    font-size: 16px;
+    padding: 5px 10px;
+    width: 200px;
+  }
 `;
 
 type MeetingType = {
@@ -134,6 +158,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
   const pc = useRef<RTCPeerConnection>();
   const localStreamRef = useRef<MediaStream>();
   const wsRef = useRef(new WebSocket("wss://fluffyserver.herokuapp.com"));
+  // const wsRef = useRef(new WebSocket("wss://localhost:3000"));
   const [status, setStatus] = useState("開始通話");
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -147,30 +172,53 @@ const Meeting: React.FC<MeetingType> = (props) => {
     wsRef.current.onmessage = wsOnMessage;
   };
 
-  const wsOnMessage = (e: MessageEvent) => {
+  const wsOnMessage = async (e: MessageEvent) => {
     const wsData = JSON.parse(e.data);
-    // console.log("wsData", wsData);
-
     const wsType = wsData["type"];
-    // console.log(wsType);
 
     if (wsType === "leave") {
       if (pc.current) {
         pc.current.close();
         pc.current = undefined;
         remoteVideoRef.current!.srcObject = null;
+        props.setOpenMeeting(false);
+        const allUpcomingList = [...dating.upcomingDateList];
+        allUpcomingList[props.nowMeetingShelter.index] = {
+          ...allUpcomingList[props.nowMeetingShelter.index],
+          doneWithMeeting: true,
+        };
+        dispatch(setUpcomingDateList(allUpcomingList));
+
+        const q = query(
+          collection(db, `/memberProfiles/${profile.uid}/upcomingDates`),
+          where("id", "==", allUpcomingList[props.nowMeetingShelter.index].id)
+        );
+        const querySnapshot = await getDocs(q);
+        const promises: any[] = [];
+        querySnapshot.forEach(async (d) => {
+          const updatingRef = doc(
+            db,
+            `/memberProfiles/${profile.uid}/upcomingDates`,
+            d.id
+          );
+
+          promises.push(
+            updateDoc(
+              updatingRef,
+              allUpcomingList[props.nowMeetingShelter.index]
+            )
+          );
+        });
+        await Promise.all(promises);
       }
     }
 
     const wsUsername = wsData["username"];
-    console.log("username", profile.uid);
     if (profile.uid === wsUsername) {
-      // console.log("跳過處理本條訊息");
       return;
     }
 
     if (wsType === "offer") {
-      console.log("進offer");
       const wsOffer = wsData["data"];
       pc.current?.setRemoteDescription(
         new RTCSessionDescription(JSON.parse(wsOffer))
@@ -187,7 +235,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
     if (wsType === "candidate") {
       const wsCandidate = JSON.parse(wsData["data"]);
       pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate));
-      // console.log("添加候選成功", wsCandidate);
     }
   };
 
@@ -207,7 +254,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
       video: true,
       audio: false,
     });
-    // console.log("stream", stream);
+    console.log(stream);
     localVideoRef.current!.srcObject = stream;
     localStreamRef.current = stream;
   };
@@ -260,15 +307,15 @@ const Meeting: React.FC<MeetingType> = (props) => {
       remoteVideoRef.current!.srcObject = e.streams[0];
     };
     pc.current = _pc;
-    // console.log("rtc連接創建成功", _pc);
   };
 
   const addLocalStreamToRtcConnection = () => {
+    console.log("addlocal");
     const localStream = localStreamRef.current!;
     localStream.getTracks().forEach((track) => {
       pc.current!.addTrack(track, localStream);
+      console.log(track);
     });
-    // console.log("將本地視頻流添加到 RTC 連接成功");
   };
 
   const hangup = () => {

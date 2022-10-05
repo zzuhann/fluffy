@@ -1,8 +1,13 @@
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Meeting from "../../component/Meeting";
 import ShelterMeeting from "../../component/ShelterMeeting";
-import UpcomingList from "../Dating/UpcomingList";
+import { InviteDating } from "../../reducers/dating";
+import { Profile } from "../../reducers/profile";
+import { db } from "../../utils/firebase";
+import UpcomingList from "./ShelterUpcomingList";
 import {
   NowNoInfoInHere,
   NowNoInfoText,
@@ -63,28 +68,78 @@ const BlackMask = styled.div`
 `;
 
 const Shelter = () => {
-  useEffect(() => {}, []);
+  const profile = useSelector<{ profile: Profile }>(
+    (state) => state.profile
+  ) as Profile;
+  const navigate = useNavigate();
+  const [shelterUpcomingList, setShelterUpcomingList] =
+    useState<InviteDating[]>();
+  const [nowChooseIndex, setNowChooseIndex] = useState(-1);
+  const [openMeeting, setOpenMeeting] = useState(false);
+  const [nowMeetingShelter, setNowMeetingShelter] = useState<{
+    petId: number;
+    shelterName: string;
+    userName: string;
+    index: number;
+  }>({ petId: 0, shelterName: "", userName: "", index: -1 });
+
+  useEffect(() => {
+    if (!profile.isShelter) {
+      navigate("/");
+    }
+    getUpcomingListData();
+  }, []);
+
+  async function getUpcomingListData() {
+    let upcomingDate: InviteDating[] = [];
+    const q = query(
+      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+      orderBy("datingDate")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((info) => {
+      upcomingDate.push({
+        ...info.data(),
+        datingDate: info.data().dateAndTime,
+      } as InviteDating);
+    });
+    setShelterUpcomingList(upcomingDate);
+  }
+
+  if (!shelterUpcomingList) return null;
+
   return (
     <Wrap>
-      <BlackMask />
-      <ShelterMeeting />
-      {/* <UpcomingListContainer>
-              <UpcomingTitle>即將到來的約會</UpcomingTitle>
-              {dating.upcomingDateList.length === 0 ? (
-                <NowNoInfoInHereConsider>
-                  <NowNoInfoImg src={noUpcomingDate} />
-                  <NowNoInfoTextConsider>
-                    目前沒有即將到來的約會，
-                    <br />
-                    到考慮領養清單邀請心儀的寵物來場約會吧！
-                  </NowNoInfoTextConsider>
-                </NowNoInfoInHereConsider>
-              ) : (
-                <>
-                  <UpcomingList getUpcomingListData={getUpcomingListData} />
-                </>
-              )}
-            </UpcomingListContainer> */}
+      {openMeeting && (
+        <ShelterMeeting
+          nowMeetingShelter={nowMeetingShelter}
+          setOpenMeeting={setOpenMeeting}
+          shelterUpcomingList={shelterUpcomingList}
+          setShelterUpcomingList={setShelterUpcomingList}
+        />
+      )}
+      <UpcomingListContainer>
+        <UpcomingTitle>即將到來的約會</UpcomingTitle>
+        {shelterUpcomingList.length === 0 ? (
+          <NowNoInfoInHereConsider>
+            <NowNoInfoImg src={noUpcomingDate} />
+            <NowNoInfoTextConsider>
+              目前沒有即將到來的約會，
+              <br />
+              到考慮領養清單邀請心儀的寵物來場約會吧！
+            </NowNoInfoTextConsider>
+          </NowNoInfoInHereConsider>
+        ) : (
+          <>
+            <UpcomingList
+              shelterUpcomingList={shelterUpcomingList}
+              setOpenMeeting={setOpenMeeting}
+              setNowMeetingShelter={setNowMeetingShelter}
+              setShelterUpcomingList={setShelterUpcomingList}
+            />
+          </>
+        )}
+      </UpcomingListContainer>
     </Wrap>
   );
 };

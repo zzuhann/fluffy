@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { db, deleteFirebaseData } from "../../utils/firebase";
@@ -26,8 +26,6 @@ import {
   WarningDeleteBtn,
 } from "../ProfileSetting/OwnPetInfo";
 import { setNotification } from "../../functions/profileReducerFunction";
-import Meeting from "../../component/Meeting";
-import { BlackMask } from "./Dating";
 
 const UpcomingListCard = styled.div`
   display: flex;
