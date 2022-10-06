@@ -277,9 +277,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setLoginStatus({ email: "", password: "" });
     }
-    setLoading(true);
     signInWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (userCredential) => {
+        setLoading(true);
         setErrorStatus("");
         dispatch(clearProfileInfo());
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
@@ -303,9 +303,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         } else {
           console.log("No such document!");
         }
-      })
-      .then(() => {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
       })
       .catch((error) => {
         switch (error.code) {
