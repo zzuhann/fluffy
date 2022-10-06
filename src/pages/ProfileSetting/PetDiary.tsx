@@ -22,10 +22,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import {
-  setNotification,
-  setOwnPetDiary,
-} from "../../functions/profileReducerFunction";
+import { setOwnPetDiary } from "../../functions/profileReducerFunction";
 import {
   CancelIcon,
   EditModeContainer,
@@ -267,7 +264,6 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
 `;
 const OptionName = styled.li`
   display: flex;
-  /* justify-content: center; */
   padding: 8px 10px;
   transition: 0.2s;
   &:hover {
@@ -595,17 +591,10 @@ export const PetDiary: React.FC<{
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
-  const [openDeleteBox, setOpenDeleteBox] = useState(false);
+  const [openDeleteBox, setOpenDeleteBox] = useState<boolean>(false);
 
   useEffect(() => {
     getAuthorPetDiary(profile.uid);
-    if (profile.ownPets.length > 0) {
-      setUploadDiaryInfo({
-        ...uploadDiaryInfo,
-        petName: profile.ownPets[0].name,
-        birthYear: profile.ownPets[0].birthYear,
-      });
-    }
   }, []);
 
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
@@ -687,9 +676,6 @@ export const PetDiary: React.FC<{
         context: newDiaryContext.context,
         img: newDiaryImg.url,
       };
-      props.setIncompleteInfo(false);
-      notifyDispatcher("已更新寵物日記");
-      setDetailDiaryBoxOpen(true);
       if (newDiaryImg.file) {
         await updateNewPetDiaryDataFirebase(
           newDiaryImg.file.name,
@@ -703,9 +689,6 @@ export const PetDiary: React.FC<{
         takePhotoTime: newDiaryContext.takePhotoTime,
         context: newDiaryContext.context,
       };
-      props.setIncompleteInfo(false);
-      notifyDispatcher("已更新寵物日記");
-      setDetailDiaryBoxOpen(true);
       await updateFirebaseDataMutipleWhere(
         `/petDiaries`,
         "postTime",
@@ -719,6 +702,9 @@ export const PetDiary: React.FC<{
         }
       );
     }
+    notifyDispatcher("已更新寵物日記");
+    props.setIncompleteInfo(false);
+    setDetailDiaryBoxOpen(true);
   }
 
   async function getAuthorPetDiary(authorUid: string) {
@@ -732,6 +718,141 @@ export const PetDiary: React.FC<{
       authorPetDiary.push(info.data() as PetDiaryType);
     });
     dispatch(setOwnPetDiary(authorPetDiary));
+  }
+
+  function renderPetDiaryPreviewImg(
+    imgURL: string,
+    emptyImg: Dispatch<SetStateAction<UploadImgType>>
+  ) {
+    return (
+      <PreviewContainer>
+        <PreviewImg src={imgURL} />
+        <PreviewCancelBtn
+          onClick={() => {
+            emptyImg({ file: null, url: "" });
+          }}
+        >
+          <CancelIcon src={trash} />
+        </PreviewCancelBtn>
+      </PreviewContainer>
+    );
+  }
+
+  function renderPetDiaryUploadImg() {
+    return (
+      <>
+        <PetDetailImg htmlFor="image">
+          <ProfileImg src={defaultProfile} alt="上傳" />
+          <PreviewCancelBtn>
+            <CancelIcon src={upload} />
+          </PreviewCancelBtn>
+        </PetDetailImg>
+        <PetDetailInput
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
+          }}
+        />
+      </>
+    );
+  }
+
+  function renderSelectPetGroup() {
+    return (
+      <SelectGroup>
+        {nowChoosePetName ? (
+          <NowChooseOption
+            onMouseEnter={() => {
+              setOptionBoxOpen(true);
+            }}
+            onClick={() => {
+              optionBoxOpen ? setOptionBoxOpen(false) : setOptionBoxOpen(true);
+            }}
+          >
+            {nowChoosePetName}
+          </NowChooseOption>
+        ) : (
+          <NowChooseOption
+            onMouseEnter={() => {
+              setOptionBoxOpen(true);
+            }}
+            onClick={() => {
+              optionBoxOpen ? setOptionBoxOpen(false) : setOptionBoxOpen(true);
+            }}
+          >
+            選擇寵物
+          </NowChooseOption>
+        )}
+        <OptionGroup
+          $isActive={optionBoxOpen === true}
+          onMouseLeave={() => {
+            setOptionBoxOpen(false);
+          }}
+        >
+          {profile.ownPets.map((pet, index) => (
+            <OptionName
+              key={index}
+              value={pet.name}
+              onClick={(e) => {
+                const index = profile.ownPets.findIndex(
+                  (pet) => pet.name === (e.target as HTMLInputElement).innerText
+                );
+                setUploadDiaryInfo({
+                  ...uploadDiaryInfo,
+                  petName: (e.target as HTMLInputElement).innerText,
+                  birthYear: profile.ownPets[index].birthYear,
+                });
+                setNowChoosePetName((e.target as HTMLInputElement).innerText);
+              }}
+            >
+              {pet.name}
+            </OptionName>
+          ))}
+        </OptionGroup>
+      </SelectGroup>
+    );
+  }
+
+  function addPetDiaryUpdateState() {
+    const addNewPet = profile.petDiary;
+    addNewPet.push({
+      ...uploadDiaryInfo,
+      img: diaryImg.url,
+      postTime: Date.now(),
+      author: { img: profile.img as string, name: profile.name },
+      commentCount: 0,
+      likedBy: [],
+      authorUid: profile.uid,
+      id: "",
+    });
+    dispatch(setOwnPetDiary(addNewPet));
+  }
+
+  function clickToUploadPetDiary() {
+    if (
+      !uploadDiaryInfo.petName ||
+      !uploadDiaryInfo.context ||
+      !uploadDiaryInfo.takePhotoTime ||
+      Object.values(diaryImg).some((info) => !info)
+    ) {
+      props.setIncompleteInfo(true);
+      return;
+    }
+    props.setIncompleteInfo(false);
+    addPetDiaryUpdateState();
+    notifyDispatcher("新增寵物日記成功！");
+    setNowChoosePetName("");
+    setWriteDiaryBoxOpen(false);
+    setDiaryImg({ file: null, url: "" });
+    if (diaryImg.file) {
+      addDataWithUploadImage(
+        `petDiary/${diaryImg.file.name}`,
+        diaryImg.file as File,
+        addPetDiaryDoc
+      );
+    }
   }
 
   function renderaddPetDiary() {
@@ -753,101 +874,13 @@ export const PetDiary: React.FC<{
           >
             取消
           </AddCloseDetailBtn>
-          {diaryImg.url ? (
-            <PreviewContainer>
-              <PreviewImg src={diaryImg.url} />
-              <PreviewCancelBtn
-                onClick={() => {
-                  setDiaryImg({ file: null, url: "" });
-                }}
-              >
-                <CancelIcon src={trash} />
-              </PreviewCancelBtn>
-            </PreviewContainer>
-          ) : (
-            <>
-              <PetDetailImg htmlFor="image">
-                <ProfileImg src={defaultProfile} alt="上傳" />
-                <PreviewCancelBtn>
-                  <CancelIcon src={upload} />
-                </PreviewCancelBtn>
-              </PetDetailImg>
-              <PetDetailInput
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  updateUseStateInputImage(
-                    e.target.files as FileList,
-                    setDiaryImg
-                  );
-                }}
-              />
-            </>
-          )}
+          {diaryImg.url
+            ? renderPetDiaryPreviewImg(diaryImg.url, setDiaryImg)
+            : renderPetDiaryUploadImg()}
           <EditModeDiaryContainer>
             <AddDiaryInputContainer>
               <AddDiaryLabel htmlFor="petName">寵物姓名: </AddDiaryLabel>
-              <SelectGroup>
-                {nowChoosePetName ? (
-                  <NowChooseOption
-                    onMouseEnter={() => {
-                      setOptionBoxOpen(true);
-                    }}
-                    onClick={() => {
-                      optionBoxOpen
-                        ? setOptionBoxOpen(false)
-                        : setOptionBoxOpen(true);
-                    }}
-                  >
-                    {nowChoosePetName}
-                  </NowChooseOption>
-                ) : (
-                  <NowChooseOption
-                    onMouseEnter={() => {
-                      setOptionBoxOpen(true);
-                    }}
-                    onClick={() => {
-                      optionBoxOpen
-                        ? setOptionBoxOpen(false)
-                        : setOptionBoxOpen(true);
-                    }}
-                  >
-                    選擇寵物
-                  </NowChooseOption>
-                )}
-
-                <OptionGroup
-                  $isActive={optionBoxOpen === true}
-                  onMouseLeave={() => {
-                    setOptionBoxOpen(false);
-                  }}
-                >
-                  {profile.ownPets.map((pet, index) => (
-                    <OptionName
-                      key={index}
-                      value={pet.name}
-                      onClick={(e) => {
-                        const index = profile.ownPets.findIndex(
-                          (pet) =>
-                            pet.name ===
-                            (e.target as HTMLInputElement).innerText
-                        );
-                        setUploadDiaryInfo({
-                          ...uploadDiaryInfo,
-                          petName: (e.target as HTMLInputElement).innerText,
-                          birthYear: profile.ownPets[index].birthYear,
-                        });
-                        setNowChoosePetName(
-                          (e.target as HTMLInputElement).innerText
-                        );
-                      }}
-                    >
-                      {pet.name}
-                    </OptionName>
-                  ))}
-                </OptionGroup>
-              </SelectGroup>
+              {renderSelectPetGroup()}
             </AddDiaryInputContainer>
 
             <AddDiaryInputContainer>
@@ -886,39 +919,7 @@ export const PetDiary: React.FC<{
           </EditModeDiaryContainer>
           <UploadAddDiaryBtn
             onClick={() => {
-              if (
-                !uploadDiaryInfo.petName ||
-                !uploadDiaryInfo.context ||
-                !uploadDiaryInfo.takePhotoTime ||
-                Object.values(diaryImg).some((info) => !info)
-              ) {
-                props.setIncompleteInfo(true);
-                return;
-              }
-              props.setIncompleteInfo(false);
-              const addNewPet = profile.petDiary;
-              addNewPet.push({
-                ...uploadDiaryInfo,
-                img: diaryImg.url,
-                postTime: Date.now(),
-                author: { img: profile.img as string, name: profile.name },
-                commentCount: 0,
-                likedBy: [],
-                authorUid: profile.uid,
-                id: "",
-              });
-              dispatch(setOwnPetDiary(addNewPet));
-              notifyDispatcher("新增寵物日記成功！");
-              setNowChoosePetName("");
-              setWriteDiaryBoxOpen(false);
-              setDiaryImg({ file: null, url: "" });
-              if (diaryImg.file) {
-                addDataWithUploadImage(
-                  `petDiary/${diaryImg.file.name}`,
-                  diaryImg.file as File,
-                  addPetDiaryDoc
-                );
-              }
+              clickToUploadPetDiary();
             }}
           >
             上傳日記
@@ -928,7 +929,66 @@ export const PetDiary: React.FC<{
     );
   }
 
+  function deletePetDiaryUpdateState() {
+    const newDiary = profile.petDiary;
+    newDiary.splice(ownPetDiaryIndex, 1);
+    dispatch(setOwnPetDiary(newDiary));
+  }
+
+  async function deletePetDiary() {
+    await deleteFirebaseDataMutipleWhere(
+      `/petDiaries`,
+      "postTime",
+      profile.petDiary[ownPetDiaryIndex].postTime,
+      "authorUid",
+      profile.uid
+    );
+    deletePetDiaryUpdateState();
+    setEditDiaryBoxOpen(false);
+    setDetailDiaryBoxOpen(false);
+    setOpenDeleteBox(false);
+    notifyDispatcher("已刪除寵物日記");
+  }
+
+  function renderWarningDeletePetDiaryBox() {
+    return (
+      <DeleteCheckBox>
+        <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
+        <DeleteCheckBoxBtnContainer>
+          <WarningDeleteBtn
+            onClick={async () => {
+              deletePetDiary();
+            }}
+          >
+            確定
+          </WarningDeleteBtn>
+          <DeleteCheckBoxBtn onClick={() => setOpenDeleteBox(false)}>
+            取消
+          </DeleteCheckBoxBtn>
+        </DeleteCheckBoxBtnContainer>
+      </DeleteCheckBox>
+    );
+  }
+
   function renderDetailPetDiary() {
+    const petAge =
+      new Date().getFullYear() - profile.petDiary[ownPetDiaryIndex].birthYear;
+    const petSex =
+      profile.petDiary[ownPetDiaryIndex].hasOwnProperty("sex") &&
+      profile.ownPets[ownPetDiaryIndex].sex === "F"
+        ? "♀"
+        : "♂";
+    const petDiaryTakePhotoDate = `${new Date(
+      newDiaryContext.takePhotoTime
+    ).getFullYear()}/${
+      new Date(newDiaryContext.takePhotoTime).getMonth() + 1 < 10
+        ? `0${new Date(newDiaryContext.takePhotoTime).getMonth() + 1}`
+        : `${new Date(newDiaryContext.takePhotoTime).getMonth() + 1}`
+    }/${
+      new Date(newDiaryContext.takePhotoTime).getDate() < 10
+        ? `0${new Date(newDiaryContext.takePhotoTime).getDate()}`
+        : `${new Date(newDiaryContext.takePhotoTime).getDate()}`
+    } `;
     return (
       <PetDeatilContainer>
         <Title>日記資訊</Title>
@@ -936,30 +996,13 @@ export const PetDiary: React.FC<{
           <PetSingleImage src={profile.petDiary[ownPetDiaryIndex].img} />
           <PetSingleDetailTextContainer>
             <PetSingleName>
-              {new Date().getFullYear() -
-                profile.petDiary[ownPetDiaryIndex].birthYear}
-              歲時的{profile.petDiary[ownPetDiaryIndex].petName} (
-              {profile.petDiary[ownPetDiaryIndex].hasOwnProperty("sex") &&
-              profile.ownPets[ownPetDiaryIndex].sex === "F"
-                ? "♀"
-                : "♂"}
-              )
+              {petAge}
+              歲時的{profile.petDiary[ownPetDiaryIndex].petName} ({petSex})
             </PetSingleName>
             <PetSingleName>
               內容: {profile.petDiary[ownPetDiaryIndex].context}
             </PetSingleName>
-            <PetSingleName>
-              拍攝日期:{" "}
-              {`${new Date(newDiaryContext.takePhotoTime).getFullYear()}/${
-                new Date(newDiaryContext.takePhotoTime).getMonth() + 1 < 10
-                  ? `0${new Date(newDiaryContext.takePhotoTime).getMonth() + 1}`
-                  : `${new Date(newDiaryContext.takePhotoTime).getMonth() + 1}`
-              }/${
-                new Date(newDiaryContext.takePhotoTime).getDate() < 10
-                  ? `0${new Date(newDiaryContext.takePhotoTime).getDate()}`
-                  : `${new Date(newDiaryContext.takePhotoTime).getDate()}`
-              } `}
-            </PetSingleName>
+            <PetSingleName>拍攝日期: {petDiaryTakePhotoDate}</PetSingleName>
           </PetSingleDetailTextContainer>
         </PetSingleContainer>
 
@@ -980,37 +1023,32 @@ export const PetDiary: React.FC<{
         >
           編輯
         </EditBtn>
-        {openDeleteBox && (
-          <DeleteCheckBox>
-            <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
-            <DeleteCheckBoxBtnContainer>
-              <WarningDeleteBtn
-                onClick={async () => {
-                  await deleteFirebaseDataMutipleWhere(
-                    `/petDiaries`,
-                    "postTime",
-                    profile.petDiary[ownPetDiaryIndex].postTime,
-                    "authorUid",
-                    profile.uid
-                  );
-                  const newDiary = profile.petDiary;
-                  newDiary.splice(ownPetDiaryIndex, 1);
-                  dispatch(setOwnPetDiary(newDiary));
-                  setEditDiaryBoxOpen(false);
-                  setDetailDiaryBoxOpen(false);
-                  setOpenDeleteBox(false);
-                  notifyDispatcher("已刪除寵物日記");
-                }}
-              >
-                確定
-              </WarningDeleteBtn>
-              <DeleteCheckBoxBtn onClick={() => setOpenDeleteBox(false)}>
-                取消
-              </DeleteCheckBoxBtn>
-            </DeleteCheckBoxBtnContainer>
-          </DeleteCheckBox>
-        )}
+        {openDeleteBox && renderWarningDeletePetDiaryBox()}
       </PetDeatilContainer>
+    );
+  }
+
+  function renderEditPetDiaryImageUpload() {
+    return (
+      <>
+        <ImageUploadLabel htmlFor="image">
+          <ProfileImg src={defaultProfile} alt="上傳" />
+          <PreviewCancelBtn>
+            <CancelIcon src={upload} />
+          </PreviewCancelBtn>
+        </ImageUploadLabel>
+        <ImageUploadInput
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            updateUseStateInputImage(
+              e.target.files as FileList,
+              setNewDiaryImg
+            );
+          }}
+        />
+      </>
     );
   }
 
@@ -1019,38 +1057,9 @@ export const PetDiary: React.FC<{
       <PetDetailCard>
         <Title>編輯寵物日記</Title>
         <EditPetDiaryModeContainer>
-          {newDiaryImg.url ? (
-            <PreviewContainer>
-              <PreviewImg src={newDiaryImg.url} />
-              <PreviewCancelBtn
-                onClick={() => {
-                  setNewDiaryImg({ file: null, url: "" });
-                }}
-              >
-                <CancelIcon src={trash} />
-              </PreviewCancelBtn>
-            </PreviewContainer>
-          ) : (
-            <>
-              <ImageUploadLabel htmlFor="image">
-                <ProfileImg src={defaultProfile} alt="上傳" />
-                <PreviewCancelBtn>
-                  <CancelIcon src={upload} />
-                </PreviewCancelBtn>
-              </ImageUploadLabel>
-              <ImageUploadInput
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  updateUseStateInputImage(
-                    e.target.files as FileList,
-                    setNewDiaryImg
-                  );
-                }}
-              />
-            </>
-          )}
+          {newDiaryImg.url
+            ? renderPetDiaryPreviewImg(newDiaryImg.url, setNewDiaryImg)
+            : renderEditPetDiaryImageUpload()}
           <EditModePetDiaryContainer>
             <EditContainer>
               <EditPetDiaryLabel htmlFor="petName">
@@ -1115,50 +1124,56 @@ export const PetDiary: React.FC<{
     );
   }
 
+  function setDisplayClickPetDiaryInfo(index: number, time: number) {
+    setDetailDiaryBoxOpen(true);
+    setEditDiaryBoxOpen(true);
+    setInitialDiaryTimeStamp(time);
+    setOwnPetDiaryIndex(index);
+    setNewDiaryImg({
+      ...newDiaryImg,
+      url: profile.petDiary[index].img,
+    });
+    setNewDiaryContext({
+      ...newDiaryContext,
+      petName: profile.petDiary[index].petName,
+      context: profile.petDiary[index].context,
+      takePhotoTime: profile.petDiary[index].takePhotoTime,
+    });
+  }
+
+  function renderNoPetDiaryNow() {
+    return (
+      <NowNoInfoInHere>
+        <NowNoInfoImg src={noPetDiary} />
+        {profile.ownPets.length === 0 ? (
+          <NowNoInfoText>\ 新增日記前須先新增寵物資料 /</NowNoInfoText>
+        ) : (
+          <NowNoInfoText>\ 目前沒有日記 點擊右上角可以新增 /</NowNoInfoText>
+        )}
+      </NowNoInfoInHere>
+    );
+  }
+
   function renderDisplayPetDiaries() {
     return (
       <InfoContainer>
         <PetTitle>寵物日記</PetTitle>
         <PetInfo>
-          {profile.petDiary.length !== 0 ? (
-            profile.petDiary.map((diary, index) => (
-              <PetSimpleCard
-                key={index}
-                onClick={() => {
-                  setDetailDiaryBoxOpen(true);
-                  setEditDiaryBoxOpen(true);
-                  setInitialDiaryTimeStamp(diary.postTime);
-                  setOwnPetDiaryIndex(index);
-                  setNewDiaryImg({
-                    ...newDiaryImg,
-                    url: profile.petDiary[index].img,
-                  });
-                  setNewDiaryContext({
-                    ...newDiaryContext,
-                    petName: profile.petDiary[index].petName,
-                    context: profile.petDiary[index].context,
-                    takePhotoTime: profile.petDiary[index].takePhotoTime,
-                  });
-                }}
-              >
-                <PetSimpleImage src={diary.img} alt="" />
-                <PetSimpleInfos>
-                  <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
-                </PetSimpleInfos>
-              </PetSimpleCard>
-            ))
-          ) : (
-            <NowNoInfoInHere>
-              <NowNoInfoImg src={noPetDiary} />
-              {profile.ownPets.length === 0 ? (
-                <NowNoInfoText>\ 新增日記前須先新增寵物資料 /</NowNoInfoText>
-              ) : (
-                <NowNoInfoText>
-                  \ 目前沒有日記 點擊右上角可以新增 /
-                </NowNoInfoText>
-              )}
-            </NowNoInfoInHere>
-          )}
+          {profile.petDiary.length !== 0
+            ? profile.petDiary.map((diary, index) => (
+                <PetSimpleCard
+                  key={index}
+                  onClick={() => {
+                    setDisplayClickPetDiaryInfo(index, diary.postTime);
+                  }}
+                >
+                  <PetSimpleImage src={diary.img} alt="" />
+                  <PetSimpleInfos>
+                    <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
+                  </PetSimpleInfos>
+                </PetSimpleCard>
+              ))
+            : renderNoPetDiaryNow()}
         </PetInfo>
 
         {profile.ownPets.length !== 0 && (
