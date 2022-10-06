@@ -93,6 +93,7 @@ const TimeBtnContainer = styled.div`
 const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   flex: 1;
+  flex-basis: 45%;
   padding: 5px;
   margin-right: 15px;
   margin-top: 5px;
@@ -347,6 +348,7 @@ type ConsiderSingleCard = {
   considerDetail: Boolean;
   nowChosenPetIndex: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
+  getUpcomingListData: () => void;
 };
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
@@ -366,6 +368,10 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
       return () => window.removeEventListener("scroll", handleScroll);
     }
   }, [props.considerDetail]);
+
+  useEffect(() => {
+    props.getUpcomingListData();
+  }, []);
 
   function handleScroll() {
     let scrollTop = document.documentElement.scrollTop;
@@ -583,6 +589,7 @@ const ConsiderPetDetail = (props: {
       }
     );
   }
+  console.log(dating.upcomingDateList);
 
   return (
     <>

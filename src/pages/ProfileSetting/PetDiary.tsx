@@ -870,6 +870,7 @@ export const PetDiary: React.FC<{
                 <CalendarContainer>
                   <Calendar
                     defaultValue={new Date()}
+                    maxDate={new Date()}
                     onClickDay={(value) => {
                       setUploadDiaryInfo({
                         ...uploadDiaryInfo,

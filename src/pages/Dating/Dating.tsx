@@ -30,6 +30,7 @@ import {
 import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 import Meeting from "../../component/Meeting";
+import { useNavigate } from "react-router-dom";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -426,6 +427,13 @@ const Pairing: React.FC = () => {
     userName: string;
     index: number;
   }>({ petId: 0, shelterName: "", userName: "", index: -1 });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!profile.isLogged) {
+      navigate("/");
+    }
+  });
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
@@ -787,6 +795,7 @@ const Pairing: React.FC = () => {
                   considerDetail={considerDetail}
                   nowChosenPetIndex={nowChosenPetIndex}
                   setDatingQty={setDatingQty}
+                  getUpcomingListData={getUpcomingListData}
                 />
               )}
             </ConsiderList>
