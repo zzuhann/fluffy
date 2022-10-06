@@ -14,6 +14,11 @@ import {
   DetailPetSingleInfo,
 } from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
+import {
+  imgInitialState,
+  imgType,
+} from "../../functions/commonFunctionAndType";
+import Topbar from "./TopBar";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -33,123 +38,11 @@ const Wrapper = styled.div`
   }
 `;
 
-const SideBarWrapper = styled.div`
-  width: 100%;
-  background-color: #f8f6f6;
-  height: 80px;
-  position: fixed;
-  top: 72px;
-  z-index: 100;
-  @media (max-width: 1120px) {
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-  @media (max-width: 1025px) {
-    top: 72px;
-  }
-  @media (max-width: 953px) {
-    display: flex;
-    justify-content: space-between;
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-`;
-
-const SidebarProfileTab = styled.div`
-  display: flex;
-  justify-content: space-between;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding-top: 10px;
-  @media (max-width: 953px) {
-    margin: 0;
-    padding-top: 0;
-  }
-`;
-
-const UserProfileContainer = styled.div`
-  display: flex;
-  align-items: center;
-  @media (max-width: 953px) {
-    display: none;
-  }
-`;
-
 export const ProfileImg = styled.img`
   width: 60px;
   height: 60px;
   border-radius: 30px;
   object-fit: cover;
-`;
-
-const ProfileName = styled.div`
-  font-size: 22px;
-  letter-spacing: 1.5px;
-  margin-left: 15px;
-  margin-right: 15px;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 32px;
-`;
-
-const SettingTabContainer = styled.div`
-  display: flex;
-  @media (max-width: 953px) {
-    flex: 1;
-    width: 100vw;
-    flex-shrink: 0;
-    justify-content: space-between;
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-  @media (max-width: 540px) {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-`;
-
-const SettingTab = styled.div<{ $isActive: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 22px;
-  letter-spacing: 1.5px;
-  margin-right: 30px;
-  cursor: pointer;
-  position: relative;
-  &:after {
-    content: "";
-    /* width: 0%; */
-    width: ${(props) => (props.$isActive ? "100%" : "0%")};
-    height: 3px;
-    background-color: #b7b0a8;
-    position: absolute;
-    top: 43px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    transition: 0.3s;
-    @media (max-width: 953px) {
-      top: 52px;
-    }
-  }
-  &:hover:after {
-    width: 100%;
-  }
-  &:last-child {
-    margin-right: 0;
-  }
-  @media (max-width: 540px) {
-    font-size: 18px;
-    letter-spacing: 1px;
-    margin-right: 15px;
-  }
-  @media (max-width: 380px) {
-    font-size: 16px;
-  }
 `;
 
 export const EditContainer = styled.div`
@@ -168,30 +61,24 @@ const MainInfo = styled.div`
   margin: 0 auto;
 `;
 
-type UploadImgType = { file: File | string; url: string };
-const uploadImgInitialState: UploadImgType = {
-  file: "",
-  url: "",
-};
-
 type AddArticleInfo = {
   title: string;
   context: string;
 };
 
 const ProfileSetting = () => {
+  const dispatch = useDispatch();
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const dispatch = useDispatch();
-  const [img, setImg] = useState<UploadImgType>(uploadImgInitialState);
-  const [newName, setNewName] = useState<string>("");
+  const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
   const [selectedTab, setSelectedTab] = useState<string>("個人資訊");
+  const [newName, setNewName] = useState<string>("");
   const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
   const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false);
   const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
   const [addPet, setAddPet] = useState<boolean>(false);
-  const [petImg, setPetImg] = useState<UploadImgType>(uploadImgInitialState);
+  const [petImg, setPetImg] = useState<imgType>(imgInitialState);
   const [addPetInfo, setAddPetInfo] = useState<{
     name: string;
     sex: string;
@@ -199,21 +86,16 @@ const ProfileSetting = () => {
     kind: string;
     birthYear: number;
   }>({ name: "", sex: "", shelterName: "false", kind: "", birthYear: 0 });
-  const [petNewImg, setPetNewImg] = useState<UploadImgType>(
-    uploadImgInitialState
-  );
+  const [petNewImg, setPetNewImg] = useState<imgType>(imgInitialState);
   const [petNewInfo, setPetNewInfo] = useState<{
     name: string;
     birthYear: number;
   }>({ name: "", birthYear: 0 });
-  const [articleCover, setArticleCover] = useState<UploadImgType>(
-    uploadImgInitialState
-  );
+  const [articleCover, setArticleCover] = useState<imgType>(imgInitialState);
   const [addArticleInfo, setAddArticleInfo] = useState<AddArticleInfo>({
     title: "",
     context: "",
   });
-  const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
   const [incompleteInfo, setIncompleteInfo] = useState(false);
 
   async function getOwnPetList() {
@@ -235,46 +117,22 @@ const ProfileSetting = () => {
 
   return (
     <>
-      <SideBarWrapper>
-        <SidebarProfileTab>
-          <UserProfileContainer>
-            <ProfileImg src={profile.img as string} alt="" />
-            <ProfileName>{profile.name}</ProfileName>
-          </UserProfileContainer>
-          <SettingTabContainer>
-            {tabs.map((tab, index) => (
-              <SettingTab
-                key={index}
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  setSelectedTab(target.innerText);
-                  if (index === 1) {
-                    getOwnPetList();
-                  }
-                }}
-                $isActive={selectedTab === tabs[index]}
-              >
-                {tab}
-              </SettingTab>
-            ))}
-          </SettingTabContainer>
-        </SidebarProfileTab>
-      </SideBarWrapper>
+      <Topbar
+        tabs={tabs}
+        setSelectedTab={setSelectedTab}
+        selectedTab={selectedTab}
+      />
       <Wrapper>
         <MainInfo>
-          {selectedTab === tabs[0] ? (
+          {selectedTab === tabs[0] && (
             <>
               <UserInfos
                 newName={newName}
                 setNewName={setNewName}
-                setImg={setImg}
-                img={img}
                 setIncompleteInfo={setIncompleteInfo}
                 incompleteInfo={incompleteInfo}
               />
             </>
-          ) : (
-            ""
           )}
 
           {selectedTab === tabs[1] && addPet ? (

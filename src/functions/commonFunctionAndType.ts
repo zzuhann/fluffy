@@ -2,6 +2,11 @@ import React from "react";
 
 export type imgType = { file: File | string; url: string };
 
+export const imgInitialState: imgType = {
+  file: "",
+  url: "",
+};
+
 export function numberInputPreventSymbol(
   e: React.KeyboardEvent<HTMLInputElement>
 ) {

@@ -256,8 +256,6 @@ export const CancelUpdateBtn = styled(Btn)`
 type userInfoType = {
   newName: string;
   setNewName: Dispatch<SetStateAction<string>>;
-  setImg: Dispatch<SetStateAction<imgType>>;
-  img: imgType;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
   incompleteInfo: boolean;
 };
@@ -405,7 +403,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       <EditUserInfoContainer>
         <Title>編輯個人資訊</Title>
         <EditModeContainer>
-          {defaultUrl !== defaultProfile && (newImg.url || props.img.url)
+          {defaultUrl !== defaultProfile && newImg.url
             ? renderUserPreviewImg()
             : renderTellUserUploadImg()}
           <UserContainer>
