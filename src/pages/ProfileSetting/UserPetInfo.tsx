@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useRef,
+  useState,
+  useMemo,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -461,34 +467,14 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const editNameInputRef = useRef<HTMLInputElement>(null);
+  const editBirthYearInputRef = useRef<HTMLInputElement>(null);
+  const addNameInputRef = useRef<HTMLInputElement>(null);
+  const addKindInputRef = useRef<HTMLInputElement>(null);
+  const addBirthYearInputRef = useRef<HTMLInputElement>(null);
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
   const [invalidAddName, setInvalidAddName] = useState(false);
   const [invalidEditName, setInvalidEditName] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
-
-  const clickAddPetInfo = () => {
-    if (
-      Object.values(props.addPetInfo).some((info) => !info) ||
-      Object.values(props.petImg).some((info) => !info)
-    ) {
-      props.setIncompleteInfo(true);
-      return;
-    }
-    if (invalidBirthYear || invalidAddName) {
-      props.setIncompleteInfo(false);
-      return;
-    }
-    props.setIncompleteInfo(false);
-    props.setAddPet(false);
-    addDataWithUploadImage(
-      `pets/${profile.uid}-${props.addPetInfo.name}`,
-      props.petImg.file as File,
-      props.addDocOwnPets
-    );
-    addPetState();
-    notifyDispatcher("新增寵物成功！");
-    props.setPetImg({ file: "", url: "" });
-  };
 
   const addPetState = () => {
     const addNewPet = profile.ownPets;
@@ -541,130 +527,227 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
     );
   }
 
-  function AddPet() {
-    return (
-      <PetDetailCard>
-        <Title>新增寵物</Title>
-        <EditModeContainer>
-          {props.petImg.url ? (
-            <PetPreviewImg
-              previewImgURL={props.petImg.url}
-              emptyImg={props.setPetImg}
-            />
-          ) : (
-            <PetUploadImg uploadImg={props.setPetImg} />
-          )}
+  const AddPet = useMemo(() => {
+    const clickAddPetInfo = () => {
+      if (
+        Object.values(props.addPetInfo).some((info) => !info) ||
+        Object.values(props.petImg).some((info) => !info)
+      ) {
+        props.setIncompleteInfo(true);
+        return;
+      }
+      if (invalidBirthYear || invalidAddName) {
+        props.setIncompleteInfo(false);
+        return;
+      }
+      if (
+        profile.ownPets.some(
+          (pet) =>
+            pet.name === (addNameInputRef.current as HTMLInputElement).value
+        )
+      ) {
+        setInvalidAddName(true);
+      } else {
+        setInvalidAddName(false);
+      }
+      if (
+        Number((addBirthYearInputRef.current as HTMLInputElement).value) >
+          new Date().getFullYear() ||
+        Number((addBirthYearInputRef.current as HTMLInputElement).value) < 1911
+      ) {
+        setInvalidBirthYear(true);
+      } else {
+        setInvalidBirthYear(false);
+      }
+      if (
+        Number((addBirthYearInputRef.current as HTMLInputElement).value) >
+          new Date().getFullYear() ||
+        Number((addBirthYearInputRef.current as HTMLInputElement).value) <
+          1911 ||
+        profile.ownPets.some(
+          (pet) =>
+            pet.name === (addNameInputRef.current as HTMLInputElement).value
+        )
+      ) {
+        return;
+      }
+      props.setIncompleteInfo(false);
+      props.setAddPet(false);
+      addDataWithUploadImage(
+        `pets/${profile.uid}-${props.addPetInfo.name}`,
+        props.petImg.file as File,
+        props.addDocOwnPets
+      );
+      addPetState();
+      notifyDispatcher("新增寵物成功！");
+      props.setPetImg({ file: "", url: "" });
+    };
 
-          <EditModeUserInfoContainer>
-            <EditContainer>
-              <EditInfoLabel htmlFor="name">名字: </EditInfoLabel>
-              <EditInfoInput
-                id="name"
-                type="text"
-                onChange={(e) => {
-                  props.setAddPetInfo({
-                    ...props.addPetInfo,
-                    name: e.target.value,
-                  });
-                  if (
-                    profile.ownPets.some((pet) => pet.name === e.target.value)
-                  ) {
-                    setInvalidAddName(true);
-                  } else {
-                    setInvalidAddName(false);
-                  }
-                }}
+    function PetUploadImg({ uploadImg }: PetUploadImgType) {
+      return (
+        <>
+          <ImageUploadLabel htmlFor="image">
+            <ProfileImg src={defaultProfile} alt="上傳" />
+            <PreviewCancelBtn>
+              <CancelIcon src={upload} />
+            </PreviewCancelBtn>
+          </ImageUploadLabel>
+          <ImageUploadInput
+            id="image"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              updateUseStateInputImage(e.target.files as FileList, uploadImg);
+            }}
+          />
+        </>
+      );
+    }
+
+    function PetPreviewImg({ previewImgURL, emptyImg }: PetPreviewImgType) {
+      return (
+        <PreviewContainer>
+          <PreviewImg src={previewImgURL} />
+          <PreviewCancelBtn
+            onClick={() => {
+              emptyImg({ file: "", url: "" });
+            }}
+          >
+            <CancelIcon src={trash} />
+          </PreviewCancelBtn>
+        </PreviewContainer>
+      );
+    }
+
+    function AddPet() {
+      console.log("add");
+      return (
+        <PetDetailCard>
+          <Title>新增寵物</Title>
+          <EditModeContainer>
+            {props.petImg.url ? (
+              <PetPreviewImg
+                previewImgURL={props.petImg.url}
+                emptyImg={props.setPetImg}
               />
-              {invalidAddName && (
-                <WarningText>已存在相同名字的寵物</WarningText>
-              )}
-            </EditContainer>
-            <EditContainer>
-              <EditInfoLabel htmlFor="kind">種類: </EditInfoLabel>
-              <EditInfoInput
-                id="kind"
-                type="text"
-                onChange={(e) => {
-                  props.setAddPetInfo({
-                    ...props.addPetInfo,
-                    kind: e.target.value,
-                  });
-                }}
-              />
-            </EditContainer>
-            <EditContainer>
-              <EditInfoLabel htmlFor="birthYear">出生年: </EditInfoLabel>
-              <EditInfoInput
-                id="birthYear"
-                type="number"
-                min="1911"
-                max={new Date().getFullYear()}
-                onKeyDown={(e) => {
-                  numberInputPreventSymbol(e);
-                }}
-                onChange={(e) => {
-                  props.setAddPetInfo({
-                    ...props.addPetInfo,
-                    birthYear: Number(e.target.value),
-                  });
-                  if (
-                    Number(e.target.value) > new Date().getFullYear() ||
-                    Number(e.target.value) < 1911
-                  ) {
-                    setInvalidBirthYear(true);
-                  } else {
-                    setInvalidBirthYear(false);
-                  }
-                }}
-              />
-              {invalidBirthYear && (
-                <WarningText>
-                  請輸入1911~{new Date().getFullYear()}的數字
-                </WarningText>
-              )}
-            </EditContainer>
-            <EditContainer>
-              <EditInfoLabel htmlFor="sex">性別: </EditInfoLabel>
-              <PetDetailSexBtn
-                onClick={() => {
-                  props.setAddPetInfo({ ...props.addPetInfo, sex: "F" });
-                }}
-                $isActive={props.addPetInfo.sex === "F"}
-              >
-                女
-              </PetDetailSexBtn>
-              <PetDetailSexBtn
-                onClick={() => {
-                  props.setAddPetInfo({ ...props.addPetInfo, sex: "M" });
-                }}
-                $isActive={props.addPetInfo.sex === "M"}
-              >
-                男
-              </PetDetailSexBtn>
-            </EditContainer>
-            {props.incompleteInfo && (
-              <WarningText>請填寫完整寵物資料</WarningText>
+            ) : (
+              <PetUploadImg uploadImg={props.setPetImg} />
             )}
-          </EditModeUserInfoContainer>
-          <AddPetBtn
-            onClick={() => {
-              clickAddPetInfo();
-            }}
-          >
-            上傳寵物資料
-          </AddPetBtn>
-          <AddPetCancelBtn
-            onClick={() => {
-              props.setIncompleteInfo(false);
-              props.setAddPet(false);
-            }}
-          >
-            取消
-          </AddPetCancelBtn>
-        </EditModeContainer>
-      </PetDetailCard>
-    );
-  }
+
+            <EditModeUserInfoContainer>
+              <EditContainer>
+                <EditInfoLabel htmlFor="name">名字: </EditInfoLabel>
+                <EditInfoInput
+                  id="name"
+                  type="text"
+                  ref={addNameInputRef}
+                  defaultValue={props.addPetInfo.name}
+                  onBlur={() => {
+                    props.setAddPetInfo({
+                      ...props.addPetInfo,
+                      name: (addNameInputRef.current as HTMLInputElement).value,
+                    });
+                  }}
+                />
+                {invalidAddName && (
+                  <WarningText>已存在相同名字的寵物</WarningText>
+                )}
+              </EditContainer>
+              <EditContainer>
+                <EditInfoLabel htmlFor="kind">種類: </EditInfoLabel>
+                <EditInfoInput
+                  id="kind"
+                  type="text"
+                  ref={addKindInputRef}
+                  defaultValue={props.addPetInfo.kind}
+                  onBlur={() => {
+                    props.setAddPetInfo({
+                      ...props.addPetInfo,
+                      kind: (addKindInputRef.current as HTMLInputElement).value,
+                    });
+                  }}
+                />
+              </EditContainer>
+              <EditContainer>
+                <EditInfoLabel htmlFor="birthYear">出生年: </EditInfoLabel>
+                <EditInfoInput
+                  id="birthYear"
+                  type="number"
+                  ref={addBirthYearInputRef}
+                  defaultValue={props.addPetInfo.birthYear}
+                  min="1911"
+                  max={new Date().getFullYear()}
+                  onKeyDown={(e) => {
+                    numberInputPreventSymbol(e);
+                  }}
+                  onBlur={() => {
+                    props.setAddPetInfo({
+                      ...props.addPetInfo,
+                      birthYear: Number(
+                        (addBirthYearInputRef.current as HTMLInputElement).value
+                      ),
+                    });
+                  }}
+                />
+                {invalidBirthYear && (
+                  <WarningText>
+                    請輸入1911~{new Date().getFullYear()}的數字
+                  </WarningText>
+                )}
+              </EditContainer>
+              <EditContainer>
+                <EditInfoLabel htmlFor="sex">性別: </EditInfoLabel>
+                <PetDetailSexBtn
+                  onClick={() => {
+                    props.setAddPetInfo({ ...props.addPetInfo, sex: "F" });
+                  }}
+                  $isActive={props.addPetInfo.sex === "F"}
+                >
+                  女
+                </PetDetailSexBtn>
+                <PetDetailSexBtn
+                  onClick={() => {
+                    props.setAddPetInfo({ ...props.addPetInfo, sex: "M" });
+                  }}
+                  $isActive={props.addPetInfo.sex === "M"}
+                >
+                  男
+                </PetDetailSexBtn>
+              </EditContainer>
+              {props.incompleteInfo && (
+                <WarningText>請填寫完整寵物資料</WarningText>
+              )}
+            </EditModeUserInfoContainer>
+            <AddPetBtn
+              onClick={() => {
+                clickAddPetInfo();
+              }}
+            >
+              上傳寵物資料
+            </AddPetBtn>
+            <AddPetCancelBtn
+              onClick={() => {
+                props.setIncompleteInfo(false);
+                props.setAddPet(false);
+              }}
+            >
+              取消
+            </AddPetCancelBtn>
+          </EditModeContainer>
+        </PetDetailCard>
+      );
+    }
+
+    return AddPet();
+  }, [
+    invalidAddName,
+    invalidBirthYear,
+    props,
+    addPetState,
+    notifyDispatcher,
+    profile.ownPets,
+    profile.uid,
+  ]);
 
   function SimpleSinglePetCard() {
     return (
@@ -801,14 +884,16 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
     ) {
       return;
     }
+    const exceptForNowPet = profile.ownPets.filter(
+      (pet) => pet.name !== profile.ownPets[props.ownPetIndex].name
+    );
     if (
-      profile.ownPets.some(
+      exceptForNowPet.some(
         (pet) =>
           pet.name === (editNameInputRef.current as HTMLInputElement).value
       )
     ) {
       setInvalidEditName(true);
-      return;
     } else {
       setInvalidEditName(false);
     }
@@ -825,6 +910,9 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
     props.setPetNewInfo({
       ...props.petNewInfo,
       name: (editNameInputRef.current as HTMLInputElement).value,
+      birthYear: Number(
+        (editBirthYearInputRef.current as HTMLInputElement).value
+      ),
     });
     if (props.petNewImg.url !== profile.ownPets[props.ownPetIndex].img) {
       await updateOwnPetInfo();
@@ -864,22 +952,23 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
             <EditContainer>
               <EditInfoLabel htmlFor="birthYear">出生年: </EditInfoLabel>
               <EditInfoInput
+                ref={editBirthYearInputRef}
                 id="birthYear"
                 type="number"
                 min="1911"
                 max={new Date().getFullYear()}
-                value={props.petNewInfo.birthYear}
+                defaultValue={props.petNewInfo.birthYear}
                 onKeyDown={(e) => {
                   numberInputPreventSymbol(e);
                 }}
-                onChange={(e) => {
-                  props.setPetNewInfo({
-                    ...props.petNewInfo,
-                    birthYear: Number(e.target.value),
-                  });
+                onBlur={() => {
                   if (
-                    Number(e.target.value) > new Date().getFullYear() ||
-                    Number(e.target.value) < 1911
+                    Number(
+                      (editBirthYearInputRef.current as HTMLInputElement).value
+                    ) > new Date().getFullYear() ||
+                    Number(
+                      (editBirthYearInputRef.current as HTMLInputElement).value
+                    ) < 1911
                   ) {
                     setInvalidBirthYear(true);
                   } else {
@@ -1038,7 +1127,7 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
   return (
     <>
       {props.addPet ? (
-        <AddPet />
+        AddPet
       ) : !props.ownPetDetail && !props.addPet ? (
         <SimpleSinglePetCard />
       ) : props.ownPetDetail && props.ownPetEdit ? (
