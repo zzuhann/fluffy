@@ -201,29 +201,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                 點擊開始視訊
               </DatingDoneBtn>
             ) : (
-              <DatingDoneBtn
-                onClick={() => {
-                  setDatingDone({
-                    id: date.id,
-                    open: !datingDone.open,
-                    index: index,
-                  });
-                  deleteFirebaseData(
-                    `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`,
-                    "id",
-                    date.id
-                  );
-                  const newUpcomingList = props.shelterUpcomingList;
-                  newUpcomingList.splice(index, 1);
-                  dispatch(setUpcomingDateList(newUpcomingList));
-                  dispatch(setNotification("已更新視訊申請清單"));
-                  setTimeout(() => {
-                    dispatch(setNotification(""));
-                  }, 3000);
-                }}
-              >
-                已完成約會
-              </DatingDoneBtn>
+              ""
             )
           ) : (
             <DatingDoneBtn

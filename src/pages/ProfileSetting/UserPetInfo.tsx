@@ -801,6 +801,17 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
     ) {
       return;
     }
+    if (
+      profile.ownPets.some(
+        (pet) =>
+          pet.name === (editNameInputRef.current as HTMLInputElement).value
+      )
+    ) {
+      setInvalidEditName(true);
+      return;
+    } else {
+      setInvalidEditName(false);
+    }
     await updateFirebaseDataMutipleWhere(
       `/petDiaries`,
       "authorUid",
@@ -845,19 +856,6 @@ const UserPetInfo: React.FC<UserPetInfoType> = (props) => {
               <EditInfoInput
                 ref={editNameInputRef}
                 defaultValue={props.petNewInfo.name}
-                // onChange={(e) => {
-                //   props.setPetNewInfo({
-                //     ...props.petNewInfo,
-                //     name: e.target.value,
-                //   });
-                //   if (
-                //     profile.ownPets.some((pet) => pet.name === e.target.value)
-                //   ) {
-                //     setInvalidEditName(true);
-                //   } else {
-                //     setInvalidEditName(false);
-                //   }
-                // }}
               />
               {invalidEditName && (
                 <WarningText>已存在相同名字的寵物</WarningText>

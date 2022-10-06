@@ -524,8 +524,9 @@ const Header = () => {
           <LogoImg src={logo} alt="" />
         </Logo>
         <NavBarContainer>
-          {navbars.map((navbar) => (
+          {navbars.map((navbar, index) => (
             <NavBar
+              key={index}
               onClick={() => {
                 if (navbar.needToLogin && !profile.isLogged) {
                   getProfilePage();
@@ -539,6 +540,7 @@ const Header = () => {
           ))}
           {profile.isShelter && (
             <NavBar
+              key={5}
               onClick={() => {
                 navigate("/shelter");
               }}
@@ -609,8 +611,9 @@ const Header = () => {
         )}
       </Wrapper>
       <SidebarContainer $isActive={clickBurgerMenu === true}>
-        {navbars.map((navbar) => (
+        {navbars.map((navbar, index) => (
           <NavBar
+            key={index}
             onClick={() => {
               setClickBurgerMenu(false);
               if (navbar.needToLogin && !profile.isLogged) {
@@ -625,6 +628,7 @@ const Header = () => {
         ))}
         {profile.isShelter && (
           <NavBar
+            key={5}
             onClick={() => {
               setClickBurgerMenu(false);
               navigate("/shelter");
