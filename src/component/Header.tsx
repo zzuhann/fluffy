@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -130,7 +130,6 @@ const NavBar = styled.li`
   font-size: 18px;
   cursor: pointer;
   position: relative;
-
   &:after {
     transition: 0.3s;
     content: "";
@@ -166,7 +165,6 @@ const ProfileNavBar = styled.li`
   text-overflow: ellipsis;
   white-space: pre;
   line-height: 24px;
-
   &:after {
     transition: 0.3s;
     content: "";
@@ -200,7 +198,6 @@ const LoginRegisterBtn = styled.div`
   font-size: 18px;
   cursor: pointer;
   position: relative;
-
   &:after {
     transition: 0.3s;
     content: "";
@@ -336,6 +333,28 @@ const Header = () => {
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
   const [openPopupBox, setOpenPopupBox] = useState(false);
   const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
+  const navbars = [
+    {
+      name: "配對專區",
+      targetLink: "/dating",
+      needToLogin: true,
+    },
+    {
+      name: "寵物日記",
+      targetLink: "/petdiary",
+      needToLogin: false,
+    },
+    {
+      name: "寵物文章補給",
+      targetLink: "/articles",
+      needToLogin: false,
+    },
+    {
+      name: "24 小時動物醫院",
+      targetLink: "/clinic",
+      needToLogin: false,
+    },
+  ];
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -344,7 +363,7 @@ const Header = () => {
 
   useEffect(() => {
     window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("scroll", togglePageHeight);
+    return () => window.removeEventListener("click", togglePageHeight);
   }, []);
 
   function togglePageHeight() {
@@ -376,7 +395,6 @@ const Header = () => {
     const q = query(
       collection(db, "petArticles"),
       where("authorUid", "==", authorUid)
-      // orderBy("postTime")
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
@@ -503,38 +521,19 @@ const Header = () => {
           <LogoImg src={logo} alt="" />
         </Logo>
         <NavBarContainer>
-          <NavBar
-            onClick={() => {
-              if (!profile.isLogged) {
-                gotoProfilePage();
-              } else {
-                navigate("/dating");
-              }
-            }}
-          >
-            配對專區
-          </NavBar>
-          <NavBar
-            onClick={() => {
-              navigate("/petdiary");
-            }}
-          >
-            寵物日記
-          </NavBar>
-          <NavBar
-            onClick={() => {
-              navigate("/articles");
-            }}
-          >
-            寵物文章補給
-          </NavBar>
-          <NavBar
-            onClick={() => {
-              navigate("/clinic");
-            }}
-          >
-            24 小時動物醫院
-          </NavBar>
+          {navbars.map((navbar) => (
+            <NavBar
+              onClick={() => {
+                if (navbar.needToLogin && !profile.isLogged) {
+                  gotoProfilePage();
+                } else {
+                  navigate(navbar.targetLink);
+                }
+              }}
+            >
+              {navbar.name}
+            </NavBar>
+          ))}
           {profile.isShelter && (
             <NavBar
               onClick={() => {
@@ -607,45 +606,24 @@ const Header = () => {
         )}
       </Wrapper>
       <SidebarContainer $isActive={clickBurgerMenu === true}>
-        <NavBar
-          onClick={() => {
-            setClickBurgerMenu(false);
-            if (!profile.isLogged) {
-              gotoProfilePage();
-            } else {
-              navigate("/dating");
-            }
-          }}
-        >
-          配對專區
-        </NavBar>
-        <NavBar
-          onClick={() => {
-            setClickBurgerMenu(false);
-            navigate("/petdiary");
-          }}
-        >
-          寵物日記
-        </NavBar>
-        <NavBar
-          onClick={() => {
-            setClickBurgerMenu(false);
-            navigate("/articles");
-          }}
-        >
-          寵物文章補給
-        </NavBar>
-        <NavBar
-          onClick={() => {
-            setClickBurgerMenu(false);
-            navigate("/clinic");
-          }}
-        >
-          24 小時動物醫院
-        </NavBar>
+        {navbars.map((navbar) => (
+          <NavBar
+            onClick={() => {
+              setClickBurgerMenu(false);
+              if (navbar.needToLogin && !profile.isLogged) {
+                gotoProfilePage();
+              } else {
+                navigate(navbar.targetLink);
+              }
+            }}
+          >
+            {navbar.name}
+          </NavBar>
+        ))}
         {profile.isShelter && (
           <NavBar
             onClick={() => {
+              setClickBurgerMenu(false);
               navigate("/shelter");
             }}
           >
