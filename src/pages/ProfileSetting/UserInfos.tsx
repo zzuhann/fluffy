@@ -403,7 +403,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     );
   }
 
-  function EditUserInfo() {
+  function renderEditUserInfo() {
     return (
       <EditUserInfoContainer>
         <Title>編輯個人資訊</Title>
@@ -449,7 +449,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     );
   }
 
-  function DetailUserInfo() {
+  function renderDetailInfo() {
     return (
       <UserInfo>
         <Title>個人資訊</Title>
@@ -462,7 +462,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     );
   }
 
-  return <>{editProfileMode ? <EditUserInfo /> : <DetailUserInfo />}</>;
+  return <>{editProfileMode ? renderEditUserInfo() : renderDetailInfo()}</>;
 };
 
 export default UserInfos;
