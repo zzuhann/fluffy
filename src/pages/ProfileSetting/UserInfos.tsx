@@ -16,15 +16,13 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import {
-  setImage,
-  setName,
-  setNotification,
-} from "../../functions/profileReducerFunction";
+import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
 import trash from "./img/bin.png";
 import defaultProfile from "./img/defaultprofile.png";
 import upload from "./img/upload.png";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { imgType } from "../../functions/commonFunctionAndType";
 
 export const Btn = styled.div`
   position: absolute;
@@ -258,145 +256,92 @@ export const CancelUpdateBtn = styled(Btn)`
 type userInfoType = {
   newName: string;
   setNewName: Dispatch<SetStateAction<string>>;
-  setImg: Dispatch<SetStateAction<{ file: File | string; url: string }>>;
-  img: { file: File | string; url: string };
+  setImg: Dispatch<SetStateAction<imgType>>;
+  img: imgType;
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
   incompleteInfo: boolean;
 };
 
 const UserInfos: React.FC<userInfoType> = (props) => {
+  const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const dispatch = useDispatch();
   const [editProfileMode, setEditProfileMode] = useState<boolean>(false);
-  const [newImg, setNewImg] = useState<{ file: File | string; url: string }>({
+  const [defaultUrl, setDefaultUrl] = useState<string>("");
+  const [newImg, setNewImg] = useState<imgType>({
     file: "",
     url: "",
   });
-  const [defaultUrl, setDefaultUrl] = useState<string>("");
-  useEffect(() => {
-    setDefaultUrl(profile.img as string);
-  }, []);
 
   useEffect(() => {
     props.setNewName(profile.name);
+    setDefaultUrl(profile.img as string);
     setNewImg({ ...newImg, url: profile.img as string });
   }, []);
+
+  async function updateAllInfoAboutUser(imgURL: string) {
+    const userProfileRef = doc(db, "memberProfiles", profile.uid);
+    await updateDoc(userProfileRef, {
+      name: props.newName,
+      img: imgURL,
+    });
+    await updateFirebaseDataWhere(`/petDiaries`, "authorUid", profile.uid, "", {
+      author: {
+        name: props.newName,
+        img: imgURL,
+      },
+    });
+    await updateFirebaseDataWhere(
+      `/petArticles`,
+      "authorUid",
+      profile.uid,
+      "",
+      {
+        author: {
+          name: props.newName,
+          img: imgURL,
+        },
+      }
+    );
+    await updateFirebaseDataWhere(`/petDiaries`, "authorUid", profile.uid, "", {
+      author: {
+        name: props.newName,
+        img: imgURL,
+      },
+    });
+    updateAllCommentsUserData(imgURL);
+  }
+
+  function updateUserProfile() {
+    if (newImg.url === profile.img && props.newName === profile.name) {
+      return;
+    }
+    if (props.newName === "" || newImg.url === "") {
+      props.setIncompleteInfo(true);
+      return;
+    }
+    props.setIncompleteInfo(false);
+    uploadProfileData();
+  }
 
   async function uploadProfileData() {
     if (newImg.file) {
       const storageRef = ref(storage, `images/${profile.uid}`);
       const uploadTask = uploadBytesResumable(storageRef, newImg.file as File);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          console.log("upload");
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            dispatch(setName(props.newName));
-            dispatch(setImage(downloadURL));
-            dispatch(setNotification("已更新個人資訊"));
-            setTimeout(() => {
-              dispatch(setNotification(""));
-            }, 3000);
-            const userProfileRef = doc(db, "memberProfiles", profile.uid);
-            await updateDoc(userProfileRef, {
-              name: props.newName,
-              img: downloadURL,
-            });
-            await updateFirebaseDataWhere(
-              `/petDiaries`,
-              "authorUid",
-              profile.uid,
-              "",
-              {
-                author: {
-                  name: props.newName,
-                  img: profile.img,
-                },
-              }
-            );
-            await updateFirebaseDataWhere(
-              `/petArticles`,
-              "authorUid",
-              profile.uid,
-              "",
-              {
-                author: {
-                  name: props.newName,
-                  img: profile.img,
-                },
-              }
-            );
-            await updateFirebaseDataWhere(
-              `/petDiaries`,
-              "authorUid",
-              profile.uid,
-              "",
-              {
-                author: {
-                  name: props.newName,
-                  img: profile.img,
-                },
-              }
-            );
-            updateAllCommentsUserData(downloadURL);
-          });
-        }
-      );
+      uploadTask.on("state_changed", () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          dispatch(setName(props.newName));
+          dispatch(setImage(downloadURL));
+          notifyDispatcher("已更新個人資訊");
+          updateAllInfoAboutUser(downloadURL);
+        });
+      });
     } else {
       dispatch(setName(props.newName));
-      dispatch(setNotification("已更新個人資訊"));
-      setTimeout(() => {
-        dispatch(setNotification(""));
-      }, 3000);
-      const userProfileRef = doc(db, "memberProfiles", profile.uid);
-      await updateDoc(userProfileRef, {
-        name: props.newName,
-        img: profile.img,
-      });
-      await updateFirebaseDataWhere(
-        `/petDiaries`,
-        "authorUid",
-        profile.uid,
-        "",
-        {
-          author: {
-            name: props.newName,
-            img: profile.img,
-          },
-        }
-      );
-      await updateFirebaseDataWhere(
-        `/petArticles`,
-        "authorUid",
-        profile.uid,
-        "",
-        {
-          author: {
-            name: props.newName,
-            img: profile.img,
-          },
-        }
-      );
-      await updateFirebaseDataWhere(
-        `/petDiaries`,
-        "authorUid",
-        profile.uid,
-        "",
-        {
-          author: {
-            name: props.newName,
-            img: profile.img,
-          },
-        }
-      );
-      updateAllCommentsUserData(profile.img as string);
+      notifyDispatcher("已更新個人資訊");
+      updateAllInfoAboutUser(profile.img as string);
     }
   }
 
@@ -418,101 +363,101 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     await Promise.all(promises);
   }
 
-  return (
-    <>
-      {editProfileMode ? (
-        <EditUserInfoContainer>
-          <Title>編輯個人資訊</Title>
-          <EditModeContainer>
-            {defaultUrl !== defaultProfile && (newImg.url || props.img.url) ? (
-              <PreviewContainer>
-                <PreviewImg src={newImg.url} />
-                <PreviewCancelBtn
-                  onClick={() => {
-                    setNewImg({ file: "", url: "" });
-                  }}
-                >
-                  <CancelIcon src={trash} />
-                </PreviewCancelBtn>
-              </PreviewContainer>
-            ) : (
-              <>
-                <ImageUploadLabel htmlFor="image">
-                  <ProfileImg src={defaultProfile} alt="上傳" />
-                  <PreviewCancelBtn>
-                    <CancelIcon src={upload} />
-                  </PreviewCancelBtn>
-                </ImageUploadLabel>
-                <ImageUploadInput
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    updateUseStateInputImage(
-                      e.target.files as FileList,
-                      setNewImg
-                    );
-                    setDefaultUrl("");
-                  }}
-                />
-              </>
-            )}
-            <EditModeUserInfoContainer>
-              <EditContainer>
-                <EditInfoLabel>姓名: </EditInfoLabel>
-                <EditInfoInput
-                  defaultValue={props.newName}
-                  onChange={(e) => {
-                    props.setNewName(e.target.value);
-                  }}
-                />
-              </EditContainer>
-              {props.incompleteInfo && (
-                <WarningText>更新資料不可為空值</WarningText>
-              )}
-            </EditModeUserInfoContainer>
-            <CancelUpdateBtn
-              onClick={() => {
-                setEditProfileMode(false);
-                props.setNewName(profile.name);
-                setNewImg({ ...newImg, url: profile.img as string });
-                props.setIncompleteInfo(false);
-              }}
-            >
-              取消
-            </CancelUpdateBtn>
-            <UpdateBtn
-              onClick={async () => {
-                if (
-                  newImg.url === profile.img &&
-                  props.newName === profile.name
-                ) {
-                  return;
-                }
-                if (props.newName === "" || newImg.url === "") {
-                  props.setIncompleteInfo(true);
-                  return;
-                }
-                props.setIncompleteInfo(false);
-                uploadProfileData();
-              }}
-            >
-              更新個人資料
-            </UpdateBtn>
-          </EditModeContainer>
-        </EditUserInfoContainer>
-      ) : (
-        <UserInfo>
-          <Title>個人資訊</Title>
+  function renderUserPreviewImg() {
+    return (
+      <PreviewContainer>
+        <PreviewImg src={newImg.url} />
+        <PreviewCancelBtn
+          onClick={() => {
+            setNewImg({ file: "", url: "" });
+          }}
+        >
+          <CancelIcon src={trash} />
+        </PreviewCancelBtn>
+      </PreviewContainer>
+    );
+  }
+
+  function renderTellUserUploadImg() {
+    return (
+      <>
+        <ImageUploadLabel htmlFor="image">
+          <ProfileImg src={defaultProfile} alt="上傳" />
+          <PreviewCancelBtn>
+            <CancelIcon src={upload} />
+          </PreviewCancelBtn>
+        </ImageUploadLabel>
+        <ImageUploadInput
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            updateUseStateInputImage(e.target.files as FileList, setNewImg);
+            setDefaultUrl("");
+          }}
+        />
+      </>
+    );
+  }
+
+  function renderEditUserInfo() {
+    return (
+      <EditUserInfoContainer>
+        <Title>編輯個人資訊</Title>
+        <EditModeContainer>
+          {defaultUrl !== defaultProfile && (newImg.url || props.img.url)
+            ? renderUserPreviewImg()
+            : renderTellUserUploadImg()}
           <UserContainer>
-            <UserImage src={profile.img as string} />
-            <UserName>姓名: {profile.name}</UserName>
+            <EditContainer>
+              <EditInfoLabel>姓名: </EditInfoLabel>
+              <EditInfoInput
+                defaultValue={props.newName}
+                onChange={(e) => {
+                  props.setNewName(e.target.value);
+                }}
+              />
+            </EditContainer>
+            {props.incompleteInfo && (
+              <WarningText>更新資料不可為空值</WarningText>
+            )}
           </UserContainer>
-          <EditBtn onClick={() => setEditProfileMode(true)}>編輯</EditBtn>
-        </UserInfo>
-      )}
-    </>
-  );
+          <CancelUpdateBtn
+            onClick={() => {
+              setEditProfileMode(false);
+              props.setNewName(profile.name);
+              setNewImg({ ...newImg, url: profile.img as string });
+              props.setIncompleteInfo(false);
+            }}
+          >
+            取消
+          </CancelUpdateBtn>
+          <UpdateBtn
+            onClick={() => {
+              updateUserProfile();
+            }}
+          >
+            更新個人資料
+          </UpdateBtn>
+        </EditModeContainer>
+      </EditUserInfoContainer>
+    );
+  }
+
+  function renderDetailInfo() {
+    return (
+      <UserInfo>
+        <Title>個人資訊</Title>
+        <UserContainer>
+          <UserImage src={profile.img as string} />
+          <UserName>姓名: {profile.name}</UserName>
+        </UserContainer>
+        <EditBtn onClick={() => setEditProfileMode(true)}>編輯</EditBtn>
+      </UserInfo>
+    );
+  }
+
+  return <>{editProfileMode ? renderEditUserInfo() : renderDetailInfo()}</>;
 };
 
 export default UserInfos;
