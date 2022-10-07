@@ -5,20 +5,15 @@ import { Profile, OwnPet } from "../../reducers/profile";
 import UserInfos from "./UserInfos";
 import { PetDiary } from "./PetDiary";
 import { db } from "../../utils/firebase";
-import { getDocs, collection, addDoc } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { setOwnPets } from "../../functions/profileReducerFunction";
-import {
-  SimpleSinglePetCard,
-  EditAddedPetInfo,
-  AddPet,
-  DetailPetSingleInfo,
-} from "./OwnPetInfo";
 import { WritePetArticle } from "./WritePetArticle";
 import {
   imgInitialState,
   imgType,
 } from "../../functions/commonFunctionAndType";
 import Topbar from "./TopBar";
+import UserOwnPetInfos from "./UserOwnPetInfos";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -74,23 +69,6 @@ const ProfileSetting = () => {
   const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
   const [selectedTab, setSelectedTab] = useState<string>("個人資訊");
   const [newName, setNewName] = useState<string>("");
-  const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
-  const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false);
-  const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
-  const [addPet, setAddPet] = useState<boolean>(false);
-  const [petImg, setPetImg] = useState<imgType>(imgInitialState);
-  const [addPetInfo, setAddPetInfo] = useState<{
-    name: string;
-    sex: string;
-    shelterName: string;
-    kind: string;
-    birthYear: number;
-  }>({ name: "", sex: "", shelterName: "false", kind: "", birthYear: 0 });
-  const [petNewImg, setPetNewImg] = useState<imgType>(imgInitialState);
-  const [petNewInfo, setPetNewInfo] = useState<{
-    name: string;
-    birthYear: number;
-  }>({ name: "", birthYear: 0 });
   const [articleCover, setArticleCover] = useState<imgType>(imgInitialState);
   const [addArticleInfo, setAddArticleInfo] = useState<AddArticleInfo>({
     title: "",
@@ -106,13 +84,6 @@ const ProfileSetting = () => {
       allOwnPet.push(info.data() as OwnPet);
     });
     dispatch(setOwnPets(allOwnPet));
-  }
-
-  async function addDocOwnPets(downloadURL: string) {
-    await addDoc(collection(db, `/memberProfiles/${profile.uid}/ownPets`), {
-      ...addPetInfo,
-      img: downloadURL,
-    });
   }
 
   return (
@@ -134,60 +105,12 @@ const ProfileSetting = () => {
               />
             </>
           )}
-
-          {selectedTab === tabs[1] && addPet ? (
-            <AddPet
-              setAddPet={setAddPet}
-              petNewImg={petNewImg}
-              petImg={petImg}
-              setPetImg={setPetImg}
-              addPetInfo={addPetInfo}
-              setAddPetInfo={setAddPetInfo}
-              setOwnPetDetail={setOwnPetDetail}
-              addDocOwnPets={addDocOwnPets}
-              setPetNewImg={setPetNewImg}
+          {selectedTab === tabs[1] && (
+            <UserOwnPetInfos
+              getOwnPetList={getOwnPetList}
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
-          ) : selectedTab === tabs[1] && !ownPetDetail ? (
-            <SimpleSinglePetCard
-              setOwnPetDetail={setOwnPetDetail}
-              setOwnPetIndex={setOwnPetIndex}
-              petNewImg={petNewImg}
-              setPetNewImg={setPetNewImg}
-              setPetNewInfo={setPetNewInfo}
-              getOwnPetList={getOwnPetList}
-              setAddPet={setAddPet}
-            />
-          ) : (
-            ""
-          )}
-          {selectedTab === tabs[1] && ownPetDetail && ownPetEdit ? (
-            <EditAddedPetInfo
-              setOwnPetDetail={setOwnPetDetail}
-              petNewImg={petNewImg}
-              setPetNewImg={setPetNewImg}
-              setPetNewInfo={setPetNewInfo}
-              petNewInfo={petNewInfo}
-              ownPetIndex={ownPetIndex}
-              getOwnPetList={getOwnPetList}
-              ownPetEdit={ownPetEdit}
-              setOwnPetEdit={setOwnPetEdit}
-              setIncompleteInfo={setIncompleteInfo}
-              incompleteInfo={incompleteInfo}
-            />
-          ) : selectedTab === tabs[1] && ownPetDetail && !ownPetEdit ? (
-            <DetailPetSingleInfo
-              petNewImg={petNewImg}
-              petNewInfo={petNewInfo}
-              ownPetIndex={ownPetIndex}
-              ownPetEdit={ownPetEdit}
-              setOwnPetEdit={setOwnPetEdit}
-              setOwnPetDetail={setOwnPetDetail}
-              getOwnPetList={getOwnPetList}
-            />
-          ) : (
-            ""
           )}
           {selectedTab === tabs[2] && (
             <PetDiary
@@ -195,7 +118,7 @@ const ProfileSetting = () => {
               incompleteInfo={incompleteInfo}
             />
           )}
-          {selectedTab === tabs[3] ? (
+          {selectedTab === tabs[3] && (
             <WritePetArticle
               addArticleInfo={addArticleInfo}
               setAddArticleInfo={setAddArticleInfo}
@@ -204,8 +127,6 @@ const ProfileSetting = () => {
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
-          ) : (
-            ""
           )}
         </MainInfo>
       </Wrapper>

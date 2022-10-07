@@ -24,6 +24,7 @@ import ProfileSetting from "./ProfileSetting";
 import defaultProfile from "./img/defaultprofile.png";
 import close from "./img/close.png";
 import { CatLoading } from "../../utils/loading";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const WarningText = styled.div`
   color: #db5452;
@@ -151,7 +152,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
-  // let navigate = useNavigate();
+  const notifyDispatcher = useNotifyDispatcher();
   const Emailregex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
   const [registerStatus, setRegisterStatus] = useState({
     name: "",
@@ -211,18 +212,15 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setRegisterStatus({ name: "", email: "", password: "" });
     }
-    setLoading(true);
     createUserWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (response) => {
+        setLoading(true);
         setErrorStatus("");
         const userUid = response.user.uid;
         await setDoc(doc(db, "memberProfiles", userUid), {
           name: profile.name,
         });
-        dispatch(setNotification("註冊成功"));
-        setTimeout(() => {
-          dispatch(setNotification(""));
-        }, 3000);
+        notifyDispatcher("註冊成功");
         dispatch(afterRegisterSaveName());
         props.setOpenLoginBox(false);
       })
@@ -285,10 +283,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          dispatch(setNotification("登入成功"));
-          setTimeout(() => {
-            dispatch(setNotification(""));
-          }, 3000);
+          notifyDispatcher("登入成功");
           dispatch(setName(docSnap.data().name));
           if (docSnap.data().shelter === "true") {
             dispatch(setShelter(true));
