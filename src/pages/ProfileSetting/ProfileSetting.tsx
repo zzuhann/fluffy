@@ -189,13 +189,11 @@ const ProfileSetting = () => {
           ) : (
             ""
           )}
-          {selectedTab === tabs[2] ? (
+          {selectedTab === tabs[2] && (
             <PetDiary
               setIncompleteInfo={setIncompleteInfo}
               incompleteInfo={incompleteInfo}
             />
-          ) : (
-            ""
           )}
           {selectedTab === tabs[3] ? (
             <WritePetArticle

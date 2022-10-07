@@ -46,11 +46,12 @@ import {
 } from "./OwnPetInfo";
 import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
 import { Btn } from "./UserInfos";
-import trash from "./img/bin.png";
 import upload from "./img/upload.png";
 import defaultProfile from "./img/defaultprofile.png";
 import noPetDiary from "./img/pet_dog_woman.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { ToPreviewImgEmptyImgToNull } from "../../component/PreviewImg";
+import { UploadImgType } from "../../functions/commonFunctionAndType";
 
 const DiaryLabel = styled(EditInfoLabel)`
   width: 180px;
@@ -544,7 +545,6 @@ export const CalendarContainer = styled.div`
   }
 `;
 
-type UploadImgType = { file: File | null; url: string };
 const uploadImgInitialState: UploadImgType = {
   file: null,
   url: "",
@@ -720,24 +720,6 @@ export const PetDiary: React.FC<{
     dispatch(setOwnPetDiary(authorPetDiary));
   }
 
-  function renderPetDiaryPreviewImg(
-    imgURL: string,
-    emptyImg: Dispatch<SetStateAction<UploadImgType>>
-  ) {
-    return (
-      <PreviewContainer>
-        <PreviewImg src={imgURL} />
-        <PreviewCancelBtn
-          onClick={() => {
-            emptyImg({ file: null, url: "" });
-          }}
-        >
-          <CancelIcon src={trash} />
-        </PreviewCancelBtn>
-      </PreviewContainer>
-    );
-  }
-
   function renderPetDiaryUploadImg() {
     return (
       <>
@@ -874,9 +856,14 @@ export const PetDiary: React.FC<{
           >
             取消
           </AddCloseDetailBtn>
-          {diaryImg.url
-            ? renderPetDiaryPreviewImg(diaryImg.url, setDiaryImg)
-            : renderPetDiaryUploadImg()}
+          {diaryImg.url ? (
+            <ToPreviewImgEmptyImgToNull
+              imgURL={diaryImg.url}
+              emptyImg={setDiaryImg}
+            />
+          ) : (
+            renderPetDiaryUploadImg()
+          )}
           <EditModeDiaryContainer>
             <AddDiaryInputContainer>
               <AddDiaryLabel htmlFor="petName">寵物姓名: </AddDiaryLabel>
@@ -1057,9 +1044,14 @@ export const PetDiary: React.FC<{
       <PetDetailCard>
         <Title>編輯寵物日記</Title>
         <EditPetDiaryModeContainer>
-          {newDiaryImg.url
-            ? renderPetDiaryPreviewImg(newDiaryImg.url, setNewDiaryImg)
-            : renderEditPetDiaryImageUpload()}
+          {newDiaryImg.url ? (
+            <ToPreviewImgEmptyImgToNull
+              imgURL={newDiaryImg.url}
+              emptyImg={setNewDiaryImg}
+            />
+          ) : (
+            renderEditPetDiaryImageUpload()
+          )}
           <EditModePetDiaryContainer>
             <EditContainer>
               <EditPetDiaryLabel htmlFor="petName">
