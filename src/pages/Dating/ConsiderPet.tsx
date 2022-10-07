@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -37,7 +31,7 @@ import {
   DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
-} from "../ProfileSetting/OwnPetInfo";
+} from "../ProfileSetting/UserOwnPetInfos";
 import { setNotification } from "../../functions/profileReducerFunction";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`

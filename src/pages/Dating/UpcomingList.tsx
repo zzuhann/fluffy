@@ -24,7 +24,7 @@ import {
   DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
-} from "../ProfileSetting/OwnPetInfo";
+} from "../ProfileSetting/UserOwnPetInfos";
 import { setNotification } from "../../functions/profileReducerFunction";
 
 const UpcomingListCard = styled.div`

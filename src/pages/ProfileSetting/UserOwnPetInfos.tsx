@@ -408,16 +408,6 @@ export const NowNoInfoText = styled.div`
   }
 `;
 
-// type SimplePetCardType = {
-//   setOwnPetDetail: Dispatch<SetStateAction<boolean>>;
-//   setOwnPetIndex: Dispatch<SetStateAction<number>>;
-//   setPetNewImg: Dispatch<SetStateAction<imgType>>;
-//   setPetNewInfo: Dispatch<SetStateAction<{ name: string; birthYear: number }>>;
-//   setAddPet: Dispatch<SetStateAction<boolean>>;
-//   petNewImg: imgType;
-//   getOwnPetList: () => void;
-// };
-
 type petInfoType = {
   name: string;
   sex: string;

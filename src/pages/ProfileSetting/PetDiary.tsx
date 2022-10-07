@@ -43,8 +43,10 @@ import {
   NowNoInfoInHere,
   NowNoInfoImg,
   NowNoInfoText,
-} from "./OwnPetInfo";
-import { AddBtnSimple, InfoContainer, PetTitle } from "./OwnPetInfo";
+  AddBtnSimple,
+  InfoContainer,
+  PetTitle,
+} from "./UserOwnPetInfos";
 import { Btn } from "./UserInfos";
 import upload from "./img/upload.png";
 import defaultProfile from "./img/defaultprofile.png";

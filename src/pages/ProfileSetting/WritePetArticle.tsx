@@ -44,7 +44,7 @@ import {
   NowNoInfoInHere,
   NowNoInfoImg,
   NowNoInfoText,
-} from "./OwnPetInfo";
+} from "./UserOwnPetInfos";
 import parse from "html-react-parser";
 import upload from "./img/upload.png";
 import noarticle from "./img/shigoto_zaitaku_cat_man.png";

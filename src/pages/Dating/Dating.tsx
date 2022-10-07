@@ -26,7 +26,7 @@ import {
   NowNoInfoInHere,
   NowNoInfoImg,
   NowNoInfoText,
-} from "./../ProfileSetting/OwnPetInfo";
+} from "./../ProfileSetting/UserOwnPetInfos";
 import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 import Meeting from "../../component/Meeting";

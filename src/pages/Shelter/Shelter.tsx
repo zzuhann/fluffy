@@ -12,7 +12,7 @@ import {
   NowNoInfoInHere,
   NowNoInfoText,
   NowNoInfoImg,
-} from "../ProfileSetting/OwnPetInfo";
+} from "../ProfileSetting/UserOwnPetInfos";
 import { Title } from "../ProfileSetting/UserInfos";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 
