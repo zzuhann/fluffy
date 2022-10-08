@@ -8,7 +8,7 @@ import React, {
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { area, shelterInfo } from "./constantInfo";
+import { area, shelterInfo } from "./ConstantInfo";
 import { Dating } from "../../reducers/dating";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import {
