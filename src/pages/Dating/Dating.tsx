@@ -17,7 +17,7 @@ import { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
 import { Btn, Title } from "../ProfileSetting/UserInfos";
 import preferenceSet from "./img/preference.png";
-import { area } from "./constantInfo";
+import { area } from "./ConstantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";
@@ -26,7 +26,7 @@ import {
   NowNoInfoInHere,
   NowNoInfoImg,
   NowNoInfoText,
-} from "./../ProfileSetting/OwnPetInfo";
+} from "./../ProfileSetting/UserOwnPetInfos";
 import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 import Meeting from "../../component/Meeting";

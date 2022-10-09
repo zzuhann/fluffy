@@ -248,9 +248,25 @@ const ArticleDetail = () => {
     }
   }, [mainPageScrollHeight]);
 
+  function addCommentArrayUpdateState() {
+    if (newCommentContext) {
+      const newCommentArray = [...articleComments];
+      newCommentArray.push({
+        user: {
+          name: profile.name,
+          img: profile.img as string,
+        },
+        useruid: profile.uid,
+        context: newCommentContext,
+        commentTime: Date.now(),
+      });
+      setArticleComments(newCommentArray);
+    }
+  }
+
   async function addArticleComment() {
     if (!targetArticle) return;
-    if (!newCommentContext) {
+    if (!newCommentContext || newCommentContext.trim() === "") {
       return;
     }
     setLoadingComment(true);
@@ -271,17 +287,7 @@ const ArticleDetail = () => {
     setMainPageScrollHeight(document.documentElement.scrollHeight + 100);
     const newCommentCount = targetArticle.commentCount + 1;
     setTargetArticle({ ...targetArticle, commentCount: newCommentCount });
-    const newCommentArray = [...articleComments];
-    newCommentArray.push({
-      user: {
-        name: profile.name,
-        img: profile.img as string,
-      },
-      useruid: profile.uid,
-      context: newCommentContext,
-      commentTime: Date.now(),
-    });
-    setArticleComments(newCommentArray);
+    addCommentArrayUpdateState();
     setLoadingComment(false);
   }
 
@@ -352,10 +358,9 @@ const ArticleDetail = () => {
     getArticleComments();
   }, [targetArticle]);
 
-  if (!targetArticle) return null;
-  return (
-    <Wrap>
-      <ArticleContainer>
+  function renderArticleCoverAuthorContainer() {
+    if (targetArticle) {
+      return (
         <CoverAuthorContainer>
           <ArticleCover src={targetArticle.img} />
           <TitleContainer>
@@ -370,34 +375,43 @@ const ArticleDetail = () => {
             </Author>
           </TitleContainer>
         </CoverAuthorContainer>
-        <ArticleContext className="DetailProseMirror">
-          {parse(targetArticle.context)}
-        </ArticleContext>
+      );
+    }
+  }
+
+  function renderHeartBtn(targetSrc: string) {
+    if (targetArticle) {
+      return (
+        <>
+          <RecordImg
+            src={targetSrc}
+            onClick={() => {
+              toggleLike();
+            }}
+          />
+          <Record>{targetArticle.likedBy.length}</Record>
+        </>
+      );
+    }
+  }
+
+  function renderRecordContainer() {
+    if (targetArticle) {
+      return (
         <RecordContainer>
-          {targetArticle.likedBy.includes(profile.uid) ? (
-            <>
-              <RecordImg
-                src={alreadyLike}
-                onClick={() => {
-                  toggleLike();
-                }}
-              />
-              <Record>{targetArticle.likedBy.length}</Record>
-            </>
-          ) : (
-            <>
-              <RecordImg
-                src={notyetLike}
-                onClick={() => {
-                  toggleLike();
-                }}
-              />
-              <Record>{targetArticle.likedBy.length}</Record>
-            </>
-          )}
+          {targetArticle.likedBy.includes(profile.uid)
+            ? renderHeartBtn(alreadyLike)
+            : renderHeartBtn(notyetLike)}
           <CommentRecordImg src={comment} />
           <Record>{targetArticle.commentCount}</Record>
         </RecordContainer>
+      );
+    }
+  }
+
+  function renderCommentContainer() {
+    if (targetArticle) {
+      return (
         <CommentContainer>
           <AddComment>
             <AddCommentTextArea
@@ -457,6 +471,20 @@ const ArticleDetail = () => {
             </CommentCard>
           ))}
         </CommentContainer>
+      );
+    }
+  }
+
+  if (!targetArticle) return null;
+  return (
+    <Wrap>
+      <ArticleContainer>
+        {renderArticleCoverAuthorContainer()}
+        <ArticleContext className="DetailProseMirror">
+          {parse(targetArticle.context)}
+        </ArticleContext>
+        {renderRecordContainer()}
+        {renderCommentContainer()}
       </ArticleContainer>
       {openLoginBox && (
         <LoginRegisterBox

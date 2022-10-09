@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import { shelterInfo } from "./constantInfo";
+import { shelterInfo } from "./ConstantInfo";
 import { Dating } from "../../reducers/dating";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
@@ -24,7 +24,7 @@ import {
   DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
-} from "../ProfileSetting/OwnPetInfo";
+} from "../ProfileSetting/UserOwnPetInfos";
 import { setNotification } from "../../functions/profileReducerFunction";
 
 const UpcomingListCard = styled.div`

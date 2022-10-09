@@ -21,7 +21,7 @@ import {
   NowNoInfoInHere,
   NowNoInfoImg,
   NowNoInfoText,
-} from "./../ProfileSetting/OwnPetInfo";
+} from "./../ProfileSetting/UserOwnPetInfos";
 import { db } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
 import defaultProfile from "./img/defaultProfile.png";
