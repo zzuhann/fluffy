@@ -86,3 +86,17 @@ export function setOwnArticle(ownArticles: OwnArticle[]) {
     payload: { ownArticles },
   };
 }
+
+export function setNotification(notification: string) {
+  return {
+    type: ActionType.setNotification,
+    payload: { notification },
+  };
+}
+
+export function setShelter(isShelter: boolean) {
+  return {
+    type: ActionType.setShelter,
+    payload: { isShelter },
+  };
+}

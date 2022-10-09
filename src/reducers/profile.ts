@@ -1,21 +1,29 @@
 export enum ActionType {
-  setProfileName,
-  setProfileEmail,
-  setProfilePassword,
-  setProfileImage,
-  clearProfileInfo,
-  checkIfLogged,
-  setProfileUid,
-  clickLoginOrRegister,
-  afterRegisterSaveName,
-  setOwnPets,
-  setOwnPetDiary,
-  setOwnArticle,
+  setProfileLogin = "setProfileLogin",
+  setProfileName = "setProfileName",
+  setShelter = "setShelter",
+  setProfileEmail = "setProfileEmail",
+  setProfilePassword = "setProfilePassword",
+  setProfileImage = "setProfileImage",
+  clearProfileInfo = "clearProfileInfo",
+  checkIfLogged = "checkIfLogged",
+  setProfileUid = "setProfileUid",
+  clickLoginOrRegister = "clickLoginOrRegister",
+  afterRegisterSaveName = "afterRegisterSaveName",
+  setOwnPets = "setOwnPets",
+  setOwnPetDiary = "setOwnPetDiary",
+  setOwnArticle = "setOwnArticle",
+  setNotification = "setNotification",
 }
 
 interface setProfileName {
   type: ActionType.setProfileName;
   payload: { name: string };
+}
+
+interface setShelter {
+  type: ActionType.setShelter;
+  payload: { isShelter: boolean };
 }
 
 interface setProfileEmail {
@@ -71,6 +79,11 @@ interface setOwnArticle {
   payload: { ownArticles: OwnArticle[] };
 }
 
+interface setNotification {
+  type: ActionType.setNotification;
+  payload: { notification: string };
+}
+
 export type ProfileActions =
   | setProfileName
   | setProfileEmail
@@ -83,7 +96,9 @@ export type ProfileActions =
   | afterRegisterSaveName
   | setOwnPets
   | setOwnPetDiary
-  | setOwnArticle;
+  | setOwnArticle
+  | setNotification
+  | setShelter;
 
 export type OwnPet = {
   name: string;
@@ -137,6 +152,8 @@ export type Profile = {
   ownPets: OwnPet[];
   petDiary: PetDiaryType[];
   ownArticles: OwnArticle[];
+  notification: string;
+  isShelter: boolean;
 };
 
 const initialState: Profile = {
@@ -150,6 +167,8 @@ const initialState: Profile = {
   ownPets: [],
   petDiary: [],
   ownArticles: [],
+  notification: "",
+  isShelter: false,
 };
 
 const ProfileReducer = (
@@ -173,14 +192,23 @@ const ProfileReducer = (
       return { ...state, isLogged: action.payload.isLogged };
     }
     case ActionType.clearProfileInfo: {
-      return { ...state, name: "", password: "", email: "", img: "" };
+      return {
+        ...state,
+        email: "",
+        name: "",
+        password: "",
+        img: "",
+        uid: "",
+        ownPets: [],
+        petDiary: [],
+        ownArticles: [],
+      };
     }
     case ActionType.afterRegisterSaveName: {
       return {
         ...state,
         password: "",
         email: "",
-        img: "",
       };
     }
     case ActionType.setProfileUid: {
@@ -197,6 +225,12 @@ const ProfileReducer = (
     }
     case ActionType.setOwnArticle: {
       return { ...state, ownArticles: action.payload.ownArticles };
+    }
+    case ActionType.setNotification: {
+      return { ...state, notification: action.payload.notification };
+    }
+    case ActionType.setShelter: {
+      return { ...state, isShelter: action.payload.isShelter };
     }
     default:
       return state;

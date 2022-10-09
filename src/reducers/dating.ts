@@ -1,9 +1,9 @@
 export enum ActionType {
-  toggleDetailInfo,
-  setUserDirection,
-  setAllCardInfrontOfUser,
-  setConsiderList,
-  setUpcomingDateList,
+  toggleDetailInfo = "toggleDetailInfo",
+  setUserDirection = "setUserDirection",
+  setAllCardInfrontOfUser = "setAllCardInfrontOfUser",
+  setConsiderList = "setConsiderList",
+  setUpcomingDateList = "setUpcomingDateList",
 }
 
 interface toggleDetailInfo {
@@ -58,8 +58,11 @@ export type InviteDating = {
   color: string;
   sterilization: string;
   image: string;
-  datingDate: number;
+  datingDate: Date | number;
   inviter: string;
+  time: string;
+  way: string;
+  doneWithMeeting: boolean;
 };
 
 export type Card = {

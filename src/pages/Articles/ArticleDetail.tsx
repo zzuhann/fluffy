@@ -11,7 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -20,75 +20,155 @@ import { useParams } from "react-router-dom";
 import { AllPetArticlesType } from "./AllArticles";
 import parse from "html-react-parser";
 import "./ArticleDetail.css";
-import notyetLike from "./like.png";
-import alreadyLike from "./like (1).png";
+import notyetLike from "./img/heart.png";
+import alreadyLike from "./img/love.png";
+import comment from "./img/chat.png";
+import { Btn } from "../ProfileSetting/UserInfos";
+import { LoginRegisterBox } from "../ProfileSetting/ProfileLoginRegister";
+import { Loading } from "../../utils/loading";
+
+const Wrap = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  background-color: #fafafa;
+  position: relative;
+`;
 
 const ArticleContainer = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 800px;
-  margin: 30px auto;
+  position: relative;
+  margin: 0 auto;
+  padding-top: 120px;
+  padding-bottom: 30px;
+  border-radius: 5px;
+  overflow: hidden;
+  letter-spacing: 1px;
+  @media (max-width: 800px) {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  @media (max-width: 650px) {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  @media (max-width: 400px) {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+`;
+
+const CoverAuthorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  border: solid 1px rgba(0, 0, 0, 0.1);
 `;
 const ArticleCover = styled.img`
   width: 100%;
-  height: 400px;
+  height: 300px;
+  object-fit: cover;
+  @media (max-width: 440px) {
+    height: 200px;
+  }
 `;
 const TitleContainer = styled.div`
   position: relative;
+  padding: 20px;
 `;
 const Title = styled.div`
-  font-size: 30px;
+  font-size: 32px;
   font-weight: bold;
+  margin-bottom: 20px;
+  line-height: 38px;
+  @media (max-width: 650px) {
+    font-size: 28px;
+  }
 `;
 const Author = styled(Link)`
-  font-size: 22px;
+  font-size: 18px;
+  color: #3c3c3c;
 `;
 const ArticleDate = styled.div`
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  color: #7d7d7d;
+  margin-bottom: 10px;
+  font-size: 18px;
 `;
-const ArticleContext = styled.div``;
+const ArticleContext = styled.div`
+  padding: 20px;
+  font-size: 18px;
+  line-height: 34px;
+  letter-spacing: 1.2px;
+  @media (max-width: 650px) {
+    font-size: 16px;
+  }
+  @media (max-width: 400px) {
+    line-height: 20px;
+  }
+`;
 const RecordContainer = styled.div`
   display: flex;
   align-items: center;
+  padding: 20px;
 `;
 const Record = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   margin-right: 15px;
+  margin-left: 5px;
 `;
 const RecordImg = styled.img`
-  width: 30px;
-  height: 30px;
-  margin-right: 15px;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+`;
+const CommentRecordImg = styled.img`
+  width: 23px;
+  height: 23px;
 `;
 const CommentContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding-top: 0;
 `;
 const AddComment = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 const AddCommentTextArea = styled.textarea`
   resize: vertical;
   width: 100%;
+  min-height: 60px;
+  max-height: 80px;
+  border: 3px solid #efefef;
+  border-radius: 5px;
+  padding: 10px 15px;
+  padding-right: 80px;
+  font-size: 18px;
 `;
-const AddCommentBtn = styled.div`
-  text-align: center;
-  margin-top: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #000;
-    color: #fff;
-  }
+const AddCommentBtn = styled(Btn)`
+  bottom: 20px;
+  right: 10px;
+  font-size: 16px;
+  padding: 5px 10px;
 `;
 const CommentCount = styled.div`
   margin-top: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 15px;
 `;
 
 const CommentCard = styled.div`
   position: relative;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 15px;
+  word-break: break-all;
 `;
 const CommentUserContainer = styled.div`
   display: flex;
@@ -96,14 +176,34 @@ const CommentUserContainer = styled.div`
 const CommentUserImg = styled.img`
   width: 40px;
   height: 40px;
+  border-radius: 20px;
+  object-fit: cover;
 `;
-const CommentUserName = styled.div``;
+const CommentUserName = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+  font-weight: bold;
+`;
 const CommentTime = styled.div`
   position: absolute;
   right: 5px;
   top: 5px;
+  font-size: 14px;
+  color: #7d7d7d;
 `;
-const CommentContext = styled.div``;
+const CommentContext = styled.div`
+  margin-left: 55px;
+  padding-right: 10px;
+  line-height: 20px;
+  white-space: pre-wrap;
+  @media (max-width: 440px) {
+    margin-left: 0;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+`;
 
 export type CommentType = {
   user: {
@@ -124,13 +224,52 @@ const ArticleDetail = () => {
   const [targetArticle, setTargetArticle] = useState<AllPetArticlesType>();
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
+  const [openLoginBox, setOpenLoginBox] = useState(false);
+  const [scroll, setScroll] = useState<number>(0);
+  const [mainPageScrollHeight, setMainPageScrollHeight] = useState<number>(0);
+  const [loadingComment, setLoadingComment] = useState(false);
+
+  useEffect(() => {
+    if (!openLoginBox) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [openLoginBox]);
+
+  function handleScroll() {
+    let scrollTop = document.documentElement.scrollTop;
+    setScroll(scrollTop);
+  }
+
+  useEffect(() => {
+    if (mainPageScrollHeight > 0) {
+      document.documentElement.scrollTop =
+        document.documentElement.scrollHeight;
+    }
+  }, [mainPageScrollHeight]);
+
+  function addCommentArrayUpdateState() {
+    if (newCommentContext) {
+      const newCommentArray = [...articleComments];
+      newCommentArray.push({
+        user: {
+          name: profile.name,
+          img: profile.img as string,
+        },
+        useruid: profile.uid,
+        context: newCommentContext,
+        commentTime: Date.now(),
+      });
+      setArticleComments(newCommentArray);
+    }
+  }
 
   async function addArticleComment() {
     if (!targetArticle) return;
-    if (!newCommentContext) {
-      window.alert("留言內容不能為空白！");
+    if (!newCommentContext || newCommentContext.trim() === "") {
       return;
     }
+    setLoadingComment(true);
     await addDoc(collection(db, `petArticles/${targetArticle.id}/comments`), {
       user: {
         name: profile.name,
@@ -145,9 +284,11 @@ const ArticleDetail = () => {
       commentCount: targetArticle.commentCount + 1,
     });
     setNewCommentContext("");
-    window.alert("留言成功");
-    getArticleComments();
-    getSpecificArticle();
+    setMainPageScrollHeight(document.documentElement.scrollHeight + 100);
+    const newCommentCount = targetArticle.commentCount + 1;
+    setTargetArticle({ ...targetArticle, commentCount: newCommentCount });
+    addCommentArrayUpdateState();
+    setLoadingComment(false);
   }
 
   async function getArticleComments() {
@@ -163,7 +304,6 @@ const ArticleDetail = () => {
     articlesSnapshot.forEach((info) => {
       articleComments.push(info.data() as CommentType);
     });
-
     setArticleComments(articleComments);
   }
 
@@ -176,15 +316,14 @@ const ArticleDetail = () => {
         ...docSnap.data(),
       } as AllPetArticlesType);
     } else {
-      console.log("No such document!");
+      navigate("/articles");
     }
   }
 
   async function toggleLike() {
     if (!targetArticle) return;
     if (!profile.isLogged) {
-      window.alert("按讚需先登入，確認後導向登入頁面");
-      navigate("/profile");
+      setOpenLoginBox(true);
       return;
     }
     const articleDetailRef = doc(db, "petArticles", id as string);
@@ -219,84 +358,142 @@ const ArticleDetail = () => {
     getArticleComments();
   }, [targetArticle]);
 
+  function renderArticleCoverAuthorContainer() {
+    if (targetArticle) {
+      return (
+        <CoverAuthorContainer>
+          <ArticleCover src={targetArticle.img} />
+          <TitleContainer>
+            <Title>{targetArticle.title}</Title>
+            <ArticleDate>
+              {new Date(targetArticle.postTime).getFullYear()}/
+              {new Date(targetArticle.postTime).getMonth() + 1}/
+              {new Date(targetArticle.postTime).getDate()}
+            </ArticleDate>
+            <Author to={`/profile/${targetArticle.authorUid}`}>
+              作者: {targetArticle.author.name}
+            </Author>
+          </TitleContainer>
+        </CoverAuthorContainer>
+      );
+    }
+  }
+
+  function renderHeartBtn(targetSrc: string) {
+    if (targetArticle) {
+      return (
+        <>
+          <RecordImg
+            src={targetSrc}
+            onClick={() => {
+              toggleLike();
+            }}
+          />
+          <Record>{targetArticle.likedBy.length}</Record>
+        </>
+      );
+    }
+  }
+
+  function renderRecordContainer() {
+    if (targetArticle) {
+      return (
+        <RecordContainer>
+          {targetArticle.likedBy.includes(profile.uid)
+            ? renderHeartBtn(alreadyLike)
+            : renderHeartBtn(notyetLike)}
+          <CommentRecordImg src={comment} />
+          <Record>{targetArticle.commentCount}</Record>
+        </RecordContainer>
+      );
+    }
+  }
+
+  function renderCommentContainer() {
+    if (targetArticle) {
+      return (
+        <CommentContainer>
+          <AddComment>
+            <AddCommentTextArea
+              value={newCommentContext}
+              placeholder="新增留言 ..."
+              onChange={(e) => {
+                setNewCommentContext(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addArticleComment();
+                }
+              }}
+            />
+            {loadingComment ? (
+              <Loading
+                $Top={"50%"}
+                $Bottom={"auto"}
+                $Right={"30px"}
+                $Left={"auto"}
+                $transform={"translateY(-50%)"}
+              />
+            ) : (
+              <AddCommentBtn
+                onClick={() => {
+                  if (!profile.isLogged) {
+                    setOpenLoginBox(true);
+                    return;
+                  }
+                  addArticleComment();
+                }}
+              >
+                送出
+              </AddCommentBtn>
+            )}
+          </AddComment>
+          <CommentCount>共 {targetArticle.commentCount} 則留言</CommentCount>
+          {articleComments.map((comment, index) => (
+            <CommentCard key={index}>
+              <CommentUserContainer>
+                <CommentUserImg src={comment.user.img} />
+                <CommentUserName>{comment.user.name}</CommentUserName>
+              </CommentUserContainer>
+              <CommentTime>
+                {new Date(comment.commentTime).getFullYear()}/
+                {new Date(comment.commentTime).getMonth() + 1}/
+                {new Date(comment.commentTime).getDate()}{" "}
+                {new Date(comment.commentTime).getHours()}:
+                {new Date(comment.commentTime).getMinutes()}
+              </CommentTime>
+              <CommentContext>{comment.context}</CommentContext>
+            </CommentCard>
+          ))}
+        </CommentContainer>
+      );
+    }
+  }
+
   if (!targetArticle) return null;
   return (
-    <ArticleContainer>
-      <ArticleCover src={targetArticle.img} />
-      <TitleContainer>
-        <Title>{targetArticle.title}</Title>
-        <Author to={`/profile/${targetArticle.authorUid}`}>
-          作者: {targetArticle.author.name}
-        </Author>
-        <ArticleDate>
-          {new Date(targetArticle.postTime).getFullYear()}/
-          {new Date(targetArticle.postTime).getMonth() + 1}/
-          {new Date(targetArticle.postTime).getDate()}
-        </ArticleDate>
-      </TitleContainer>
-      <ArticleContext className="DetailProseMirror">
-        {parse(targetArticle.context)}
-      </ArticleContext>
-      <RecordContainer>
-        <Record>喜歡 {targetArticle.likedBy.length}</Record>
-        <Record>留言 {targetArticle.commentCount}</Record>
-        {targetArticle.likedBy.includes(profile.uid) ? (
-          <RecordImg
-            src={alreadyLike}
-            onClick={() => {
-              toggleLike();
-            }}
-          />
-        ) : (
-          <RecordImg
-            src={notyetLike}
-            onClick={() => {
-              toggleLike();
-            }}
-          />
-        )}
-      </RecordContainer>
-      <CommentContainer>
-        <AddComment>
-          <AddCommentTextArea
-            value={newCommentContext}
-            placeholder="新增留言 ..."
-            onChange={(e) => {
-              setNewCommentContext(e.target.value);
-            }}
-          />
-          <AddCommentBtn
-            onClick={() => {
-              if (!profile.isLogged) {
-                window.alert("留言需先登入，確認後導向登入頁面");
-                navigate("/profile");
-                return;
-              }
-              addArticleComment();
-            }}
-          >
-            新增留言
-          </AddCommentBtn>
-        </AddComment>
-        <CommentCount>共 {targetArticle.commentCount} 則留言</CommentCount>
-        {articleComments.map((comment, index) => (
-          <CommentCard key={index}>
-            <CommentUserContainer>
-              <CommentUserImg src={comment.user.img} />
-              <CommentUserName>{comment.user.name}</CommentUserName>
-            </CommentUserContainer>
-            <CommentTime>
-              {new Date(comment.commentTime).getFullYear()}/
-              {new Date(comment.commentTime).getMonth() + 1}/
-              {new Date(comment.commentTime).getDate()}{" "}
-              {new Date(comment.commentTime).getHours()}:
-              {new Date(comment.commentTime).getMinutes()}
-            </CommentTime>
-            <CommentContext>{comment.context}</CommentContext>
-          </CommentCard>
-        ))}
-      </CommentContainer>
-    </ArticleContainer>
+    <Wrap>
+      <ArticleContainer>
+        {renderArticleCoverAuthorContainer()}
+        <ArticleContext className="DetailProseMirror">
+          {parse(targetArticle.context)}
+        </ArticleContext>
+        {renderRecordContainer()}
+        {renderCommentContainer()}
+      </ArticleContainer>
+      {openLoginBox && (
+        <LoginRegisterBox
+          openLoginBox={openLoginBox}
+          setOpenLoginBox={setOpenLoginBox}
+          $Top={scroll}
+        />
+      )}
+    </Wrap>
   );
 };
 

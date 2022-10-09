@@ -1,15 +1,50 @@
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import React, { useEffect } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import "./petArticle.css";
 import parse from "html-react-parser";
+import {
+  FaHeading,
+  FaBold,
+  FaStrikethrough,
+  FaRedo,
+  FaUndo,
+} from "react-icons/fa";
+import { TbHeading, TbBlockquote } from "react-icons/tb";
+import { MdFormatListBulleted, MdHorizontalRule } from "react-icons/md";
+import { AiOutlineOrderedList } from "react-icons/ai";
 
-const EditorInput = styled.div`
-  position: absolute;
-  width: 600px;
-  height: 500px;
-  border: solid 1px black;
+const MenuBarContainer = styled.div`
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+`;
+
+const HTMLButton = styled.button`
+  font-size: 18px;
+  margin: 7px;
+  margin-right: 15px;
+  outline: none;
+  border: none;
+  background: none;
+  color: rgb(70, 70, 70);
+  cursor: pointer;
+  padding: 2px 3px;
+  @media (max-width: 565px) {
+    font-size: 16px;
+    margin: 5px;
+  }
+  &:last-child {
+    margin-right: 7px;
+  }
+  &:hover {
+    background: rgb(197, 197, 197);
+    padding: 2px 3px;
+    border-radius: 2px;
+  }
 `;
 
 const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
@@ -18,81 +53,86 @@ const MenuBar: React.FC<{ editor: Editor | null }> = ({ editor }) => {
   }
 
   return (
-    <div className="menuBar">
-      <button
+    <MenuBarContainer>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive("bold") ? "is-active" : ""}
       >
-        bold
-      </button>
-      <button
+        <FaBold />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={editor.isActive("strike") ? "is-active" : ""}
       >
-        strike
-      </button>
-      <button onClick={() => editor.chain().focus().unsetAllMarks().run()}>
-        clear marks
-      </button>
-      <button
+        <FaStrikethrough />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
       >
-        h1
-      </button>
-      <button
+        <FaHeading />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
       >
-        h2
-      </button>
-      <button
+        <TbHeading />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
-        bullet list
-      </button>
-      <button
+        <MdFormatListBulleted />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive("orderedList") ? "is-active" : ""}
       >
-        ordered list
-      </button>
-      <button
+        <AiOutlineOrderedList />
+      </HTMLButton>
+      <HTMLButton
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={editor.isActive("blockquote") ? "is-active" : ""}
       >
-        blockquote
-      </button>
-      <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        horizontal rule
-      </button>
-      <button onClick={() => editor.chain().focus().undo().run()}>undo</button>
-      <button onClick={() => editor.chain().focus().redo().run()}>redo</button>
-    </div>
+        <TbBlockquote />
+      </HTMLButton>
+      <HTMLButton
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <MdHorizontalRule />
+      </HTMLButton>
+      <HTMLButton onClick={() => editor.chain().focus().undo().run()}>
+        <FaUndo />
+      </HTMLButton>
+      <HTMLButton onClick={() => editor.chain().focus().redo().run()}>
+        <FaRedo />
+      </HTMLButton>
+    </MenuBarContainer>
   );
 };
 
 export const PetArticle: React.FC<{
-  setAddArticleInfo: (value: { title: string; context: string }) => void;
+  setAddArticleInfo: Dispatch<
+    SetStateAction<{ title: string; context: string }>
+  >;
   addArticleInfo: {
     title: string;
     context: string;
   };
 }> = ({ setAddArticleInfo, addArticleInfo }) => {
-  useEffect(() => {
-    setAddArticleInfo({ ...addArticleInfo, context: "" });
-  }, []);
-
+  // useEffect(() => {
+  //   setAddArticleInfo({ ...addArticleInfo, context: "" });
+  // }, []);
   const editor = useEditor({
     extensions: [StarterKit],
     content: `${addArticleInfo.context}`,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setAddArticleInfo({ ...addArticleInfo, context: html });
+      setAddArticleInfo((pre) => {
+        return { ...pre, context: html };
+      });
     },
   });
-
   return (
     <div className="textEditor">
       <MenuBar editor={editor} />
@@ -105,6 +145,7 @@ const MirrorTitle = styled.div`
   font-size: 30px;
   font-weight: bold;
   margin-top: 30px;
+  margin-bottom: 10px;
 `;
 const ProseMirror = styled.div``;
 
@@ -125,22 +166,22 @@ export const ContextDetails: React.FC<{
 };
 
 export const EditPetArticle: React.FC<{
-  setEditArticleContext: (value: { title: string; context: string }) => void;
+  setEditArticleContext: Dispatch<
+    SetStateAction<{ title: string; context: string }>
+  >;
   editArticleContext: {
     title: string;
     context: string;
   };
 }> = ({ editArticleContext, setEditArticleContext }) => {
-  // useEffect(() => {
-  //   setEditArticleContext({ ...editArticleContext, context: "" });
-  // }, []);
-
   const editor = useEditor({
     extensions: [StarterKit],
     content: `${editArticleContext.context}`,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setEditArticleContext({ ...editArticleContext, context: html });
+      setEditArticleContext((pre) => {
+        return { ...pre, context: html };
+      });
     },
   });
 

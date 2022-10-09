@@ -119,7 +119,7 @@ export function updateUseStateInputImage(file: FileList, fn: Function) {
 export async function updateFirebaseDataMutipleWhere(
   collectionUrl: string,
   field1: string,
-  target1: number,
+  target1: number | string,
   field2: string,
   target2: string,
   imgURL: string,
@@ -130,6 +130,27 @@ export async function updateFirebaseDataMutipleWhere(
     where(field1, "==", target1),
     where(field2, "==", target2)
   );
+  const querySnapshot = await getDocs(q);
+  const promises: any[] = [];
+  querySnapshot.forEach(async (d) => {
+    const targetRef = doc(db, collectionUrl, d.id);
+    if (imgURL) {
+      promises.push(updateDoc(targetRef, data));
+    } else {
+      promises.push(updateDoc(targetRef, data));
+    }
+  });
+  await Promise.all(promises);
+}
+
+export async function updateFirebaseDataWhere(
+  collectionUrl: string,
+  field1: string,
+  target1: number | string,
+  imgURL: string,
+  data: any
+) {
+  const q = query(collection(db, collectionUrl), where(field1, "==", target1));
   const querySnapshot = await getDocs(q);
   const promises: any[] = [];
   querySnapshot.forEach(async (d) => {

@@ -1,10 +1,3 @@
-.DetailProseMirror {
-  padding: 10px;
-  border-top: 1px solid grey;
-  background: white;
-  border-radius: 0 0 5px 5px;
-}
-
 .DetailProseMirror:focus {
   border: none;
 }
