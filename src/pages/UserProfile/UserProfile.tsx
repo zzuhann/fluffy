@@ -137,8 +137,6 @@ const MainSection = styled.div`
   position: relative;
 `;
 
-// petdiary style
-
 const AllDiariesContainer = styled.div`
   margin: 0 auto;
   padding: 70px 0 46px;
@@ -224,8 +222,8 @@ const DiaryCard = styled(Link)<{ likecount: number; commentcount: number }>`
   transition: 0.3s;
   bottom: 0;
   &:hover:before {
-    content: "喜歡 ${(props) => props.likecount} 
-    留言 ${(props) => props.commentcount}";
+    content: "喜歡 ${(props) => props.likecount} 留言 ${(props) =>
+      props.commentcount}";
     position: absolute;
     width: 100%;
     height: 100%;
@@ -281,14 +279,12 @@ const DiaryTitle = styled.div`
 `;
 const PetAge = styled.div``;
 
-// article style
 const AllArticlesContainer = styled.div`
   min-height: 346px;
   padding: 0px 0 46px;
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  /* margin-top: 30px; */
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   justify-content: space-between;
@@ -361,8 +357,6 @@ const HeartAndCommentRecordContainer = styled.div`
 const Record = styled.div`
   flex-shrink: 0;
 `;
-
-// pet
 
 const PetInfo = styled.div`
   padding: 70px 0 46px;
@@ -455,7 +449,6 @@ const UserProfile = () => {
   ) as Profile;
   const [tabIndex, setTabIndex] = useState<number>(0);
   const tabs = ["日記", "文章", "寵物"];
-  const [ownPet, setOwnPet] = useState<string[]>([]);
   const [userInfo, setUserInfo] = useState<{ img: string; name: string }>({
     img: "",
     name: "",
@@ -487,7 +480,6 @@ const UserProfile = () => {
     const q = query(
       collection(db, "petArticles"),
       where("authorUid", "==", authorUid)
-      // orderBy("postTime")
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((info) => {
@@ -528,15 +520,6 @@ const UserProfile = () => {
     });
     setUserPet(allOwnPet);
   }
-
-  useEffect(() => {
-    if (!userPet) return;
-    let pets: string[] = [];
-    userPet.forEach((pet) => {
-      pets.push(pet.name);
-    });
-    setOwnPet(pets);
-  }, [userPet, id]);
 
   if (!userDiary) return null;
   if (!userArticle) return null;

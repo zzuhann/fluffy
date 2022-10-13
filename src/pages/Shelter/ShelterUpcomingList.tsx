@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { db, deleteFirebaseData } from "../../utils/firebase";
+import { deleteFirebaseData } from "../../utils/firebase";
 import { InviteDating } from "../../reducers/dating";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
@@ -122,9 +122,6 @@ type Props = {
 };
 
 const UpcomingList: React.FC<Props> = (props) => {
-  const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
   const dispatch = useDispatch();
   const [datingDone, setDatingDone] = useState<{
     id: number;

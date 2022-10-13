@@ -10,8 +10,6 @@ import { Profile } from "../../reducers/profile";
 import consider from "./img/consider.png";
 import notconsider from "./img/close.png";
 
-// card
-
 const ChooseBtnAnimation = keyframes`
   0% {bottom: 200px}
   100% {bottom: 250px}

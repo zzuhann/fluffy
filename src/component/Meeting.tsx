@@ -158,7 +158,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
   const pc = useRef<RTCPeerConnection>();
   const localStreamRef = useRef<MediaStream>();
   const wsRef = useRef(new WebSocket("wss://fluffyserver.herokuapp.com"));
-  // const wsRef = useRef(new WebSocket("wss://localhost:3000"));
   const [status, setStatus] = useState("開始通話");
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -248,7 +247,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
     );
   };
 
-  // 詢問攝影機與音訊權限
   const getMediaDevices = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
@@ -259,13 +257,11 @@ const Meeting: React.FC<MeetingType> = (props) => {
     localStreamRef.current = stream;
   };
 
-  // 交換 sdp
-  // 設置為當前連接的本地描述
   const createOffer = () => {
     pc.current
       ?.createOffer({
         offerToReceiveAudio: true,
-        offerToReceiveVideo: true, // 接收視頻接收音頻
+        offerToReceiveVideo: true,
       })
       .then((sdp) => {
         console.log("offer", JSON.stringify(sdp));
@@ -279,7 +275,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
     pc.current
       ?.createAnswer({
         offerToReceiveAudio: true,
-        offerToReceiveVideo: true, // 接收視頻接收音頻
+        offerToReceiveVideo: true,
       })
       .then((sdp) => {
         console.log("answer", JSON.stringify(sdp));

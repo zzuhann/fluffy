@@ -151,7 +151,7 @@ const SectionTitle = styled.div`
     line-height: 30px;
   }
 `;
-const SectionText = styled.div`
+const SectionText = styled.h2`
   margin-top: 20px;
   line-height: 30px;
   letter-spacing: 1.5px;
