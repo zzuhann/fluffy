@@ -55,7 +55,7 @@ const UserInfo = styled.div`
 const EditUserInfoContainer = styled(UserInfo)`
   padding-bottom: 80px;
 `;
-export const Title = styled.div`
+export const Title = styled.h1`
   font-size: 32px;
   font-weight: bold;
   position: relative;

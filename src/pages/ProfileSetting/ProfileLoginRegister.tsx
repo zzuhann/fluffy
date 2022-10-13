@@ -14,7 +14,6 @@ import {
   targetRegisterOrLogin,
   afterRegisterSaveName,
   setProfileUid,
-  setNotification,
   setShelter,
 } from "../../functions/profileReducerFunction";
 import { useSelector, useDispatch } from "react-redux";

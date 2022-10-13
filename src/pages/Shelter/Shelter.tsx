@@ -1,5 +1,5 @@
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -54,19 +54,6 @@ export const NowNoInfoTextConsider = styled(NowNoInfoText)`
   text-align: center;
 `;
 
-const BlackMask = styled.div`
-  opacity: 0.5;
-  overflow-y: hidden;
-  transition: 0.3s;
-  position: fixed;
-  background-color: black;
-  width: 100%;
-  top: 0;
-  left: 0;
-  height: 100%;
-  z-index: 2500;
-`;
-
 const Shelter = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
@@ -74,7 +61,6 @@ const Shelter = () => {
   const navigate = useNavigate();
   const [shelterUpcomingList, setShelterUpcomingList] =
     useState<InviteDating[]>();
-  const [nowChooseIndex, setNowChooseIndex] = useState(-1);
   const [openMeeting, setOpenMeeting] = useState(false);
   const [nowMeetingShelter, setNowMeetingShelter] = useState<{
     petId: number;

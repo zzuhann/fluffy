@@ -774,7 +774,7 @@ const Pairing: React.FC = () => {
         ) : (
           ""
         )}
-        {tab === "considerAdopt" ? (
+        {tab === "considerAdopt" && (
           <>
             <ConsiderList>
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
@@ -800,10 +800,8 @@ const Pairing: React.FC = () => {
               )}
             </ConsiderList>
           </>
-        ) : (
-          ""
         )}
-        {tab === "upcomingDate" ? (
+        {tab === "upcomingDate" && (
           <>
             {openMeeting && (
               <Meeting
@@ -833,8 +831,6 @@ const Pairing: React.FC = () => {
               )}
             </UpcomingListContainer>
           </>
-        ) : (
-          ""
         )}
       </Wrap>
     </>

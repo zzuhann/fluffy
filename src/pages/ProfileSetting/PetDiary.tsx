@@ -185,21 +185,6 @@ const PetDetailImg = styled.label`
   position: relative;
 `;
 
-const PreviewContainer = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-`;
-
-const PreviewImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  position: relative;
-`;
-
 const PreviewCancelBtn = styled.div`
   position: absolute;
   bottom: -10px;

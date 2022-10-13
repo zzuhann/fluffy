@@ -80,7 +80,7 @@ const TitleContainer = styled.div`
   position: relative;
   padding: 20px;
 `;
-const Title = styled.div`
+const Title = styled.h1`
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 20px;

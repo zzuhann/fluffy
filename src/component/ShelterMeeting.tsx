@@ -233,25 +233,11 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
     localStreamRef.current = stream;
   };
 
-  const createOffer = () => {
-    pc.current
-      ?.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: true,
-      })
-      .then((sdp) => {
-        console.log("offer", JSON.stringify(sdp));
-        pc.current?.setLocalDescription(sdp);
-        wsSend("offer", JSON.stringify(sdp));
-        setStatus("等待對方接聽");
-      });
-  };
-
   const createAnswer = () => {
     pc.current
       ?.createAnswer({
         offerToReceiveAudio: true,
-        offerToReceiveVideo: true, // 接收視頻接收音頻
+        offerToReceiveVideo: true,
       })
       .then((sdp) => {
         console.log("answer", JSON.stringify(sdp));

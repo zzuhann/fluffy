@@ -6,7 +6,6 @@ import { db } from "../../utils/firebase";
 import { PageTitle } from "../PetDiaries/AllPetDiraies";
 import notyetLike from "./img/heart.png";
 import comment from "./img/chat.png";
-import { CatLoading } from "../../utils/loading";
 
 const Wrap = styled.div`
   width: 100%;
@@ -88,7 +87,6 @@ const ArticleCardBottom = styled.div`
 
 const ArticleTitle = styled.div`
   font-weight: bold;
-  /* flex: 1; */
   margin-bottom: 20px;
   line-height: 25px;
   width: 100%;

@@ -120,9 +120,6 @@ export const PetArticle: React.FC<{
     context: string;
   };
 }> = ({ setAddArticleInfo, addArticleInfo }) => {
-  // useEffect(() => {
-  //   setAddArticleInfo({ ...addArticleInfo, context: "" });
-  // }, []);
   const editor = useEditor({
     extensions: [StarterKit],
     content: `${addArticleInfo.context}`,

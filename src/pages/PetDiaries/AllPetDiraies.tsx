@@ -5,7 +5,6 @@ import styled, { keyframes } from "styled-components";
 import { db } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
-import { CatLoading } from "../../utils/loading";
 
 export const PageTitle = styled.h1`
   font-size: 32px;
@@ -178,8 +177,6 @@ export type AllPetDiariesType = {
   id: string;
   birthYear: number;
 };
-
-// skeleton
 
 const slide = keyframes`
   from {
