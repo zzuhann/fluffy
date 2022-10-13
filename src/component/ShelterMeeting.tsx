@@ -240,7 +240,6 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        console.log("answer", JSON.stringify(sdp));
         pc.current?.setLocalDescription(sdp);
         wsSend("answer", JSON.stringify(sdp));
         setStatus("通話中");
@@ -257,7 +256,6 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
     });
     _pc.onicecandidate = (e) => {
       if (e.candidate) {
-        console.log("candidate", JSON.stringify(e.candidate));
         wsSend("candidate", JSON.stringify(e.candidate));
       }
     };

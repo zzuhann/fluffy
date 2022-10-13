@@ -6,7 +6,7 @@ import trash from "./img/bin.png";
 
 const PreviewContainer = styled.div`
   position: relative;
-  width: 350px;
+  width: 200px;
   height: 200px;
   padding-left: 15px;
   @media (max-width: 533px) {
@@ -15,14 +15,24 @@ const PreviewContainer = styled.div`
   }
 `;
 
-const PreviewImg = styled.img`
+const PreviewArticleContainer = styled(PreviewContainer)`
   width: 350px;
+  height: 200px;
+`;
+
+const PreviewImg = styled.img`
+  width: 200px;
   height: 200px;
   object-fit: cover;
   position: relative;
   @media (max-width: 533px) {
     width: 100%;
   }
+`;
+
+const PreviewArticleImg = styled(PreviewImg)`
+  width: 350px;
+  height: 200px;
 `;
 
 const PreviewCancelBtn = styled.div`
@@ -57,8 +67,8 @@ export const ToPreviewImgEmptyImgToString: React.FC<{
   emptyImg: Dispatch<SetStateAction<imgType>>;
 }> = ({ imgURL, emptyImg }) => {
   return (
-    <PreviewContainer>
-      <PreviewImg src={imgURL} alt="" />
+    <PreviewArticleContainer>
+      <PreviewArticleImg src={imgURL} alt="" />
       <PreviewCancelBtn
         onClick={() => {
           emptyImg({ file: "", url: "" });
@@ -66,7 +76,7 @@ export const ToPreviewImgEmptyImgToString: React.FC<{
       >
         <CancelIcon src={trash} />
       </PreviewCancelBtn>
-    </PreviewContainer>
+    </PreviewArticleContainer>
   );
 };
 
@@ -85,5 +95,23 @@ export const ToPreviewImgEmptyImgToNull: React.FC<{
         <CancelIcon src={trash} />
       </PreviewCancelBtn>
     </PreviewContainer>
+  );
+};
+
+export const ToPreviewImgEmptyImgToNullArticle: React.FC<{
+  imgURL: string;
+  emptyImg: Dispatch<SetStateAction<UploadImgType>>;
+}> = ({ imgURL, emptyImg }) => {
+  return (
+    <PreviewArticleContainer>
+      <PreviewArticleImg src={imgURL} />
+      <PreviewCancelBtn
+        onClick={() => {
+          emptyImg({ file: null, url: "" });
+        }}
+      >
+        <CancelIcon src={trash} />
+      </PreviewCancelBtn>
+    </PreviewArticleContainer>
   );
 };

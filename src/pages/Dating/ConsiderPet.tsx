@@ -583,7 +583,6 @@ const ConsiderPetDetail = (props: {
       }
     );
   }
-  console.log(dating.upcomingDateList);
 
   return (
     <>
@@ -857,7 +856,7 @@ const ConsiderPetDetail = (props: {
                         time: timeSelect[index],
                         dateAndTime: (inviteDatingInfo.date as Date).setHours(
                           Number(timeSelect[index].split(":")[0]),
-                          0
+                          Number(timeSelect[index].split(":")[1])
                         ),
                       });
                     }}
