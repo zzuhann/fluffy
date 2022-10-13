@@ -1,7 +1,7 @@
 <div align="center">
 <a href="https://fluffy-18025.web.app/" target="_blank"><img src="https://fluffy-18025.web.app/static/media/fluffylogo.547d057c91e8e28efd40.png" alt="fluffy" width="200"/></a>
 <br/>
-<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span> | <span><a href="#Contact">Contact</a></span>
+<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span>
 </div>
 <h2 id="Intro">Intro</h2>
 
@@ -30,3 +30,22 @@ Fluffy is a pet platform desires to promote stray animals in shelters in Taiwan.
 <li>Obtained 24-hour veterinary clinics in Taiwan through web crawling by <b>Node.js, request, and cheerio</b></li>
 <li>Customized calendar with <b>React Calendar</b></li>
 </ul>
+
+<h2 id="Flow_Chart">Flow Chart</h2>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/Desktop%20-%201.png?raw=true" alt="flowChart"/>
+
+<h2 id="Demo">Demo</h2>
+<p>▼ Home Page</p>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E9%A6%96%E9%A0%81demo.gif?raw=true"/>
+
+<p>▼ Pairing: to press love button if you are willing to adopt dogs or cats</p>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E9%85%8D%E5%B0%8D.gif?raw=true"/>
+
+<p>▼ Meeting: peer-to-peer video chat between shelters and users who want to adopt animals</p>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E8%A6%96%E8%A8%8A.gif?raw=true"/>
+
+<p>▼ Pet Diary: users can browse all pet diaries and comment or press the like button</p>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E5%AF%B5%E7%89%A9%E6%97%A5%E8%A8%98.gif?raw=true"/>
+
+<p>▼ User Profile Page</p>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E4%BD%9C%E8%80%85%E5%80%8B%E4%BA%BA%E9%A0%81%E9%9D%A2.gif?raw=true"/>
