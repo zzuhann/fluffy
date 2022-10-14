@@ -282,7 +282,7 @@ const DiaryDetail = () => {
 
   async function addDiaryComment() {
     if (!targetDiary) return;
-    if (!newCommentContext) {
+    if (!newCommentContext || newCommentContext.trim() === "") {
       return;
     }
     setLoadingComment(true);
