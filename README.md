@@ -33,7 +33,7 @@ Fluffy is a pet platform desires to promote stray animals in shelters in Taiwan.
 
 <h2 id="Flow_Chart">Flow Chart</h2>
 <picture>
-<img src="https://github.com/zzuhann/fluffyStorage/blob/main/Desktop%20-%201.png?raw=true" alt="flowChart"/>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/Desktop%20-%201%20(1).png?raw=true" alt="flowChart"/>
 </picture>
 
 <h2 id="Demo">Demo</h2>
