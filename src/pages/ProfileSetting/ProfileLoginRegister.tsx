@@ -22,7 +22,7 @@ import styled from "styled-components";
 import ProfileSetting from "./ProfileSetting";
 import defaultProfile from "./img/defaultprofile.png";
 import close from "./img/close.png";
-import { CatLoading } from "../../utils/loading";
+import { Loading } from "../../utils/loading";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const WarningText = styled.div`
@@ -109,6 +109,7 @@ const Input = styled.input`
 `;
 
 export const RegisterLoginBtn = styled.div`
+  position: relative;
   width: 100%;
   font-size: 18px;
   letter-spacing: 1.5px;
@@ -117,6 +118,7 @@ export const RegisterLoginBtn = styled.div`
   margin-top: 10px;
   background-color: #952f04;
   color: #fff;
+  min-height: 35px;
   cursor: pointer;
   align-self: center;
   text-align: center;
@@ -211,9 +213,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setRegisterStatus({ name: "", email: "", password: "" });
     }
+    setLoading(true);
     createUserWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (response) => {
-        setLoading(true);
         setErrorStatus("");
         const userUid = response.user.uid;
         await setDoc(doc(db, "memberProfiles", userUid), {
@@ -230,6 +232,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         switch (error.code) {
           case "auth/email-already-in-use":
             setErrorStatus("此信箱已被註冊！");
+            setLoading(false);
             break;
           default:
         }
@@ -274,9 +277,9 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
     } else {
       setLoginStatus({ email: "", password: "" });
     }
+    setLoading(true);
     signInWithEmailAndPassword(auth, profile.email, profile.password)
       .then(async (userCredential) => {
-        setLoading(true);
         setErrorStatus("");
         dispatch(clearProfileInfo());
         const docRef = doc(db, "memberProfiles", userCredential.user.uid);
@@ -297,16 +300,16 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         } else {
           console.log("No such document!");
         }
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
+        setLoading(false);
       })
       .catch((error) => {
         switch (error.code) {
           case "auth/user-not-found":
+            setLoading(false);
             setErrorStatus("查無此信箱，請進行註冊或重新輸入");
             break;
           case "auth/wrong-password":
+            setLoading(false);
             setErrorStatus("密碼錯誤，請重新輸入！");
             break;
           default:
@@ -314,9 +317,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       });
   }
 
-  return isLoading ? (
-    <CatLoading />
-  ) : profile.clickLoginOrRegister === "login" ? (
+  return profile.clickLoginOrRegister === "login" ? (
     <RegisterLoginWrapper
       $Top={props.$Top}
       onKeyDown={(e) => {
@@ -331,7 +332,6 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           onClick={() => props.setOpenLoginBox(false)}
         />
       )}
-
       <RegisterLoginTitle>登入</RegisterLoginTitle>
       <ToggleRegisterLogin
         onClick={() => {
@@ -402,7 +402,19 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
       <Label>測試帳號：fluffy@test.com</Label>
       <Label>測試密碼：Fluffy</Label>
       {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
-      <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
+      {isLoading ? (
+        <RegisterLoginBtn>
+          <Loading
+            $Top={"50%"}
+            $Bottom={"auto"}
+            $Right={"auto"}
+            $Left={"50%"}
+            $transform={"translate(-50%,-50%)"}
+          />
+        </RegisterLoginBtn>
+      ) : (
+        <RegisterLoginBtn onClick={() => logInProfile()}>登入</RegisterLoginBtn>
+      )}
     </RegisterLoginWrapper>
   ) : (
     <RegisterLoginWrapper
@@ -438,10 +450,8 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
             }
           }}
         />
-        {registerStatus.name === "empty" ? (
+        {registerStatus.name === "empty" && (
           <WarningText>使用者名稱不得為空白</WarningText>
-        ) : (
-          ""
         )}
       </InputContainer>
       <InputContainer>
@@ -507,8 +517,21 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
         )}
       </InputContainer>
       {errorStatus && <WarningErrorCode>{errorStatus}</WarningErrorCode>}
-      <RegisterLoginBtn onClick={() => createProfile()}>註冊</RegisterLoginBtn>
-
+      {isLoading ? (
+        <RegisterLoginBtn>
+          <Loading
+            $Top={"50%"}
+            $Bottom={"auto"}
+            $Right={"auto"}
+            $Left={"50%"}
+            $transform={"translate(-50%,-50%)"}
+          />
+        </RegisterLoginBtn>
+      ) : (
+        <RegisterLoginBtn onClick={() => createProfile()}>
+          註冊
+        </RegisterLoginBtn>
+      )}
       <ToggleRegisterLogin
         onClick={() => {
           dispatch(setName(""));

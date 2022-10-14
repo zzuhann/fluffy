@@ -38,7 +38,7 @@ import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
 
-const Wrapper = styled.div<{ $isActive: boolean }>`
+const Wrapper = styled.header<{ $isActive: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -108,11 +108,17 @@ export const BlackMask = styled.div<{
   z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
+const NavBarTag = styled.nav`
+  margin-right: auto;
+  margin-left: 50px;
+  @media (max-width: 1025px) {
+    display: none;
+  }
+`;
+
 const NavBarContainer = styled.ul`
   display: flex;
   align-items: center;
-  margin-right: auto;
-  margin-left: 50px;
   @media (max-width: 1025px) {
     display: none;
   }
@@ -130,6 +136,7 @@ const NavBar = styled.li`
   font-size: 18px;
   cursor: pointer;
   position: relative;
+  width: fit-content;
   &:after {
     transition: 0.3s;
     content: "";
@@ -520,30 +527,32 @@ const Header = () => {
         <Logo to="/">
           <LogoImg src={logo} alt="" />
         </Logo>
-        <NavBarContainer>
-          {navbars.map((navbar) => (
-            <NavBar
-              onClick={() => {
-                if (navbar.needToLogin && !profile.isLogged) {
-                  gotoProfilePage();
-                } else {
-                  navigate(navbar.targetLink);
-                }
-              }}
-            >
-              {navbar.name}
-            </NavBar>
-          ))}
-          {profile.isShelter && (
-            <NavBar
-              onClick={() => {
-                navigate("/shelter");
-              }}
-            >
-              所有視訊申請
-            </NavBar>
-          )}
-        </NavBarContainer>
+        <NavBarTag>
+          <NavBarContainer>
+            {navbars.map((navbar) => (
+              <NavBar
+                onClick={() => {
+                  if (navbar.needToLogin && !profile.isLogged) {
+                    gotoProfilePage();
+                  } else {
+                    navigate(navbar.targetLink);
+                  }
+                }}
+              >
+                {navbar.name}
+              </NavBar>
+            ))}
+            {profile.isShelter && (
+              <NavBar
+                onClick={() => {
+                  navigate("/shelter");
+                }}
+              >
+                所有視訊申請
+              </NavBar>
+            )}
+          </NavBarContainer>
+        </NavBarTag>
         {openPopupBox && (
           <>
             <PopUpMessage>

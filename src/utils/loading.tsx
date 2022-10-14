@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import catHand from "./cat_hand_mike.png";
 
 const Wrap = styled.div<Position>`
   position: absolute;
   top: ${(props) => props.$Top};
+  bottom: ${(props) => props.$Bottom};
   transform: ${(props) => props.$transform};
   right: ${(props) => props.$Right};
+  left: ${(props) => props.$Left};
 `;
 
 type Position = {

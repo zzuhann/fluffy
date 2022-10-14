@@ -252,7 +252,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
       video: true,
       audio: false,
     });
-    console.log(stream);
     localVideoRef.current!.srcObject = stream;
     localStreamRef.current = stream;
   };
@@ -264,7 +263,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        console.log("offer", JSON.stringify(sdp));
         pc.current?.setLocalDescription(sdp);
         wsSend("offer", JSON.stringify(sdp));
         setStatus("等待對方接聽");
@@ -278,7 +276,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        console.log("answer", JSON.stringify(sdp));
         pc.current?.setLocalDescription(sdp);
         wsSend("answer", JSON.stringify(sdp));
         setStatus("通話中");
@@ -295,7 +292,6 @@ const Meeting: React.FC<MeetingType> = (props) => {
     });
     _pc.onicecandidate = (e) => {
       if (e.candidate) {
-        console.log("candidate", JSON.stringify(e.candidate));
         wsSend("candidate", JSON.stringify(e.candidate));
       }
     };
@@ -306,11 +302,9 @@ const Meeting: React.FC<MeetingType> = (props) => {
   };
 
   const addLocalStreamToRtcConnection = () => {
-    console.log("addlocal");
     const localStream = localStreamRef.current!;
     localStream.getTracks().forEach((track) => {
       pc.current!.addTrack(track, localStream);
-      console.log(track);
     });
   };
 

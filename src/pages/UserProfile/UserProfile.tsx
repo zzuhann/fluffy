@@ -432,7 +432,7 @@ const PetSimpleInfos = styled.div`
 const PetSimpleInfo = styled.div`
   color: #fff;
   text-overflow: ellipsis;
-  overflow-x: hidden;
+  overflow: hidden;
   white-space: nowrap;
   position: relative;
   line-height: 25px;
@@ -560,7 +560,7 @@ const UserProfile = () => {
         <MainSection>
           {tabIndex === 0 ? (
             <>
-              {profile.ownPets.length !== 0 && (
+              {userPet.length !== 0 && (
                 <SelectGroup>
                   <NowChooseOption
                     onMouseEnter={() => {
@@ -589,7 +589,7 @@ const UserProfile = () => {
                     >
                       全部
                     </OptionName>
-                    {profile.ownPets.map((pet, index) => (
+                    {userPet.map((pet, index) => (
                       <OptionName
                         key={index}
                         value={pet.name}

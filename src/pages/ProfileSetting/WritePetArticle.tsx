@@ -53,6 +53,7 @@ import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import {
   ToPreviewImgEmptyImgToString,
   ToPreviewImgEmptyImgToNull,
+  ToPreviewImgEmptyImgToNullArticle,
 } from "../../component/PreviewImg";
 
 const FinishAddArticleBtn = styled(Btn)`
@@ -741,7 +742,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             文章封面:{" "}
           </CoverEditArticleLabel>
           {editArticleCover.url ? (
-            <ToPreviewImgEmptyImgToNull
+            <ToPreviewImgEmptyImgToNullArticle
               imgURL={editArticleCover.url}
               emptyImg={setEditArticleCover}
             />
