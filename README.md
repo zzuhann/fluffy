@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://fluffy-18025.web.app/" target="_blank"><img src="https://fluffy-18025.web.app/static/media/fluffylogo.547d057c91e8e28efd40.png" alt="fluffy" width="200"/></a>
+<a href="https://fluffy-18025.web.app/" target="_blank"><img src="https://github.com/zzuhann/fluffyStorage/blob/main/logotogithub.png?raw=true" alt="fluffy" width="200"/></a>
 <br/>
 <span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span>
 </div>
