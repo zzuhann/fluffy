@@ -349,7 +349,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       where("useruid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(comments);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach((d) => {
       const targetRef = doc(db, d.ref.path);
       promises.push(

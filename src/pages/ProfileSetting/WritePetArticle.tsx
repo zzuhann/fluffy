@@ -474,7 +474,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       where("authorUid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach(async (d) => {
       const ownArticleRef = doc(db, `/petArticles`, d.id);
       if (imgURL) {

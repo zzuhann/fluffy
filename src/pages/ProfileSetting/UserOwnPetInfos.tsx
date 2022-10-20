@@ -658,7 +658,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
       where("name", "==", profile.ownPets[ownPetIndex].name)
     );
     const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach(async (d) => {
       const petProfileRef = doc(
         db,

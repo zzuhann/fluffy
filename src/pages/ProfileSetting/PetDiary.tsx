@@ -619,7 +619,7 @@ export const PetDiary: React.FC<{
       where("authorUid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach(async (d) => {
       const petProfileRef = doc(db, `/petDiaries`, d.id);
       if (imgURL) {

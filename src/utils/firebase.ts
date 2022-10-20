@@ -57,7 +57,7 @@ export async function deleteFirebaseData(
 ) {
   const q = query(collection(db, url), where(field, "==", target));
   const querySnapshot = await getDocs(q);
-  const promises: any[] = [];
+  const promises: Promise<void>[] = [];
   querySnapshot.forEach(async (d) => {
     promises.push(deleteDoc(doc(db, url, d.id)));
   });
@@ -77,7 +77,7 @@ export async function deleteFirebaseDataMutipleWhere(
     where(field2, "==", target2)
   );
   const querySnapshot = await getDocs(q);
-  const promises: any[] = [];
+  const promises: Promise<void>[] = [];
   querySnapshot.forEach(async (d) => {
     promises.push(deleteDoc(doc(db, url, d.id)));
   });
@@ -123,7 +123,7 @@ export async function updateFirebaseDataMutipleWhere(
   field2: string,
   target2: string,
   imgURL: string,
-  data: any
+  data: null | object
 ) {
   const q = query(
     collection(db, collectionUrl),
@@ -131,7 +131,7 @@ export async function updateFirebaseDataMutipleWhere(
     where(field2, "==", target2)
   );
   const querySnapshot = await getDocs(q);
-  const promises: any[] = [];
+  const promises: Promise<void>[] = [];
   querySnapshot.forEach(async (d) => {
     const targetRef = doc(db, collectionUrl, d.id);
     if (imgURL) {
@@ -148,11 +148,11 @@ export async function updateFirebaseDataWhere(
   field1: string,
   target1: number | string,
   imgURL: string,
-  data: any
+  data: object
 ) {
   const q = query(collection(db, collectionUrl), where(field1, "==", target1));
   const querySnapshot = await getDocs(q);
-  const promises: any[] = [];
+  const promises: Promise<void>[] = [];
   querySnapshot.forEach(async (d) => {
     const targetRef = doc(db, collectionUrl, d.id);
     if (imgURL) {
