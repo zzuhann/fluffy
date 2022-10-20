@@ -274,10 +274,12 @@ const UserInfos: React.FC<userInfoType> = (props) => {
   });
 
   useEffect(() => {
-    props.setNewName(profile.name);
-    setDefaultUrl(profile.img as string);
-    setNewImg({ ...newImg, url: profile.img as string });
-  }, []);
+    if (profile.name && props.newName === "") {
+      props.setNewName(profile.name);
+      setDefaultUrl(profile.img as string);
+      setNewImg({ ...newImg, url: profile.img as string });
+    }
+  }, [profile.name]);
 
   async function updateAllInfoAboutUser(imgURL: string) {
     const userProfileRef = doc(db, "memberProfiles", profile.uid);
@@ -332,16 +334,18 @@ const UserInfos: React.FC<userInfoType> = (props) => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
           dispatch(setName(props.newName));
           dispatch(setImage(downloadURL));
-          notifyDispatcher("已更新個人資訊");
           updateAllInfoAboutUser(downloadURL);
         });
       });
     } else {
       dispatch(setName(props.newName));
-      notifyDispatcher("已更新個人資訊");
       updateAllInfoAboutUser(profile.img as string);
     }
+    notifyDispatcher("已更新個人資訊");
+    setEditProfileMode(false);
   }
+
+  console.log(profile.img);
 
   async function updateAllCommentsUserData(newImg: string) {
     const comments = query(

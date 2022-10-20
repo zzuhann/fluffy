@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -92,7 +92,6 @@ const SettingTab = styled.div<{ $isActive: boolean }>`
   position: relative;
   &:after {
     content: "";
-    /* width: 0%; */
     width: ${(props) => (props.$isActive ? "100%" : "0%")};
     height: 3px;
     background-color: #b7b0a8;
