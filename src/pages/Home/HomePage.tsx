@@ -246,10 +246,7 @@ const Home = () => {
               {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
             </PopUpNote>
           </PopupTopMessage>
-          <BlackMask
-            $isActive={openPopupBox === true}
-            $Height={openPopupBox ? pageHigh : 0}
-          />
+          <BlackMask $isActive={openPopupBox === true} />
         </>
       )}
       <CoverContainer>

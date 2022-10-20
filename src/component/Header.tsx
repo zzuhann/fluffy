@@ -38,7 +38,7 @@ import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
 
-const Wrapper = styled.header<{ $isActive: boolean }>`
+const Wrapper = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -94,17 +94,16 @@ const SidebarContainer = styled.ul<{ $isActive: boolean }>`
 
 export const BlackMask = styled.div<{
   $isActive: boolean;
-  $Height: number;
 }>`
   opacity: ${(props) => (props.$isActive ? "1" : "0")};
   overflow-y: hidden;
   transition: 0.3s;
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.8);
   left: 0;
   top: 0;
   width: 100%;
-  height: ${(props) => props.$Height}px;
+  height: 100%;
   z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
@@ -334,8 +333,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const nowLocation = useLocation();
-  const [scroll, setScroll] = useState<number>(0);
-  const [pageHigh, setPageHigh] = useState<number>(0);
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
   const [openPopupBox, setOpenPopupBox] = useState(false);
@@ -362,26 +359,6 @@ const Header = () => {
       needToLogin: false,
     },
   ];
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("click", togglePageHeight);
-  }, []);
-
-  function togglePageHeight() {
-    let pageHeight = document.documentElement.offsetHeight;
-    setPageHigh(pageHeight);
-  }
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   async function getAuthorPetDiary(authorUid: string) {
     const authorPetDiary: PetDiaryType[] = [];
@@ -510,12 +487,11 @@ const Header = () => {
     <>
       <BlackMask
         $isActive={clickBurgerMenu === true}
-        $Height={clickBurgerMenu ? pageHigh : 0}
         onClick={() =>
           clickBurgerMenu ? setClickBurgerMenu(false) : setClickBurgerMenu(true)
         }
       />
-      <Wrapper $isActive={scroll > 0}>
+      <Wrapper>
         <BurgerMenu
           src={burgerMenu}
           onClick={() =>
@@ -562,10 +538,7 @@ const Header = () => {
                 {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
               </PopUpNote>
             </PopUpMessage>
-            <BlackMask
-              $isActive={openPopupBox === true}
-              $Height={openPopupBox ? pageHigh : 0}
-            />
+            <BlackMask $isActive={openPopupBox === true} />
           </>
         )}
 
