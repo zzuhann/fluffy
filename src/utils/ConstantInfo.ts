@@ -1,3 +1,26 @@
+export const navbars = [
+  {
+    name: "配對專區",
+    targetLink: "/dating",
+    needToLogin: true,
+  },
+  {
+    name: "寵物日記",
+    targetLink: "/petdiary",
+    needToLogin: false,
+  },
+  {
+    name: "寵物文章補給",
+    targetLink: "/articles",
+    needToLogin: false,
+  },
+  {
+    name: "24 小時動物醫院",
+    targetLink: "/clinic",
+    needToLogin: false,
+  },
+];
+
 export const area = [
   "臺北市",
   "新北市",

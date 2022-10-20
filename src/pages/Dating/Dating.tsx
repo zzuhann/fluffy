@@ -17,7 +17,7 @@ import ConsiderPetDetail, { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
 import { Btn, Title } from "../ProfileSetting/UserInfos";
 import preferenceSet from "./img/preference.png";
-import { area } from "./ConstantInfo";
+import { area } from "../../utils/ConstantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";

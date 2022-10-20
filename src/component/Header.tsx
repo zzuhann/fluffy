@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,6 +37,7 @@ import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
+import { navbars } from "../utils/ConstantInfo";
 
 const Wrapper = styled.header`
   display: flex;
@@ -337,28 +338,6 @@ const Header = () => {
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
   const [openPopupBox, setOpenPopupBox] = useState(false);
   const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
-  const navbars = [
-    {
-      name: "配對專區",
-      targetLink: "/dating",
-      needToLogin: true,
-    },
-    {
-      name: "寵物日記",
-      targetLink: "/petdiary",
-      needToLogin: false,
-    },
-    {
-      name: "寵物文章補給",
-      targetLink: "/articles",
-      needToLogin: false,
-    },
-    {
-      name: "24 小時動物醫院",
-      targetLink: "/clinic",
-      needToLogin: false,
-    },
-  ];
 
   useEffect(() => {
     async function getAuthorPetDiary(authorUid: string) {
