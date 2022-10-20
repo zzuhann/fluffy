@@ -103,7 +103,7 @@ export const BlackMask = styled.div<{
   left: 0;
   top: 0;
   width: 100%;
-  height: 100%;
+  height: ${(props) => (props.$isActive ? "100%" : "0")};
   z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
@@ -360,37 +360,63 @@ const Header = () => {
     },
   ];
 
-  async function getAuthorPetDiary(authorUid: string) {
-    const authorPetDiary: PetDiaryType[] = [];
-    const q = query(
-      collection(db, "petDiaries"),
-      where("authorUid", "==", authorUid),
-      orderBy("postTime")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
-    });
-    dispatch(setOwnPetDiary(authorPetDiary));
-  }
-
-  async function getAuthorArticles(authorUid: string) {
-    const authorPetDiary: OwnArticle[] = [];
-    const q = query(
-      collection(db, "petArticles"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({
-        id: info.id,
-        ...info.data(),
-      } as OwnArticle);
-    });
-    dispatch(setOwnArticle(authorPetDiary));
-  }
-
   useEffect(() => {
+    async function getAuthorPetDiary(authorUid: string) {
+      const authorPetDiary: PetDiaryType[] = [];
+      const q = query(
+        collection(db, "petDiaries"),
+        where("authorUid", "==", authorUid),
+        orderBy("postTime")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+      });
+      dispatch(setOwnPetDiary(authorPetDiary));
+    }
+
+    async function getAuthorArticles(authorUid: string) {
+      const authorPetDiary: OwnArticle[] = [];
+      const q = query(
+        collection(db, "petArticles"),
+        where("authorUid", "==", authorUid)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({
+          id: info.id,
+          ...info.data(),
+        } as OwnArticle);
+      });
+      dispatch(setOwnArticle(authorPetDiary));
+    }
+
+    async function getUpcomingListData(uid: string) {
+      let upcomingDate: InviteDating[] = [];
+      const q = query(
+        collection(db, "memberProfiles", uid, "upcomingDates"),
+        orderBy("datingDate")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        upcomingDate.push({
+          ...info.data(),
+          datingDate: info.data().dateAndTime,
+        } as InviteDating);
+      });
+      dispatch(setUpcomingDateList(upcomingDate));
+    }
+
+    async function getOwnPetList(id: string) {
+      const allOwnPet: OwnPet[] = [];
+      const q = collection(db, `memberProfiles/${id}/ownPets`);
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        allOwnPet.push(info.data() as OwnPet);
+      });
+      dispatch(setOwnPets(allOwnPet));
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         getOwnPetList(user.uid);
@@ -420,33 +446,7 @@ const Header = () => {
         dispatch(targetRegisterOrLogin("login"));
       }
     });
-  }, []);
-
-  async function getUpcomingListData(uid: string) {
-    let upcomingDate: InviteDating[] = [];
-    const q = query(
-      collection(db, "memberProfiles", uid, "upcomingDates"),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push({
-        ...info.data(),
-        datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    dispatch(setUpcomingDateList(upcomingDate));
-  }
-
-  async function getOwnPetList(id: string) {
-    const allOwnPet: OwnPet[] = [];
-    const q = collection(db, `memberProfiles/${id}/ownPets`);
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      allOwnPet.push(info.data() as OwnPet);
-    });
-    dispatch(setOwnPets(allOwnPet));
-  }
+  }, [dispatch]);
 
   function signOutProfile() {
     signOut(auth)

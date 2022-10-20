@@ -115,12 +115,7 @@ const PetCard = styled.div`
   transform: translateX(-50%);
   z-index: 2502;
   padding-bottom: 50px;
-  /* box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.5); */
 `;
-
-// const BlackMaskConsiderList = styled(BlackMask)`
-//   background-color: transparent;
-// `;
 
 const PetImg = styled.img`
   width: 350px;
