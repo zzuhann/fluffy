@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { db } from "../../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import styled from "styled-components";
+import { areaList } from "../../utils/ConstantInfo";
 
 const Wrap = styled.div`
   width: 100%;
@@ -179,7 +180,6 @@ const VetClinic = () => {
   const [clinics, setClinics] = useState<ClinicType[]>([]);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowCountry, setNowCountry] = useState<string>("全台診所");
-  const areaList = ["全台診所", "北部地區", "中部地區", "南部地區"];
   useEffect(() => {
     getVetClinicData();
   }, []);

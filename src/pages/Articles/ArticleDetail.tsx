@@ -278,35 +278,6 @@ const ArticleDetail = () => {
     setLoadingComment(false);
   }
 
-  async function getArticleComments() {
-    if (!targetArticle) return;
-    const articleComments: CommentType[] = [];
-    const articlesRef = collection(
-      db,
-      `petArticles/${targetArticle.id}/comments`
-    );
-    let articlesSnapshot = await getDocs(
-      query(articlesRef, orderBy("commentTime"))
-    );
-    articlesSnapshot.forEach((info) => {
-      articleComments.push(info.data() as CommentType);
-    });
-    setArticleComments(articleComments);
-  }
-
-  async function getSpecificArticle() {
-    const docRef = doc(db, "petArticles", id as string);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setTargetArticle({
-        id: docSnap.id,
-        ...docSnap.data(),
-      } as AllPetArticlesType);
-    } else {
-      navigate("/articles");
-    }
-  }
-
   async function toggleLike() {
     if (!targetArticle) return;
     if (!profile.isLogged) {
@@ -339,11 +310,37 @@ const ArticleDetail = () => {
   }
 
   useEffect(() => {
+    async function getSpecificArticle() {
+      const docRef = doc(db, "petArticles", id as string);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setTargetArticle({
+          id: docSnap.id,
+          ...docSnap.data(),
+        } as AllPetArticlesType);
+        getArticleComments();
+      } else {
+        navigate("/articles");
+      }
+    }
+
+    async function getArticleComments() {
+      if (!targetArticle) return;
+      const articleComments: CommentType[] = [];
+      const articlesRef = collection(
+        db,
+        `petArticles/${targetArticle.id}/comments`
+      );
+      let articlesSnapshot = await getDocs(
+        query(articlesRef, orderBy("commentTime"))
+      );
+      articlesSnapshot.forEach((info) => {
+        articleComments.push(info.data() as CommentType);
+      });
+      setArticleComments(articleComments);
+    }
     getSpecificArticle();
-  }, []);
-  useEffect(() => {
-    getArticleComments();
-  }, [targetArticle]);
+  }, [id, navigate, targetArticle]);
 
   function renderArticleCoverAuthorContainer() {
     if (targetArticle) {
