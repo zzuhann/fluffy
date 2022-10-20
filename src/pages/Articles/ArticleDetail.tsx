@@ -225,21 +225,8 @@ const ArticleDetail = () => {
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
   const [openLoginBox, setOpenLoginBox] = useState(false);
-  const [scroll, setScroll] = useState<number>(0);
   const [mainPageScrollHeight, setMainPageScrollHeight] = useState<number>(0);
   const [loadingComment, setLoadingComment] = useState(false);
-
-  useEffect(() => {
-    if (!openLoginBox) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [openLoginBox]);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   useEffect(() => {
     if (mainPageScrollHeight > 0) {
@@ -490,7 +477,7 @@ const ArticleDetail = () => {
         <LoginRegisterBox
           openLoginBox={openLoginBox}
           setOpenLoginBox={setOpenLoginBox}
-          $Top={scroll}
+          $Top={45}
         />
       )}
     </Wrap>

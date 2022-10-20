@@ -13,7 +13,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
 import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
-import { ConsiderEverySinglePetCard } from "./ConsiderPet";
+import ConsiderPetDetail, { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
 import { Btn, Title } from "../ProfileSetting/UserInfos";
 import preferenceSet from "./img/preference.png";
@@ -31,6 +31,7 @@ import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 import Meeting from "../../component/Meeting";
 import { useNavigate } from "react-router-dom";
+import { BlackMask } from "../../component/Header";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -383,19 +384,6 @@ const TutorialContext = styled.div`
   line-height: 20px;
   letter-spacing: 1.5px;
   margin-bottom: 5px;
-`;
-
-export const BlackMask = styled.div`
-  opacity: 0.5;
-  overflow-y: hidden;
-  transition: 0.3s;
-  position: fixed;
-  background-color: black;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  z-index: 1;
 `;
 
 const Pairing: React.FC = () => {
@@ -776,6 +764,14 @@ const Pairing: React.FC = () => {
         )}
         {tab === "considerAdopt" && (
           <>
+            {considerDetail && (
+              <ConsiderPetDetail
+                nowChosenPetIndex={nowChosenPetIndex}
+                setConsiderDetail={setConsiderDetail}
+                considerDetail={considerDetail}
+                setDatingQty={setDatingQty}
+              />
+            )}
             <ConsiderList>
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
               {dating.considerList.length === 0 ? (

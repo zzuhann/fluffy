@@ -33,6 +33,7 @@ import {
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
 import { setNotification } from "../../functions/profileReducerFunction";
+import { BlackMask } from "../../component/Header";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -101,38 +102,25 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   }
 `;
 
-const PetCard = styled.div<{ $Top: number }>`
+const PetCard = styled.div`
   width: 350px;
-  /* height: 680px; */
   border-radius: 10px;
   overflow: hidden;
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   left: 50%;
-  top: ${(props) => props.$Top - 40}px;
+  top: 20vh;
   transform: translateX(-50%);
-  box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
-  z-index: 2501;
+  z-index: 2502;
   padding-bottom: 50px;
+  /* box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.5); */
 `;
 
-const BlackMask = styled.div<{
-  $isActive: boolean;
-  $Height: number;
-}>`
-  opacity: ${(props) => (props.$isActive ? "1" : "0")};
-  overflow-y: hidden;
-  transition: 0.3s;
-  position: fixed;
-  background-color: transparent;
-  width: 100%;
-  top: 0;
-  left: 0;
-  height: ${(props) => props.$Height}px;
-  z-index: ${(props) => (props.$isActive ? "2500" : "0")};
-`;
+// const BlackMaskConsiderList = styled(BlackMask)`
+//   background-color: transparent;
+// `;
 
 const PetImg = styled.img`
   width: 350px;
@@ -219,16 +207,20 @@ const MeetingWayBtn = styled(Btn)<{ $isActive: boolean }>`
   }
 `;
 
-const InviteDatingBox = styled.div<{ $Top: number }>`
+const InviteDatingBox = styled.div`
   width: 250px;
-  position: absolute;
-  right: 100px;
-  top: ${(props) => props.$Top - 40}px;
+  position: fixed;
+  left: 65%;
+  top: 20vh;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
   letter-spacing: 1.5px;
   z-index: 2502;
+  @media (max-width: 766px) {
+    right: 50px;
+    left: auto;
+  } ;
 `;
 
 const InviteDatingTitle = styled.div`
@@ -354,23 +346,10 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const [scroll, setScroll] = useState<number>(0);
-
-  useEffect(() => {
-    if (!props.considerDetail) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [props.considerDetail]);
 
   useEffect(() => {
     props.getUpcomingListData();
   }, []);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   if (!dating.considerList) return null;
   return (
@@ -392,17 +371,6 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           </ConsiderTitle>
         </ConsiderPetCard>
       ))}
-      {props.considerDetail ? (
-        <ConsiderPetDetail
-          nowChosenPetIndex={props.nowChosenPetIndex}
-          setConsiderDetail={props.setConsiderDetail}
-          considerDetail={props.considerDetail}
-          scroll={scroll}
-          setDatingQty={props.setDatingQty}
-        />
-      ) : (
-        ""
-      )}
     </>
   );
 };
@@ -411,7 +379,6 @@ const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;
   considerDetail: Boolean;
-  scroll: number;
   setDatingQty: Dispatch<SetStateAction<number>>;
 }) => {
   const dating = useSelector<{ dating: Dating }>(
@@ -437,18 +404,12 @@ const ConsiderPetDetail = (props: {
     "15:30",
   ]);
   const [timeIndex, setTimeIndex] = useState<number>(-1);
-  const [pageHigh, setPageHigh] = useState<number>(0);
   const [repeatInvite, setRepeatInvite] = useState(false);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
   const [meetingWay, setMeetingWay] = useState("實體");
   const [shelterDates, setShelterDates] = useState<InviteDating[]>();
   const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false);
-
-  useEffect(() => {
-    window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("scroll", togglePageHeight);
-  }, []);
 
   useEffect(() => {
     getShelterUpcomingDates();
@@ -487,11 +448,6 @@ const ConsiderPetDetail = (props: {
     } else {
       setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
     }
-  }
-
-  function togglePageHeight() {
-    let pageHeight = document.documentElement.offsetHeight;
-    setPageHigh(pageHeight);
   }
 
   async function getShelterUpcomingDates() {
@@ -586,16 +542,8 @@ const ConsiderPetDetail = (props: {
 
   return (
     <>
-      <BlackMask
-        $isActive={props.considerDetail === true}
-        $Height={props.considerDetail ? pageHigh : 0}
-        onClick={() =>
-          props.considerDetail
-            ? props.setConsiderDetail(false)
-            : props.setConsiderDetail(true)
-        }
-      />
-      <PetCard $Top={props.scroll}>
+      <BlackMask $isActive={props.considerDetail as boolean} />
+      <PetCard>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}
           alt=""
@@ -754,7 +702,7 @@ const ConsiderPetDetail = (props: {
         )}
       </PetCard>
       {inviteBoxOpen ? (
-        <InviteDatingBox $Top={props.scroll}>
+        <InviteDatingBox>
           <InviteDatingTitle>
             申請與 {dating.considerList[props.nowChosenPetIndex].id} 約會
           </InviteDatingTitle>
