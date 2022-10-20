@@ -408,14 +408,6 @@ export const NowNoInfoText = styled.div`
   }
 `;
 
-type petInfoType = {
-  name: string;
-  sex: string;
-  shelterName: string;
-  kind: string;
-  birthYear: number;
-};
-
 type UserOwnPetInfosType = {
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
   incompleteInfo: boolean;

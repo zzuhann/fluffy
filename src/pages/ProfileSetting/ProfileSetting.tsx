@@ -96,14 +96,12 @@ const ProfileSetting = () => {
       <Wrapper>
         <MainInfo>
           {selectedTab === tabs[0] && (
-            <>
-              <UserInfos
-                newName={newName}
-                setNewName={setNewName}
-                setIncompleteInfo={setIncompleteInfo}
-                incompleteInfo={incompleteInfo}
-              />
-            </>
+            <UserInfos
+              newName={newName}
+              setNewName={setNewName}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
+            />
           )}
           {selectedTab === tabs[1] && (
             <UserOwnPetInfos

@@ -145,8 +145,8 @@ const Topbar: React.FC<TopbarType> = (props) => {
             <SettingTab
               key={index}
               onClick={(e) => {
-                const target = e.target as HTMLElement;
-                props.setSelectedTab(target.innerText);
+                const target = e.target as HTMLDivElement;
+                props.setSelectedTab(target.textContent as string);
               }}
               $isActive={props.selectedTab === props.tabs[index]}
             >

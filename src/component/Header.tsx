@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";

@@ -580,10 +580,6 @@ export const PetDiary: React.FC<{
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
   const [openDeleteBox, setOpenDeleteBox] = useState<boolean>(false);
 
-  useEffect(() => {
-    getAuthorPetDiary(profile.uid);
-  }, []);
-
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petDiary/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
@@ -692,19 +688,6 @@ export const PetDiary: React.FC<{
     notifyDispatcher("已更新寵物日記");
     props.setIncompleteInfo(false);
     setDetailDiaryBoxOpen(true);
-  }
-
-  async function getAuthorPetDiary(authorUid: string) {
-    const authorPetDiary: PetDiaryType[] = [];
-    const q = query(
-      collection(db, "petDiaries"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push(info.data() as PetDiaryType);
-    });
-    dispatch(setOwnPetDiary(authorPetDiary));
   }
 
   function renderPetDiaryUploadImg() {

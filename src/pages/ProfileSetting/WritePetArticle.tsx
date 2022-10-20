@@ -558,23 +558,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
     setEditArticleMode(false);
   }
 
-  async function getAuthorArticles(authorUid: string) {
-    const authorPetDiary: OwnArticle[] = [];
-    const q = query(
-      collection(db, "petArticles"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push(info.data() as OwnArticle);
-    });
-    dispatch(setOwnArticle(authorPetDiary));
-  }
-
-  useEffect(() => {
-    getAuthorArticles(profile.uid);
-  }, []);
-
   function addPetArticleUpdateState() {
     const newArticleArr = profile.ownArticles;
     newArticleArr.push({
