@@ -294,9 +294,9 @@ export const PopUpMessage = styled.div`
   left: 50%;
   transform: translateX(-50%);
   top: 40vh;
+  position: fixed;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
-  position: absolute;
   z-index: 2505;
   display: flex;
   flex-direction: column;
