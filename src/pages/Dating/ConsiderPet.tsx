@@ -408,6 +408,21 @@ const ConsiderPetDetail = (props: {
   const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false);
 
   useEffect(() => {
+    async function getShelterUpcomingDates() {
+      let upcomingDate: InviteDating[] = [];
+      const q = query(
+        collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+        orderBy("datingDate")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        upcomingDate.push({
+          ...info.data(),
+          datingDate: info.data().dateAndTime,
+        } as InviteDating);
+      });
+      setShelterDates(upcomingDate);
+    }
     getShelterUpcomingDates();
   }, []);
 
@@ -444,22 +459,6 @@ const ConsiderPetDetail = (props: {
     } else {
       setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
     }
-  }
-
-  async function getShelterUpcomingDates() {
-    let upcomingDate: InviteDating[] = [];
-    const q = query(
-      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push({
-        ...info.data(),
-        datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    setShelterDates(upcomingDate);
   }
 
   async function updateUpcomingDate(list: Card) {

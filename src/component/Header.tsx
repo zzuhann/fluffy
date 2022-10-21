@@ -384,7 +384,6 @@ const Header = () => {
           datingDate: info.data().dateAndTime,
         } as InviteDating);
       });
-      console.log("update");
       dispatch(setUpcomingDateList(upcomingDate));
     }
 
@@ -483,8 +482,9 @@ const Header = () => {
         </Logo>
         <NavBarTag>
           <NavBarContainer>
-            {navbars.map((navbar) => (
+            {navbars.map((navbar, index) => (
               <NavBar
+                key={index}
                 onClick={() => {
                   if (navbar.needToLogin && !profile.isLogged) {
                     gotoProfilePage();
@@ -566,7 +566,7 @@ const Header = () => {
         )}
       </Wrapper>
       <SidebarContainer $isActive={clickBurgerMenu === true}>
-        {navbars.map((navbar) => (
+        {navbars.map((navbar, index) => (
           <NavBar
             onClick={() => {
               setClickBurgerMenu(false);
@@ -576,6 +576,7 @@ const Header = () => {
                 navigate(navbar.targetLink);
               }
             }}
+            key={index}
           >
             {navbar.name}
           </NavBar>

@@ -420,7 +420,7 @@ const Pairing: React.FC = () => {
     if (!profile.isLogged) {
       navigate("/");
     }
-  });
+  }, [profile.isLogged, navigate]);
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {

@@ -73,24 +73,24 @@ const Shelter = () => {
     if (!profile.isShelter) {
       navigate("/");
     }
-    getUpcomingListData();
-  }, []);
 
-  async function getUpcomingListData() {
-    let upcomingDate: InviteDating[] = [];
-    const q = query(
-      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push({
-        ...info.data(),
-        datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    setShelterUpcomingList(upcomingDate);
-  }
+    async function getUpcomingListData() {
+      let upcomingDate: InviteDating[] = [];
+      const q = query(
+        collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+        orderBy("datingDate")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        upcomingDate.push({
+          ...info.data(),
+          datingDate: info.data().dateAndTime,
+        } as InviteDating);
+      });
+      setShelterUpcomingList(upcomingDate);
+    }
+    getUpcomingListData();
+  }, [profile.isShelter, navigate]);
 
   if (!shelterUpcomingList) return null;
 

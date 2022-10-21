@@ -180,34 +180,29 @@ const VetClinic = () => {
   const [clinics, setClinics] = useState<ClinicType[]>([]);
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
   const [nowCountry, setNowCountry] = useState<string>("全台診所");
+
   useEffect(() => {
+    async function getVetClinicData() {
+      const allClinic: ClinicType[] = [];
+      const p = collection(db, "24HoursVetClinics");
+      const querySecond = await getDocs(p);
+      querySecond.forEach((info) => {
+        allClinic.push(
+          info.data() as {
+            name: string;
+            location: string;
+            country: string;
+            phone: string;
+            note: string;
+          }
+        );
+      });
+      clinicRef.current = allClinic;
+      setClinics(allClinic);
+    }
+
     getVetClinicData();
   }, []);
-
-  async function getVetClinicData() {
-    const allClinic: {
-      name: string;
-      location: string;
-      country: string;
-      phone: string;
-      note: string;
-    }[] = [];
-    const p = collection(db, "24HoursVetClinics");
-    const querySecond = await getDocs(p);
-    querySecond.forEach((info) => {
-      allClinic.push(
-        info.data() as {
-          name: string;
-          location: string;
-          country: string;
-          phone: string;
-          note: string;
-        }
-      );
-    });
-    clinicRef.current = allClinic;
-    setClinics(allClinic);
-  }
 
   function changePreferenceArea(target: string) {
     const displayClinic: ClinicType[] = [];

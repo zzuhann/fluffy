@@ -23,7 +23,7 @@ export const navbars = [
 
 export const areaList = ["全台診所", "北部地區", "中部地區", "南部地區"];
 export const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
-
+export const userProfileTabs = ["日記", "文章", "寵物"];
 export const area = [
   "臺北市",
   "新北市",
