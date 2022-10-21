@@ -460,11 +460,20 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   function updateNewArticleDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petArticles/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        updateArticleInfo(downloadURL);
-      });
-    });
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          updateArticleInfo(downloadURL);
+        });
+      }
+    );
   }
 
   async function updateArticleInfo(imgURL: string) {

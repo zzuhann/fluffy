@@ -583,11 +583,20 @@ export const PetDiary: React.FC<{
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petDiary/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        updatePetDiaryInfo(downloadURL);
-      });
-    });
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          updatePetDiaryInfo(downloadURL);
+        });
+      }
+    );
   }
   async function addPetDiaryDoc(imgURL: string) {
     await addDoc(collection(db, `/petDiaries`), {

@@ -330,22 +330,31 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     if (newImg.file) {
       const storageRef = ref(storage, `images/${profile.uid}`);
       const uploadTask = uploadBytesResumable(storageRef, newImg.file as File);
-      uploadTask.on("state_changed", () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          dispatch(setName(props.newName));
-          dispatch(setImage(downloadURL));
-          updateAllInfoAboutUser(downloadURL);
-        });
-      });
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("upload");
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            dispatch(setName(props.newName));
+            dispatch(setImage(downloadURL));
+            updateAllInfoAboutUser(downloadURL);
+            notifyDispatcher("已更新個人資訊");
+            setEditProfileMode(false);
+          });
+        }
+      );
     } else {
       dispatch(setName(props.newName));
       updateAllInfoAboutUser(profile.img as string);
+      notifyDispatcher("已更新個人資訊");
+      setEditProfileMode(false);
     }
-    notifyDispatcher("已更新個人資訊");
-    setEditProfileMode(false);
   }
-
-  console.log(profile.img);
 
   async function updateAllCommentsUserData(newImg: string) {
     const comments = query(
@@ -353,16 +362,12 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       where("useruid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(comments);
-    const promises: Promise<void>[] = [];
     querySnapshot.forEach((d) => {
       const targetRef = doc(db, d.ref.path);
-      promises.push(
-        updateDoc(targetRef, {
-          user: { name: props.newName, img: newImg },
-        })
-      );
+      updateDoc(targetRef, {
+        user: { name: props.newName, img: newImg },
+      });
     });
-    await Promise.all(promises);
   }
 
   function renderUserPreviewImg() {
