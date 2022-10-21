@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { Profile, OwnArticle } from "../../reducers/profile";
+import { Profile } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,
@@ -52,7 +52,6 @@ import { imgType, UploadImgType } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import {
   ToPreviewImgEmptyImgToString,
-  ToPreviewImgEmptyImgToNull,
   ToPreviewImgEmptyImgToNullArticle,
 } from "../../component/PreviewImg";
 
@@ -460,11 +459,20 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   function updateNewArticleDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petArticles/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        updateArticleInfo(downloadURL);
-      });
-    });
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          updateArticleInfo(downloadURL);
+        });
+      }
+    );
   }
 
   async function updateArticleInfo(imgURL: string) {
@@ -474,7 +482,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       where("authorUid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach(async (d) => {
       const ownArticleRef = doc(db, `/petArticles`, d.id);
       if (imgURL) {
@@ -557,23 +565,6 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
     notifyDispatcher("已更新寵物文章");
     setEditArticleMode(false);
   }
-
-  async function getAuthorArticles(authorUid: string) {
-    const authorPetDiary: OwnArticle[] = [];
-    const q = query(
-      collection(db, "petArticles"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push(info.data() as OwnArticle);
-    });
-    dispatch(setOwnArticle(authorPetDiary));
-  }
-
-  useEffect(() => {
-    getAuthorArticles(profile.uid);
-  }, []);
 
   function addPetArticleUpdateState() {
     const newArticleArr = profile.ownArticles;

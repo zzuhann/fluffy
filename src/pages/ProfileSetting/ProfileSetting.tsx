@@ -14,6 +14,7 @@ import {
 } from "../../functions/commonFunctionAndType";
 import Topbar from "./TopBar";
 import UserOwnPetInfos from "./UserOwnPetInfos";
+import { tabs } from "../../utils/ConstantInfo";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -66,7 +67,6 @@ const ProfileSetting = () => {
   const profile = useSelector<{ profile: Profile }>(
     (state) => state.profile
   ) as Profile;
-  const tabs = ["個人資訊", "寵物資料", "寵物日記", "寵物文章"];
   const [selectedTab, setSelectedTab] = useState<string>("個人資訊");
   const [newName, setNewName] = useState<string>("");
   const [articleCover, setArticleCover] = useState<imgType>(imgInitialState);
@@ -96,14 +96,12 @@ const ProfileSetting = () => {
       <Wrapper>
         <MainInfo>
           {selectedTab === tabs[0] && (
-            <>
-              <UserInfos
-                newName={newName}
-                setNewName={setNewName}
-                setIncompleteInfo={setIncompleteInfo}
-                incompleteInfo={incompleteInfo}
-              />
-            </>
+            <UserInfos
+              newName={newName}
+              setNewName={setNewName}
+              setIncompleteInfo={setIncompleteInfo}
+              incompleteInfo={incompleteInfo}
+            />
           )}
           {selectedTab === tabs[1] && (
             <UserOwnPetInfos

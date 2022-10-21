@@ -22,7 +22,6 @@ import {
   setOwnArticle,
   setEmail,
   clearProfileInfo,
-  setNotification,
   setShelter,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./img/defaultprofile.png";
@@ -37,8 +36,10 @@ import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
 import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
+import { navbars } from "../utils/ConstantInfo";
+import { useNotifyDispatcher } from "../functions/SidebarNotify";
 
-const Wrapper = styled.header<{ $isActive: boolean }>`
+const Wrapper = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -94,17 +95,16 @@ const SidebarContainer = styled.ul<{ $isActive: boolean }>`
 
 export const BlackMask = styled.div<{
   $isActive: boolean;
-  $Height: number;
 }>`
   opacity: ${(props) => (props.$isActive ? "1" : "0")};
   overflow-y: hidden;
   transition: 0.3s;
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.8);
   left: 0;
   top: 0;
   width: 100%;
-  height: ${(props) => props.$Height}px;
+  height: ${(props) => (props.$isActive ? "100%" : "0")};
   z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
@@ -295,9 +295,9 @@ export const PopUpMessage = styled.div`
   left: 50%;
   transform: translateX(-50%);
   top: 40vh;
+  position: fixed;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
-  position: absolute;
   z-index: 2505;
   display: flex;
   flex-direction: column;
@@ -334,86 +334,69 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const nowLocation = useLocation();
-  const [scroll, setScroll] = useState<number>(0);
-  const [pageHigh, setPageHigh] = useState<number>(0);
+  const notifyDispatcher = useNotifyDispatcher();
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
   const [openPopupBox, setOpenPopupBox] = useState(false);
   const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
-  const navbars = [
-    {
-      name: "配對專區",
-      targetLink: "/dating",
-      needToLogin: true,
-    },
-    {
-      name: "寵物日記",
-      targetLink: "/petdiary",
-      needToLogin: false,
-    },
-    {
-      name: "寵物文章補給",
-      targetLink: "/articles",
-      needToLogin: false,
-    },
-    {
-      name: "24 小時動物醫院",
-      targetLink: "/clinic",
-      needToLogin: false,
-    },
-  ];
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    async function getAuthorPetDiary(authorUid: string) {
+      const authorPetDiary: PetDiaryType[] = [];
+      const q = query(
+        collection(db, "petDiaries"),
+        where("authorUid", "==", authorUid),
+        orderBy("postTime")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+      });
+      dispatch(setOwnPetDiary(authorPetDiary));
+    }
 
-  useEffect(() => {
-    window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("click", togglePageHeight);
-  }, []);
+    async function getAuthorArticles(authorUid: string) {
+      const authorPetDiary: OwnArticle[] = [];
+      const q = query(
+        collection(db, "petArticles"),
+        where("authorUid", "==", authorUid)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({
+          id: info.id,
+          ...info.data(),
+        } as OwnArticle);
+      });
+      dispatch(setOwnArticle(authorPetDiary));
+    }
 
-  function togglePageHeight() {
-    let pageHeight = document.documentElement.offsetHeight;
-    setPageHigh(pageHeight);
-  }
+    async function getUpcomingListData(uid: string) {
+      let upcomingDate: InviteDating[] = [];
+      const q = query(
+        collection(db, "memberProfiles", uid, "upcomingDates"),
+        orderBy("datingDate")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        upcomingDate.push({
+          ...info.data(),
+          datingDate: info.data().dateAndTime,
+        } as InviteDating);
+      });
+      dispatch(setUpcomingDateList(upcomingDate));
+    }
 
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
+    async function getOwnPetList(id: string) {
+      const allOwnPet: OwnPet[] = [];
+      const q = collection(db, `memberProfiles/${id}/ownPets`);
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        allOwnPet.push(info.data() as OwnPet);
+      });
+      dispatch(setOwnPets(allOwnPet));
+    }
 
-  async function getAuthorPetDiary(authorUid: string) {
-    const authorPetDiary: PetDiaryType[] = [];
-    const q = query(
-      collection(db, "petDiaries"),
-      where("authorUid", "==", authorUid),
-      orderBy("postTime")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
-    });
-    dispatch(setOwnPetDiary(authorPetDiary));
-  }
-
-  async function getAuthorArticles(authorUid: string) {
-    const authorPetDiary: OwnArticle[] = [];
-    const q = query(
-      collection(db, "petArticles"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({
-        id: info.id,
-        ...info.data(),
-      } as OwnArticle);
-    });
-    dispatch(setOwnArticle(authorPetDiary));
-  }
-
-  useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         getOwnPetList(user.uid);
@@ -443,43 +426,14 @@ const Header = () => {
         dispatch(targetRegisterOrLogin("login"));
       }
     });
-  }, []);
-
-  async function getUpcomingListData(uid: string) {
-    let upcomingDate: InviteDating[] = [];
-    const q = query(
-      collection(db, "memberProfiles", uid, "upcomingDates"),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push({
-        ...info.data(),
-        datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    dispatch(setUpcomingDateList(upcomingDate));
-  }
-
-  async function getOwnPetList(id: string) {
-    const allOwnPet: OwnPet[] = [];
-    const q = collection(db, `memberProfiles/${id}/ownPets`);
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      allOwnPet.push(info.data() as OwnPet);
-    });
-    dispatch(setOwnPets(allOwnPet));
-  }
+  }, [dispatch]);
 
   function signOutProfile() {
     signOut(auth)
       .then(() => {
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
-        dispatch(setNotification("登出成功"));
-        setTimeout(() => {
-          dispatch(setNotification(""));
-        }, 3000);
+        notifyDispatcher("登出成功");
         if (nowLocation.pathname === "/dating") {
           navigate("/");
         }
@@ -510,12 +464,11 @@ const Header = () => {
     <>
       <BlackMask
         $isActive={clickBurgerMenu === true}
-        $Height={clickBurgerMenu ? pageHigh : 0}
         onClick={() =>
           clickBurgerMenu ? setClickBurgerMenu(false) : setClickBurgerMenu(true)
         }
       />
-      <Wrapper $isActive={scroll > 0}>
+      <Wrapper>
         <BurgerMenu
           src={burgerMenu}
           onClick={() =>
@@ -529,8 +482,9 @@ const Header = () => {
         </Logo>
         <NavBarTag>
           <NavBarContainer>
-            {navbars.map((navbar) => (
+            {navbars.map((navbar, index) => (
               <NavBar
+                key={index}
                 onClick={() => {
                   if (navbar.needToLogin && !profile.isLogged) {
                     gotoProfilePage();
@@ -562,10 +516,7 @@ const Header = () => {
                 {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
               </PopUpNote>
             </PopUpMessage>
-            <BlackMask
-              $isActive={openPopupBox === true}
-              $Height={openPopupBox ? pageHigh : 0}
-            />
+            <BlackMask $isActive={openPopupBox === true} />
           </>
         )}
 
@@ -615,7 +566,7 @@ const Header = () => {
         )}
       </Wrapper>
       <SidebarContainer $isActive={clickBurgerMenu === true}>
-        {navbars.map((navbar) => (
+        {navbars.map((navbar, index) => (
           <NavBar
             onClick={() => {
               setClickBurgerMenu(false);
@@ -625,6 +576,7 @@ const Header = () => {
                 navigate(navbar.targetLink);
               }
             }}
+            key={index}
           >
             {navbar.name}
           </NavBar>

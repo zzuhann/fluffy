@@ -19,7 +19,7 @@ export const PopupHint = styled.div`
   top: 100px;
   padding: 20px 25px;
   letter-spacing: 1.5px;
-  z-index: 100;
+  z-index: 2503;
   font-size: 18px;
   animation: ${PopupAnimation} 3s ease infinite;
 `;

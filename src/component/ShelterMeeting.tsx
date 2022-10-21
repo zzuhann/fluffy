@@ -170,7 +170,7 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
           where("id", "==", allUpcomingList[props.nowMeetingShelter.index].id)
         );
         const querySnapshot = await getDocs(q);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
         querySnapshot.forEach(async (d) => {
           const updatingRef = doc(
             db,
@@ -214,7 +214,7 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
     }
   };
 
-  const wsSend = (type: string, data: any) => {
+  const wsSend = (type: string, data: object | string) => {
     wsRef.current.send(
       JSON.stringify({
         username: profile.uid,

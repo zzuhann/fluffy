@@ -26,6 +26,7 @@ import { db } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
 import defaultProfile from "./img/defaultProfile.png";
 import noDiary from "./img/pet_darui_cat.png";
+import { userProfileTabs } from "../../utils/ConstantInfo";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -444,11 +445,7 @@ const PetYearAge = styled.div`
 `;
 
 const UserProfile = () => {
-  const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const tabs = ["日記", "文章", "寵物"];
   const [userInfo, setUserInfo] = useState<{ img: string; name: string }>({
     img: "",
     name: "",
@@ -461,40 +458,51 @@ const UserProfile = () => {
   const [nowChoosePet, setNowChoosePet] = useState<string>("全部");
   const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
 
-  async function getAuthorPetDiary(authorUid: string) {
-    const authorPetDiary: PetDiaryType[] = [];
-    const q = query(
-      collection(db, "petDiaries"),
-      where("authorUid", "==", authorUid),
-      orderBy("takePhotoTime")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
-    });
-    setUserDiary(authorPetDiary);
-  }
-
-  async function getAuthorArticles(authorUid: string) {
-    const authorPetDiary: OwnArticle[] = [];
-    const q = query(
-      collection(db, "petArticles"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push({
-        id: info.id,
-        ...info.data(),
-      } as OwnArticle);
-    });
-    setUserArticle(authorPetDiary);
-  }
-
   useEffect(() => {
     getOwnPetList(id as string);
     getAuthorPetDiary(id as string);
     getAuthorArticles(id as string);
+    getUserInfo();
+
+    async function getOwnPetList(id: string) {
+      const allOwnPet: OwnPet[] = [];
+      const q = collection(db, `memberProfiles/${id}/ownPets`);
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        allOwnPet.push(info.data() as OwnPet);
+      });
+      setUserPet(allOwnPet);
+    }
+
+    async function getAuthorPetDiary(authorUid: string) {
+      const authorPetDiary: PetDiaryType[] = [];
+      const q = query(
+        collection(db, "petDiaries"),
+        where("authorUid", "==", authorUid),
+        orderBy("takePhotoTime")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
+      });
+      setUserDiary(authorPetDiary);
+    }
+
+    async function getAuthorArticles(authorUid: string) {
+      const authorPetDiary: OwnArticle[] = [];
+      const q = query(
+        collection(db, "petArticles"),
+        where("authorUid", "==", authorUid)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiary.push({
+          id: info.id,
+          ...info.data(),
+        } as OwnArticle);
+      });
+      setUserArticle(authorPetDiary);
+    }
 
     async function getUserInfo() {
       const docRef = doc(db, "memberProfiles", id as string);
@@ -508,18 +516,7 @@ const UserProfile = () => {
         navigate("/");
       }
     }
-    getUserInfo();
-  }, [id]);
-
-  async function getOwnPetList(id: string) {
-    const allOwnPet: OwnPet[] = [];
-    const q = collection(db, `memberProfiles/${id}/ownPets`);
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      allOwnPet.push(info.data() as OwnPet);
-    });
-    setUserPet(allOwnPet);
-  }
+  }, [id, navigate]);
 
   if (!userDiary) return null;
   if (!userArticle) return null;
@@ -545,7 +542,7 @@ const UserProfile = () => {
         </UserInfo>
         <UserName>{userInfo.name}</UserName>
         <Tabs>
-          {tabs.map((tab, index) => (
+          {userProfileTabs.map((tab, index) => (
             <Tab
               key={index}
               onClick={() => {

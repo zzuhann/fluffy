@@ -228,20 +228,22 @@ const AllPetDiaries = () => {
   const [openLikeBox, setOpenLikeBox] = useState<boolean>(false);
   const [nowid, setNowId] = useState<number>(-1);
 
-  async function getPetDiaries() {
-    const authorPetDiaries: AllPetDiariesType[] = [];
-    const q = query(collection(db, "petDiaries"), orderBy("postTime", "desc"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiaries.push({
-        id: info.id,
-        ...info.data(),
-      } as AllPetDiariesType);
-    });
-    setAllPetArticles(authorPetDiaries);
-  }
-
   useEffect(() => {
+    async function getPetDiaries() {
+      const authorPetDiaries: AllPetDiariesType[] = [];
+      const q = query(
+        collection(db, "petDiaries"),
+        orderBy("postTime", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetDiaries.push({
+          id: info.id,
+          ...info.data(),
+        } as AllPetDiariesType);
+      });
+      setAllPetArticles(authorPetDiaries);
+    }
     getPetDiaries();
   }, []);
   return (

@@ -179,20 +179,19 @@ const AllArticles = () => {
     []
   );
 
-  async function getAuthorArticles() {
-    const authorPetAricles: AllPetArticlesType[] = [];
-    const q = query(collection(db, "petArticles"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetAricles.push({
-        id: info.id,
-        ...info.data(),
-      } as AllPetArticlesType);
-    });
-    setAllPetArticles(authorPetAricles);
-  }
-
   useEffect(() => {
+    async function getAuthorArticles() {
+      const authorPetAricles: AllPetArticlesType[] = [];
+      const q = query(collection(db, "petArticles"));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        authorPetAricles.push({
+          id: info.id,
+          ...info.data(),
+        } as AllPetArticlesType);
+      });
+      setAllPetArticles(authorPetAricles);
+    }
     getAuthorArticles();
   }, []);
 
