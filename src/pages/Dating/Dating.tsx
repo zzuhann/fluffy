@@ -402,7 +402,7 @@ const Pairing: React.FC = () => {
   const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
   const chosenIdRef = useRef<number[]>([]);
   const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
-  const [datingQty, setDatingQty] = useState<number>(0);
+  const [datingArr, setDatingArr] = useState<number[]>([]);
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
@@ -556,7 +556,7 @@ const Pairing: React.FC = () => {
             ? setOpenDatingFeatureMenu(false)
             : setOpenDatingFeatureMenu(true);
         }}
-        $Notification={matchSuccessQty > 0 || datingQty > 0}
+        $Notification={matchSuccessQty > 0 || datingArr.length > 0}
       >
         <OpenToggleTabsIcon src={menuburger} />
       </OpenToggleTabs>
@@ -590,8 +590,8 @@ const Pairing: React.FC = () => {
       <TogglePairingTabs
         matchSuccessQty={matchSuccessQty}
         setMatchSuccessQty={setMatchSuccessQty}
-        datingQty={datingQty}
-        setDatingQty={setDatingQty}
+        setDatingArr={setDatingArr}
+        datingArr={datingArr}
         tab={tab}
         setTab={setTab}
         getListsData={getListsData}
@@ -768,7 +768,8 @@ const Pairing: React.FC = () => {
                 nowChosenPetIndex={nowChosenPetIndex}
                 setConsiderDetail={setConsiderDetail}
                 considerDetail={considerDetail}
-                setDatingQty={setDatingQty}
+                setDatingArr={setDatingArr}
+                datingArr={datingArr}
               />
             )}
             <ConsiderList>
@@ -789,7 +790,6 @@ const Pairing: React.FC = () => {
                   tab={tab}
                   considerDetail={considerDetail}
                   nowChosenPetIndex={nowChosenPetIndex}
-                  setDatingQty={setDatingQty}
                   getUpcomingListData={getUpcomingListData}
                 />
               )}

@@ -331,7 +331,6 @@ type ConsiderSingleCard = {
   tab: string;
   considerDetail: Boolean;
   nowChosenPetIndex: number;
-  setDatingQty: Dispatch<SetStateAction<number>>;
   getUpcomingListData: () => void;
 };
 
@@ -341,9 +340,6 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
-  const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
 
   useEffect(() => {
     props.getUpcomingListData();
@@ -377,7 +373,8 @@ const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;
   considerDetail: Boolean;
-  setDatingQty: Dispatch<SetStateAction<number>>;
+  setDatingArr: Dispatch<SetStateAction<number[]>>;
+  datingArr: number[];
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -682,6 +679,11 @@ const ConsiderPetDetail = (props: {
             <DeleteCheckBoxBtnContainer>
               <WarningDeleteBtn
                 onClick={async () => {
+                  let newUpcomingDatingArr = props.datingArr.filter(
+                    (date) =>
+                      date !== dating.considerList[props.nowChosenPetIndex].id
+                  );
+                  props.setDatingArr(newUpcomingDatingArr);
                   deleteFirebaseData(
                     `/memberProfiles/${profile.uid}/considerLists`,
                     "id",
@@ -703,6 +705,7 @@ const ConsiderPetDetail = (props: {
                   newConsiderList.splice(props.nowChosenPetIndex, 1);
                   dispatch(setConsiderList(newConsiderList));
                   props.setConsiderDetail(false);
+
                   dispatch(setNotification("已更新考慮領養清單"));
                   setTimeout(() => {
                     dispatch(setNotification(""));
@@ -867,8 +870,11 @@ const ConsiderPetDetail = (props: {
                 sendEmailToNotifyUser(
                   dating.considerList[props.nowChosenPetIndex]
                 );
-                props.setDatingQty((prev) => prev + 1);
-                // 改成用陣列 filter
+                let newDatingArr = [...props.datingArr];
+                newDatingArr.push(
+                  dating.considerList[props.nowChosenPetIndex].id
+                );
+                props.setDatingArr(newDatingArr);
                 setInviteBoxOpen(false);
                 dispatch(
                   setNotification("申請成功！可至「即將到來的約會」查看")

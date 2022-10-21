@@ -75,8 +75,8 @@ export type TogglePairingTabsProps = {
   setMatchSuccessQty: Dispatch<SetStateAction<number>>;
   setOpenDatingFeatureMenu: Dispatch<SetStateAction<boolean>>;
   openDatingFeatureMenu: boolean;
-  datingQty: number;
-  setDatingQty: Dispatch<SetStateAction<number>>;
+  setDatingArr: Dispatch<SetStateAction<number[]>>;
+  datingArr: number[];
 };
 
 const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
@@ -109,12 +109,12 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         onClick={() => {
           props.setTab("upcomingDate");
           props.getUpcomingListData();
-          props.setDatingQty(0);
+          props.setDatingArr([]);
         }}
         $isActive={props.tab === "upcomingDate"}
       >
-        {props.datingQty > 0 && (
-          <AlertMatchQty>+{props.datingQty}</AlertMatchQty>
+        {props.datingArr.length > 0 && (
+          <AlertMatchQty>+{props.datingArr.length}</AlertMatchQty>
         )}
         <PairingTab>即將到來的約會</PairingTab>
       </PairingTabContainer>
