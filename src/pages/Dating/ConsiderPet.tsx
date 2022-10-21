@@ -489,6 +489,29 @@ const ConsiderPetDetail = (props: {
     );
   }
 
+  function updateUpcomingDateState(list: Card) {
+    let newUpcomingDate = [...dating.upcomingDateList];
+    newUpcomingDate.push({
+      id: list.id,
+      area: list.area,
+      shleterPkid: list.shleterPkid,
+      shelterName: list.shelterName,
+      shelterAddress: list.shelterAddress,
+      shelterTel: list.shelterTel,
+      kind: list.kind,
+      sex: list.sex,
+      color: list.color,
+      sterilization: list.sterilization,
+      image: list.image,
+      datingDate: inviteDatingInfo.date as Date,
+      inviter: inviteDatingInfo.name,
+      time: inviteDatingInfo.time,
+      way: inviteDatingInfo.way,
+      doneWithMeeting: false,
+    });
+    dispatch(setUpcomingDateList(newUpcomingDate));
+  }
+
   async function updateShelterUpcomingDate(list: Card) {
     await addDoc(
       collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
@@ -833,31 +856,9 @@ const ConsiderPetDetail = (props: {
                 updateUpcomingDate(
                   dating.considerList[props.nowChosenPetIndex]
                 );
-                let newUpcomingDate = [...dating.upcomingDateList];
-                newUpcomingDate.push({
-                  id: dating.considerList[props.nowChosenPetIndex].id,
-                  area: dating.considerList[props.nowChosenPetIndex].area,
-                  shleterPkid:
-                    dating.considerList[props.nowChosenPetIndex].shleterPkid,
-                  shelterName:
-                    dating.considerList[props.nowChosenPetIndex].shelterName,
-                  shelterAddress:
-                    dating.considerList[props.nowChosenPetIndex].shelterAddress,
-                  shelterTel:
-                    dating.considerList[props.nowChosenPetIndex].shelterTel,
-                  kind: dating.considerList[props.nowChosenPetIndex].kind,
-                  sex: dating.considerList[props.nowChosenPetIndex].sex,
-                  color: dating.considerList[props.nowChosenPetIndex].color,
-                  sterilization:
-                    dating.considerList[props.nowChosenPetIndex].sterilization,
-                  image: dating.considerList[props.nowChosenPetIndex].image,
-                  datingDate: inviteDatingInfo.date as Date,
-                  inviter: inviteDatingInfo.name,
-                  time: inviteDatingInfo.time,
-                  way: inviteDatingInfo.way,
-                  doneWithMeeting: false,
-                });
-                dispatch(setUpcomingDateList(newUpcomingDate));
+                updateUpcomingDateState(
+                  dating.considerList[props.nowChosenPetIndex]
+                );
                 if (meetingWay === "視訊") {
                   updateShelterUpcomingDate(
                     dating.considerList[props.nowChosenPetIndex]
