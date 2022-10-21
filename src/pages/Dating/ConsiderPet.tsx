@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { area, shelterInfo } from "./ConstantInfo";
+import { area, shelterInfo } from "../../utils/ConstantInfo";
 import { Dating } from "../../reducers/dating";
 import { db, deleteFirebaseData } from "../../utils/firebase";
 import {
@@ -13,7 +13,10 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
-import { setConsiderList } from "../../functions/datingReducerFunction";
+import {
+  setConsiderList,
+  setUpcomingDateList,
+} from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import findplace from "./img/loupe.png";
@@ -32,7 +35,8 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
-import { setNotification } from "../../functions/profileReducerFunction";
+import { BlackMask } from "../../component/Header";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -88,7 +92,7 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   flex: 1;
   flex-basis: 45%;
-  padding: 5px;
+  padding: 3px;
   margin-right: 15px;
   margin-top: 5px;
   font-size: 16px;
@@ -101,42 +105,24 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   }
 `;
 
-const PetCard = styled.div<{ $Top: number }>`
+const PetCard = styled.div`
   width: 350px;
-  /* height: 680px; */
   border-radius: 10px;
   overflow: hidden;
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   left: 50%;
-  top: ${(props) => props.$Top - 40}px;
+  top: 15vh;
   transform: translateX(-50%);
-  box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.7);
-  z-index: 2501;
+  z-index: 2502;
   padding-bottom: 50px;
-`;
-
-const BlackMask = styled.div<{
-  $isActive: boolean;
-  $Height: number;
-}>`
-  opacity: ${(props) => (props.$isActive ? "1" : "0")};
-  overflow-y: hidden;
-  transition: 0.3s;
-  position: fixed;
-  background-color: transparent;
-  width: 100%;
-  top: 0;
-  left: 0;
-  height: ${(props) => props.$Height}px;
-  z-index: ${(props) => (props.$isActive ? "2500" : "0")};
 `;
 
 const PetImg = styled.img`
   width: 350px;
-  height: 350px;
+  height: 300px;
   object-fit: cover;
 `;
 const PetInfoContainer = styled.div`
@@ -219,16 +205,20 @@ const MeetingWayBtn = styled(Btn)<{ $isActive: boolean }>`
   }
 `;
 
-const InviteDatingBox = styled.div<{ $Top: number }>`
+const InviteDatingBox = styled.div`
   width: 250px;
-  position: absolute;
-  right: 100px;
-  top: ${(props) => props.$Top - 40}px;
+  position: fixed;
+  left: 65%;
+  top: 10vh;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
   letter-spacing: 1.5px;
   z-index: 2502;
+  @media (max-width: 766px) {
+    right: 50px;
+    left: auto;
+  } ;
 `;
 
 const InviteDatingTitle = styled.div`
@@ -237,7 +227,7 @@ const InviteDatingTitle = styled.div`
   margin-bottom: 10px;
 `;
 const InviteInfoContainer = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   display: flex;
   flex-direction: column;
 `;
@@ -247,7 +237,7 @@ const InviteInfoLabel = styled.label`
 const InviteInfoInput = styled.input`
   border: 2px solid #d1cfcf;
   border-radius: 5px;
-  padding: 10px 15px;
+  padding: 5px;
 `;
 
 const CloseInviteBoxBtn = styled.img`
@@ -341,7 +331,6 @@ type ConsiderSingleCard = {
   tab: string;
   considerDetail: Boolean;
   nowChosenPetIndex: number;
-  setDatingQty: Dispatch<SetStateAction<number>>;
   getUpcomingListData: () => void;
 };
 
@@ -351,26 +340,10 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
   ) as Dating;
-  const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const [scroll, setScroll] = useState<number>(0);
-
-  useEffect(() => {
-    if (!props.considerDetail) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [props.considerDetail]);
 
   useEffect(() => {
     props.getUpcomingListData();
   }, []);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   if (!dating.considerList) return null;
   return (
@@ -392,17 +365,6 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           </ConsiderTitle>
         </ConsiderPetCard>
       ))}
-      {props.considerDetail ? (
-        <ConsiderPetDetail
-          nowChosenPetIndex={props.nowChosenPetIndex}
-          setConsiderDetail={props.setConsiderDetail}
-          considerDetail={props.considerDetail}
-          scroll={scroll}
-          setDatingQty={props.setDatingQty}
-        />
-      ) : (
-        ""
-      )}
     </>
   );
 };
@@ -411,8 +373,8 @@ const ConsiderPetDetail = (props: {
   nowChosenPetIndex: number;
   setConsiderDetail: (considerDetail: Boolean) => void;
   considerDetail: Boolean;
-  scroll: number;
-  setDatingQty: Dispatch<SetStateAction<number>>;
+  setDatingArr: Dispatch<SetStateAction<number[]>>;
+  datingArr: number[];
 }) => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -421,6 +383,7 @@ const ConsiderPetDetail = (props: {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const [inviteDatingInfo, setInviteDatingInfo] = useState<{
     name: string;
     email: string;
@@ -437,7 +400,6 @@ const ConsiderPetDetail = (props: {
     "15:30",
   ]);
   const [timeIndex, setTimeIndex] = useState<number>(-1);
-  const [pageHigh, setPageHigh] = useState<number>(0);
   const [repeatInvite, setRepeatInvite] = useState(false);
   const [incompleteInfo, setIncompleteInfo] = useState(false);
   const [openDeleteBox, setOpenDeleteBox] = useState(false);
@@ -446,11 +408,21 @@ const ConsiderPetDetail = (props: {
   const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false);
 
   useEffect(() => {
-    window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("scroll", togglePageHeight);
-  }, []);
-
-  useEffect(() => {
+    async function getShelterUpcomingDates() {
+      let upcomingDate: InviteDating[] = [];
+      const q = query(
+        collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
+        orderBy("datingDate")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((info) => {
+        upcomingDate.push({
+          ...info.data(),
+          datingDate: info.data().dateAndTime,
+        } as InviteDating);
+      });
+      setShelterDates(upcomingDate);
+    }
     getShelterUpcomingDates();
   }, []);
 
@@ -489,27 +461,6 @@ const ConsiderPetDetail = (props: {
     }
   }
 
-  function togglePageHeight() {
-    let pageHeight = document.documentElement.offsetHeight;
-    setPageHigh(pageHeight);
-  }
-
-  async function getShelterUpcomingDates() {
-    let upcomingDate: InviteDating[] = [];
-    const q = query(
-      collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      upcomingDate.push({
-        ...info.data(),
-        datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    setShelterDates(upcomingDate);
-  }
-
   async function updateUpcomingDate(list: Card) {
     await addDoc(
       collection(db, `/memberProfiles/${profile.uid}/upcomingDates`),
@@ -533,6 +484,29 @@ const ConsiderPetDetail = (props: {
         doneWithMeeting: false,
       }
     );
+  }
+
+  function updateUpcomingDateState(list: Card) {
+    let newUpcomingDate = [...dating.upcomingDateList];
+    newUpcomingDate.push({
+      id: list.id,
+      area: list.area,
+      shleterPkid: list.shleterPkid,
+      shelterName: list.shelterName,
+      shelterAddress: list.shelterAddress,
+      shelterTel: list.shelterTel,
+      kind: list.kind,
+      sex: list.sex,
+      color: list.color,
+      sterilization: list.sterilization,
+      image: list.image,
+      datingDate: inviteDatingInfo.date as Date,
+      inviter: inviteDatingInfo.name,
+      time: inviteDatingInfo.time,
+      way: inviteDatingInfo.way,
+      doneWithMeeting: false,
+    });
+    dispatch(setUpcomingDateList(newUpcomingDate));
   }
 
   async function updateShelterUpcomingDate(list: Card) {
@@ -586,16 +560,8 @@ const ConsiderPetDetail = (props: {
 
   return (
     <>
-      <BlackMask
-        $isActive={props.considerDetail === true}
-        $Height={props.considerDetail ? pageHigh : 0}
-        onClick={() =>
-          props.considerDetail
-            ? props.setConsiderDetail(false)
-            : props.setConsiderDetail(true)
-        }
-      />
-      <PetCard $Top={props.scroll}>
+      <BlackMask $isActive={props.considerDetail as boolean} />
+      <PetCard>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}
           alt=""
@@ -713,6 +679,11 @@ const ConsiderPetDetail = (props: {
             <DeleteCheckBoxBtnContainer>
               <WarningDeleteBtn
                 onClick={async () => {
+                  let newUpcomingDatingArr = props.datingArr.filter(
+                    (date) =>
+                      date !== dating.considerList[props.nowChosenPetIndex].id
+                  );
+                  props.setDatingArr(newUpcomingDatingArr);
                   deleteFirebaseData(
                     `/memberProfiles/${profile.uid}/considerLists`,
                     "id",
@@ -734,10 +705,7 @@ const ConsiderPetDetail = (props: {
                   newConsiderList.splice(props.nowChosenPetIndex, 1);
                   dispatch(setConsiderList(newConsiderList));
                   props.setConsiderDetail(false);
-                  dispatch(setNotification("已更新考慮領養清單"));
-                  setTimeout(() => {
-                    dispatch(setNotification(""));
-                  }, 3000);
+                  notifyDispatcher("已更新考慮領養清單");
                 }}
               >
                 確定
@@ -754,7 +722,7 @@ const ConsiderPetDetail = (props: {
         )}
       </PetCard>
       {inviteBoxOpen ? (
-        <InviteDatingBox $Top={props.scroll}>
+        <InviteDatingBox>
           <InviteDatingTitle>
             申請與 {dating.considerList[props.nowChosenPetIndex].id} 約會
           </InviteDatingTitle>
@@ -887,6 +855,9 @@ const ConsiderPetDetail = (props: {
                 updateUpcomingDate(
                   dating.considerList[props.nowChosenPetIndex]
                 );
+                updateUpcomingDateState(
+                  dating.considerList[props.nowChosenPetIndex]
+                );
                 if (meetingWay === "視訊") {
                   updateShelterUpcomingDate(
                     dating.considerList[props.nowChosenPetIndex]
@@ -895,14 +866,13 @@ const ConsiderPetDetail = (props: {
                 sendEmailToNotifyUser(
                   dating.considerList[props.nowChosenPetIndex]
                 );
-                props.setDatingQty((prev) => prev + 1);
-                setInviteBoxOpen(false);
-                dispatch(
-                  setNotification("申請成功！可至「即將到來的約會」查看")
+                let newDatingArr = [...props.datingArr];
+                newDatingArr.push(
+                  dating.considerList[props.nowChosenPetIndex].id
                 );
-                setTimeout(() => {
-                  dispatch(setNotification(""));
-                }, 3000);
+                props.setDatingArr(newDatingArr);
+                setInviteBoxOpen(false);
+                notifyDispatcher("申請成功！可至「即將到來的約會」查看");
               }}
             >
               送出邀請

@@ -274,10 +274,12 @@ const UserInfos: React.FC<userInfoType> = (props) => {
   });
 
   useEffect(() => {
-    props.setNewName(profile.name);
-    setDefaultUrl(profile.img as string);
-    setNewImg({ ...newImg, url: profile.img as string });
-  }, []);
+    if (profile.name && props.newName === "") {
+      props.setNewName(profile.name);
+      setDefaultUrl(profile.img as string);
+      setNewImg({ ...newImg, url: profile.img as string });
+    }
+  }, [profile.name]);
 
   async function updateAllInfoAboutUser(imgURL: string) {
     const userProfileRef = doc(db, "memberProfiles", profile.uid);
@@ -328,18 +330,29 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     if (newImg.file) {
       const storageRef = ref(storage, `images/${profile.uid}`);
       const uploadTask = uploadBytesResumable(storageRef, newImg.file as File);
-      uploadTask.on("state_changed", () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          dispatch(setName(props.newName));
-          dispatch(setImage(downloadURL));
-          notifyDispatcher("已更新個人資訊");
-          updateAllInfoAboutUser(downloadURL);
-        });
-      });
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("upload");
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            dispatch(setName(props.newName));
+            dispatch(setImage(downloadURL));
+            updateAllInfoAboutUser(downloadURL);
+            notifyDispatcher("已更新個人資訊");
+            setEditProfileMode(false);
+          });
+        }
+      );
     } else {
       dispatch(setName(props.newName));
-      notifyDispatcher("已更新個人資訊");
       updateAllInfoAboutUser(profile.img as string);
+      notifyDispatcher("已更新個人資訊");
+      setEditProfileMode(false);
     }
   }
 
@@ -349,16 +362,12 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       where("useruid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(comments);
-    const promises: any[] = [];
     querySnapshot.forEach((d) => {
       const targetRef = doc(db, d.ref.path);
-      promises.push(
-        updateDoc(targetRef, {
-          user: { name: props.newName, img: newImg },
-        })
-      );
+      updateDoc(targetRef, {
+        user: { name: props.newName, img: newImg },
+      });
     });
-    await Promise.all(promises);
   }
 
   function renderUserPreviewImg() {

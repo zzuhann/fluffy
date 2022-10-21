@@ -225,21 +225,8 @@ const ArticleDetail = () => {
   const [articleComments, setArticleComments] = useState<CommentType[]>([]);
   const [newCommentContext, setNewCommentContext] = useState<string>();
   const [openLoginBox, setOpenLoginBox] = useState(false);
-  const [scroll, setScroll] = useState<number>(0);
   const [mainPageScrollHeight, setMainPageScrollHeight] = useState<number>(0);
   const [loadingComment, setLoadingComment] = useState(false);
-
-  useEffect(() => {
-    if (!openLoginBox) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [openLoginBox]);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
 
   useEffect(() => {
     if (mainPageScrollHeight > 0) {
@@ -291,35 +278,6 @@ const ArticleDetail = () => {
     setLoadingComment(false);
   }
 
-  async function getArticleComments() {
-    if (!targetArticle) return;
-    const articleComments: CommentType[] = [];
-    const articlesRef = collection(
-      db,
-      `petArticles/${targetArticle.id}/comments`
-    );
-    let articlesSnapshot = await getDocs(
-      query(articlesRef, orderBy("commentTime"))
-    );
-    articlesSnapshot.forEach((info) => {
-      articleComments.push(info.data() as CommentType);
-    });
-    setArticleComments(articleComments);
-  }
-
-  async function getSpecificArticle() {
-    const docRef = doc(db, "petArticles", id as string);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setTargetArticle({
-        id: docSnap.id,
-        ...docSnap.data(),
-      } as AllPetArticlesType);
-    } else {
-      navigate("/articles");
-    }
-  }
-
   async function toggleLike() {
     if (!targetArticle) return;
     if (!profile.isLogged) {
@@ -352,11 +310,37 @@ const ArticleDetail = () => {
   }
 
   useEffect(() => {
+    async function getSpecificArticle() {
+      const docRef = doc(db, "petArticles", id as string);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setTargetArticle({
+          id: docSnap.id,
+          ...docSnap.data(),
+        } as AllPetArticlesType);
+        getArticleComments();
+      } else {
+        navigate("/articles");
+      }
+    }
+
+    async function getArticleComments() {
+      if (!targetArticle) return;
+      const articleComments: CommentType[] = [];
+      const articlesRef = collection(
+        db,
+        `petArticles/${targetArticle.id}/comments`
+      );
+      let articlesSnapshot = await getDocs(
+        query(articlesRef, orderBy("commentTime"))
+      );
+      articlesSnapshot.forEach((info) => {
+        articleComments.push(info.data() as CommentType);
+      });
+      setArticleComments(articleComments);
+    }
     getSpecificArticle();
-  }, []);
-  useEffect(() => {
-    getArticleComments();
-  }, [targetArticle]);
+  }, [id, navigate, targetArticle]);
 
   function renderArticleCoverAuthorContainer() {
     if (targetArticle) {
@@ -490,7 +474,7 @@ const ArticleDetail = () => {
         <LoginRegisterBox
           openLoginBox={openLoginBox}
           setOpenLoginBox={setOpenLoginBox}
-          $Top={scroll}
+          $Top={45}
         />
       )}
     </Wrap>

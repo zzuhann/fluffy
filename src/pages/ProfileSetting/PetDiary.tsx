@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
-import { Profile, PetDiaryType } from "../../reducers/profile";
+import { Profile } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,
@@ -580,18 +580,23 @@ export const PetDiary: React.FC<{
   const [nowChoosePetName, setNowChoosePetName] = useState<string>("");
   const [openDeleteBox, setOpenDeleteBox] = useState<boolean>(false);
 
-  useEffect(() => {
-    getAuthorPetDiary(profile.uid);
-  }, []);
-
   function updateNewPetDiaryDataFirebase(photoName: string, newPetImg: File) {
     const storageRef = ref(storage, `petDiary/${photoName}`);
     const uploadTask = uploadBytesResumable(storageRef, newPetImg);
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        updatePetDiaryInfo(downloadURL);
-      });
-    });
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("upload");
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          updatePetDiaryInfo(downloadURL);
+        });
+      }
+    );
   }
   async function addPetDiaryDoc(imgURL: string) {
     await addDoc(collection(db, `/petDiaries`), {
@@ -619,7 +624,7 @@ export const PetDiary: React.FC<{
       where("authorUid", "==", profile.uid)
     );
     const querySnapshot = await getDocs(q);
-    const promises: any[] = [];
+    const promises: Promise<void>[] = [];
     querySnapshot.forEach(async (d) => {
       const petProfileRef = doc(db, `/petDiaries`, d.id);
       if (imgURL) {
@@ -692,19 +697,6 @@ export const PetDiary: React.FC<{
     notifyDispatcher("已更新寵物日記");
     props.setIncompleteInfo(false);
     setDetailDiaryBoxOpen(true);
-  }
-
-  async function getAuthorPetDiary(authorUid: string) {
-    const authorPetDiary: PetDiaryType[] = [];
-    const q = query(
-      collection(db, "petDiaries"),
-      where("authorUid", "==", authorUid)
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((info) => {
-      authorPetDiary.push(info.data() as PetDiaryType);
-    });
-    dispatch(setOwnPetDiary(authorPetDiary));
   }
 
   function renderPetDiaryUploadImg() {

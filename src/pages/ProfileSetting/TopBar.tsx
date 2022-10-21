@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
@@ -92,7 +92,6 @@ const SettingTab = styled.div<{ $isActive: boolean }>`
   position: relative;
   &:after {
     content: "";
-    /* width: 0%; */
     width: ${(props) => (props.$isActive ? "100%" : "0%")};
     height: 3px;
     background-color: #b7b0a8;
@@ -145,8 +144,8 @@ const Topbar: React.FC<TopbarType> = (props) => {
             <SettingTab
               key={index}
               onClick={(e) => {
-                const target = e.target as HTMLElement;
-                props.setSelectedTab(target.innerText);
+                const target = e.target as HTMLDivElement;
+                props.setSelectedTab(target.textContent as string);
               }}
               $isActive={props.selectedTab === props.tabs[index]}
             >

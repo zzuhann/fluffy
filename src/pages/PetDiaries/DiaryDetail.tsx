@@ -319,32 +319,6 @@ const DiaryDetail = () => {
     setLoadingComment(false);
   }
 
-  async function getDiaryComments() {
-    if (!targetDiary) return;
-    const diaryComments: CommentType[] = [];
-    const diariesRef = collection(db, `petDiaries/${targetDiary.id}/comments`);
-    let diariesSnapshot = await getDocs(
-      query(diariesRef, orderBy("commentTime"))
-    );
-    diariesSnapshot.forEach((info) => {
-      diaryComments.push(info.data() as CommentType);
-    });
-    setDiaryComments(diaryComments);
-  }
-
-  async function getSpecificDiary() {
-    const docRef = doc(db, "petDiaries", id as string);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setTargetDiary({
-        id: docSnap.id,
-        ...docSnap.data(),
-      } as AllPetDiariesType);
-    } else {
-      navigate("/petdiary");
-    }
-  }
-
   async function toggleLike() {
     if (!targetDiary) return;
     if (!profile.isLogged) {
@@ -377,12 +351,38 @@ const DiaryDetail = () => {
   }
 
   useEffect(() => {
-    getSpecificDiary();
-  }, []);
+    async function getSpecificDiary() {
+      const docRef = doc(db, "petDiaries", id as string);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setTargetDiary({
+          id: docSnap.id,
+          ...docSnap.data(),
+        } as AllPetDiariesType);
+        getDiaryComments();
+      } else {
+        navigate("/petdiary");
+      }
+    }
 
-  useEffect(() => {
-    getDiaryComments();
-  }, [targetDiary]);
+    async function getDiaryComments() {
+      if (!targetDiary) return;
+      const diaryComments: CommentType[] = [];
+      const diariesRef = collection(
+        db,
+        `petDiaries/${targetDiary.id}/comments`
+      );
+      let diariesSnapshot = await getDocs(
+        query(diariesRef, orderBy("commentTime"))
+      );
+      diariesSnapshot.forEach((info) => {
+        diaryComments.push(info.data() as CommentType);
+      });
+      setDiaryComments(diaryComments);
+    }
+
+    getSpecificDiary();
+  }, [id, navigate, targetDiary]);
 
   if (!targetDiary) return null;
   return (

@@ -13,11 +13,11 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import PetCardDetail from "./PairingFeature";
 import UpcomingList from "./UpcomingList";
 import TogglePairingTabs from "./TogglePairingTabs";
-import { ConsiderEverySinglePetCard } from "./ConsiderPet";
+import ConsiderPetDetail, { ConsiderEverySinglePetCard } from "./ConsiderPet";
 import { Profile } from "../../reducers/profile";
 import { Btn, Title } from "../ProfileSetting/UserInfos";
 import preferenceSet from "./img/preference.png";
-import { area } from "./ConstantInfo";
+import { area } from "../../utils/ConstantInfo";
 import close from "./img/close.png";
 import menuburger from "./img/menuburger.png";
 import question from "./img/help-sing.png";
@@ -385,19 +385,6 @@ const TutorialContext = styled.div`
   margin-bottom: 5px;
 `;
 
-export const BlackMask = styled.div`
-  opacity: 0.5;
-  overflow-y: hidden;
-  transition: 0.3s;
-  position: fixed;
-  background-color: black;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  z-index: 1;
-`;
-
 const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
     (state) => state.dating
@@ -415,7 +402,7 @@ const Pairing: React.FC = () => {
   const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
   const chosenIdRef = useRef<number[]>([]);
   const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
-  const [datingQty, setDatingQty] = useState<number>(0);
+  const [datingArr, setDatingArr] = useState<number[]>([]);
   const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
     useState<boolean>(false);
   const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
@@ -433,7 +420,7 @@ const Pairing: React.FC = () => {
     if (!profile.isLogged) {
       navigate("/");
     }
-  });
+  }, [profile.isLogged, navigate]);
 
   useEffect(() => {
     if (preference.kind !== "all" || preference.location !== "0") {
@@ -569,7 +556,7 @@ const Pairing: React.FC = () => {
             ? setOpenDatingFeatureMenu(false)
             : setOpenDatingFeatureMenu(true);
         }}
-        $Notification={matchSuccessQty > 0 || datingQty > 0}
+        $Notification={matchSuccessQty > 0 || datingArr.length > 0}
       >
         <OpenToggleTabsIcon src={menuburger} />
       </OpenToggleTabs>
@@ -603,8 +590,8 @@ const Pairing: React.FC = () => {
       <TogglePairingTabs
         matchSuccessQty={matchSuccessQty}
         setMatchSuccessQty={setMatchSuccessQty}
-        datingQty={datingQty}
-        setDatingQty={setDatingQty}
+        setDatingArr={setDatingArr}
+        datingArr={datingArr}
         tab={tab}
         setTab={setTab}
         getListsData={getListsData}
@@ -776,6 +763,15 @@ const Pairing: React.FC = () => {
         )}
         {tab === "considerAdopt" && (
           <>
+            {considerDetail && (
+              <ConsiderPetDetail
+                nowChosenPetIndex={nowChosenPetIndex}
+                setConsiderDetail={setConsiderDetail}
+                considerDetail={considerDetail}
+                setDatingArr={setDatingArr}
+                datingArr={datingArr}
+              />
+            )}
             <ConsiderList>
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
               {dating.considerList.length === 0 ? (
@@ -794,7 +790,6 @@ const Pairing: React.FC = () => {
                   tab={tab}
                   considerDetail={considerDetail}
                   nowChosenPetIndex={nowChosenPetIndex}
-                  setDatingQty={setDatingQty}
                   getUpcomingListData={getUpcomingListData}
                 />
               )}
@@ -821,13 +816,11 @@ const Pairing: React.FC = () => {
                   </NowNoInfoTextConsider>
                 </NowNoInfoInHereConsider>
               ) : (
-                <>
-                  <UpcomingList
-                    getUpcomingListData={getUpcomingListData}
-                    setOpenMeeting={setOpenMeeting}
-                    setNowMeetingShelter={setNowMeetingShelter}
-                  />
-                </>
+                <UpcomingList
+                  getUpcomingListData={getUpcomingListData}
+                  setOpenMeeting={setOpenMeeting}
+                  setNowMeetingShelter={setNowMeetingShelter}
+                />
               )}
             </UpcomingListContainer>
           </>

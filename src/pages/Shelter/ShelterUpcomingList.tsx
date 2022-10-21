@@ -1,15 +1,14 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { deleteFirebaseData } from "../../utils/firebase";
 import { InviteDating } from "../../reducers/dating";
-import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import shelter from "./img/animal-shelter.png";
 import clock from "./img/clock.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import { setUpcomingDateList } from "../../functions/datingReducerFunction";
-import { setNotification } from "../../functions/profileReducerFunction";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -123,6 +122,7 @@ type Props = {
 
 const UpcomingList: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const [datingDone, setDatingDone] = useState<{
     id: number;
     open: Boolean;
@@ -213,10 +213,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                   const newUpcomingList = props.shelterUpcomingList;
                   newUpcomingList.splice(index, 1);
                   dispatch(setUpcomingDateList(newUpcomingList));
-                  dispatch(setNotification("已更新視訊申請清單"));
-                  setTimeout(() => {
-                    dispatch(setNotification(""));
-                  }, 3000);
+                  notifyDispatcher("已更新視訊申請清單");
                 }}
               >
                 已完成約會
@@ -238,10 +235,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                 const newUpcomingList = props.shelterUpcomingList;
                 newUpcomingList.splice(index, 1);
                 dispatch(setUpcomingDateList(newUpcomingList));
-                dispatch(setNotification("已更新視訊申請清單"));
-                setTimeout(() => {
-                  dispatch(setNotification(""));
-                }, 3000);
+                notifyDispatcher("已更新視訊申請清單");
               }}
             >
               已完成約會

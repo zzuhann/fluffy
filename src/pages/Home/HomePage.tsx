@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -17,10 +17,6 @@ import {
   BlackMask,
 } from "../../component/Header";
 import catHand from "./img/cat_hand_white.png";
-
-const PopupTopMessage = styled(PopUpMessage)<{ $Top: number }>`
-  top: ${(props) => props.$Top + 300}px;
-`;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -193,30 +189,7 @@ const Home = () => {
   ) as Profile;
   const [openPopupBox, setOpenPopupBox] = useState(false);
   const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
-  const [pageHigh, setPageHigh] = useState<number>(0);
-  const [scroll, setScroll] = useState<number>(0);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    window.addEventListener("click", togglePageHeight);
-    return () => window.removeEventListener("scroll", togglePageHeight);
-  }, []);
-  useEffect(() => {
-    if (!openPopupBox) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [openPopupBox]);
-
-  function handleScroll() {
-    let scrollTop = document.documentElement.scrollTop;
-    setScroll(scrollTop);
-  }
-
-  function togglePageHeight() {
-    let pageHeight = document.documentElement.offsetHeight;
-    setPageHigh(pageHeight);
-  }
 
   function gotoProfilePage() {
     setNavigateToProfileTime(3);
@@ -239,17 +212,14 @@ const Home = () => {
     <Wrapper>
       {openPopupBox && (
         <>
-          <PopupTopMessage $Top={scroll}>
+          <PopUpMessage>
             <PopImg src={catHand} />
             <PopUpText>進入配對專區需先登入/註冊</PopUpText>
             <PopUpNote>
               {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
             </PopUpNote>
-          </PopupTopMessage>
-          <BlackMask
-            $isActive={openPopupBox === true}
-            $Height={openPopupBox ? pageHigh : 0}
-          />
+          </PopUpMessage>
+          <BlackMask $isActive={openPopupBox === true} />
         </>
       )}
       <CoverContainer>
