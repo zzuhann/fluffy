@@ -25,7 +25,7 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
-import { setNotification } from "../../functions/profileReducerFunction";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const UpcomingListCard = styled.div`
   display: flex;
@@ -233,6 +233,7 @@ const UpcomingList: React.FC<Props> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const [checkToAdoptPet, setCheckToAdoptPet] = useState<Boolean>(false);
   const [datingDone, setDatingDone] = useState<{
     id: number;
@@ -373,11 +374,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                             "id",
                             date.id
                           );
-                          dispatch(setNotification("已完成本次約會並更新清單"));
-                          setTimeout(() => {
-                            dispatch(setNotification(""));
-                            setAdoptAnswer(-1);
-                          }, 3000);
+                          notifyDispatcher("已完成本次約會並更新清單");
                           const newUpcomingList = dating.upcomingDateList;
                           newUpcomingList.splice(datingDone.index, 1);
                           dispatch(setUpcomingDateList(newUpcomingList));
@@ -513,13 +510,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                                 ),
                                 { id: date.id }
                               );
-                              dispatch(
-                                setNotification("已將領養寵物新增至會員資料")
-                              );
-                              setTimeout(() => {
-                                dispatch(setNotification(""));
-                                setAdoptAnswer(-1);
-                              }, 3000);
+                              notifyDispatcher("已將領養寵物新增至會員資料");
                             }}
                           >
                             確認(日後可修改)
@@ -622,13 +613,8 @@ const UpcomingList: React.FC<Props> = (props) => {
                               "id",
                               date.id
                             );
-                            dispatch(
-                              setNotification("已完成本次約會並更新清單")
-                            );
-                            setTimeout(() => {
-                              dispatch(setNotification(""));
-                              setAdoptAnswer(-1);
-                            }, 3000);
+                            notifyDispatcher("已完成本次約會並更新清單");
+                            setAdoptAnswer(-1);
                             const newUpcomingList = dating.upcomingDateList;
                             newUpcomingList.splice(datingDone.index, 1);
                             dispatch(setUpcomingDateList(newUpcomingList));
@@ -766,13 +752,8 @@ const UpcomingList: React.FC<Props> = (props) => {
                                   ),
                                   { id: date.id }
                                 );
-                                dispatch(
-                                  setNotification("已將領養寵物新增至會員資料")
-                                );
-                                setTimeout(() => {
-                                  dispatch(setNotification(""));
-                                  setAdoptAnswer(-1);
-                                }, 3000);
+                                notifyDispatcher("已將領養寵物新增至會員資料");
+                                setAdoptAnswer(-1);
                               }}
                             >
                               確認(日後可修改)
@@ -830,11 +811,8 @@ const UpcomingList: React.FC<Props> = (props) => {
                             "id",
                             date.id
                           );
-                          dispatch(setNotification("已完成本次約會並更新清單"));
-                          setTimeout(() => {
-                            dispatch(setNotification(""));
-                            setAdoptAnswer(-1);
-                          }, 3000);
+                          notifyDispatcher("已完成本次約會並更新清單");
+                          setAdoptAnswer(-1);
                           const newUpcomingList = dating.upcomingDateList;
                           newUpcomingList.splice(datingDone.index, 1);
                           dispatch(setUpcomingDateList(newUpcomingList));
@@ -970,13 +948,8 @@ const UpcomingList: React.FC<Props> = (props) => {
                                 ),
                                 { id: date.id }
                               );
-                              dispatch(
-                                setNotification("已將領養寵物新增至會員資料")
-                              );
-                              setTimeout(() => {
-                                dispatch(setNotification(""));
-                                setAdoptAnswer(-1);
-                              }, 3000);
+                              notifyDispatcher("已將領養寵物新增至會員資料");
+                              setAdoptAnswer(-1);
                             }}
                           >
                             確認(日後可修改)
@@ -1006,10 +979,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                     const newUpcomingList = dating.upcomingDateList;
                     newUpcomingList.splice(index, 1);
                     dispatch(setUpcomingDateList(newUpcomingList));
-                    dispatch(setNotification("已更新即將到來的約會清單"));
-                    setTimeout(() => {
-                      dispatch(setNotification(""));
-                    }, 3000);
+                    notifyDispatcher("已更新即將到來的約會清單");
                   }}
                 >
                   確定

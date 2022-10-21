@@ -22,7 +22,6 @@ import {
   setOwnArticle,
   setEmail,
   clearProfileInfo,
-  setNotification,
   setShelter,
 } from "../functions/profileReducerFunction";
 import defaultProfile from "./img/defaultprofile.png";
@@ -38,6 +37,7 @@ import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
 import { navbars } from "../utils/ConstantInfo";
+import { useNotifyDispatcher } from "../functions/SidebarNotify";
 
 const Wrapper = styled.header`
   display: flex;
@@ -334,6 +334,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const nowLocation = useLocation();
+  const notifyDispatcher = useNotifyDispatcher();
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
   const [openPopupBox, setOpenPopupBox] = useState(false);
@@ -433,10 +434,7 @@ const Header = () => {
       .then(() => {
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
-        dispatch(setNotification("登出成功"));
-        setTimeout(() => {
-          dispatch(setNotification(""));
-        }, 3000);
+        notifyDispatcher("登出成功");
         if (nowLocation.pathname === "/dating") {
           navigate("/");
         }

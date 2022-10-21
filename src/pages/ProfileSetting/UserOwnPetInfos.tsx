@@ -39,15 +39,13 @@ import {
   EditInfoLabel,
   EditInfoInput,
 } from "./UserInfos";
-import {
-  setNotification,
-  setOwnPets,
-} from "../../functions/profileReducerFunction";
+import { setOwnPets } from "../../functions/profileReducerFunction";
 import noPetNow from "./img/cat_fish_run.png";
 import {
   imgInitialState,
   imgType,
 } from "../../functions/commonFunctionAndType";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 export const InfoContainer = styled.div`
   max-width: 1120px;
@@ -419,6 +417,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const [invalidBirthYear, setInvalidBirthYear] = useState(false);
   const [invalidName, setInvalidName] = useState(false);
   const [addPet, setAddPet] = useState<boolean>(false);
@@ -603,10 +602,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               const addNewPet = profile.ownPets;
               addNewPet.push({ ...addPetInfo, img: petImg.url });
               dispatch(setOwnPets(addNewPet));
-              dispatch(setNotification("新增寵物成功！"));
-              setTimeout(() => {
-                dispatch(setNotification(""));
-              }, 3000);
+              notifyDispatcher("新增寵物成功！");
               setPetImg({ file: "", url: "" });
             }}
           >
@@ -709,10 +705,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         birthYear: petNewInfo.birthYear,
         img: petNewImg.url,
       };
-      dispatch(setNotification("已更新寵物資訊"));
-      setTimeout(() => {
-        dispatch(setNotification(""));
-      }, 3000);
+      notifyDispatcher("已更新寵物資訊");
     } else {
       await updatePetInfo("");
       await updateFirebaseDataMutipleWhere(
@@ -731,10 +724,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         name: petNewInfo.name,
         birthYear: petNewInfo.birthYear,
       };
-      dispatch(setNotification("已更新寵物資訊"));
-      setTimeout(() => {
-        dispatch(setNotification(""));
-      }, 3000);
+      notifyDispatcher("已更新寵物資訊");
     }
   }
 
@@ -955,10 +945,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                       dispatch(setOwnPets(newOwnPets));
                       setOpenDeleteBox(false);
                       setOwnPetDetail(false);
-                      dispatch(setNotification("已刪除寵物資訊"));
-                      setTimeout(() => {
-                        dispatch(setNotification(""));
-                      }, 3000);
+                      notifyDispatcher("已刪除寵物資訊");
                     }}
                   >
                     確定

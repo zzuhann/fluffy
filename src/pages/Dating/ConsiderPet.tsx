@@ -35,8 +35,8 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
-import { setNotification } from "../../functions/profileReducerFunction";
 import { BlackMask } from "../../component/Header";
+import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -383,6 +383,7 @@ const ConsiderPetDetail = (props: {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const notifyDispatcher = useNotifyDispatcher();
   const [inviteDatingInfo, setInviteDatingInfo] = useState<{
     name: string;
     email: string;
@@ -705,11 +706,7 @@ const ConsiderPetDetail = (props: {
                   newConsiderList.splice(props.nowChosenPetIndex, 1);
                   dispatch(setConsiderList(newConsiderList));
                   props.setConsiderDetail(false);
-
-                  dispatch(setNotification("已更新考慮領養清單"));
-                  setTimeout(() => {
-                    dispatch(setNotification(""));
-                  }, 3000);
+                  notifyDispatcher("已更新考慮領養清單");
                 }}
               >
                 確定
@@ -876,12 +873,7 @@ const ConsiderPetDetail = (props: {
                 );
                 props.setDatingArr(newDatingArr);
                 setInviteBoxOpen(false);
-                dispatch(
-                  setNotification("申請成功！可至「即將到來的約會」查看")
-                );
-                setTimeout(() => {
-                  dispatch(setNotification(""));
-                }, 3000);
+                notifyDispatcher("申請成功！可至「即將到來的約會」查看");
               }}
             >
               送出邀請
