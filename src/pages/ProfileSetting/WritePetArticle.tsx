@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { Profile, OwnArticle } from "../../reducers/profile";
+import { Profile } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,
@@ -52,7 +52,6 @@ import { imgType, UploadImgType } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import {
   ToPreviewImgEmptyImgToString,
-  ToPreviewImgEmptyImgToNull,
   ToPreviewImgEmptyImgToNullArticle,
 } from "../../component/PreviewImg";
 

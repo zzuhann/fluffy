@@ -383,6 +383,7 @@ const Header = () => {
           datingDate: info.data().dateAndTime,
         } as InviteDating);
       });
+      console.log("update");
       dispatch(setUpcomingDateList(upcomingDate));
     }
 

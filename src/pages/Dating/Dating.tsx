@@ -31,7 +31,6 @@ import noConsiderCard from "./img/dog_family.png";
 import noUpcomingDate from "./img/kataomoi_woman-01.png";
 import Meeting from "../../component/Meeting";
 import { useNavigate } from "react-router-dom";
-import { BlackMask } from "../../component/Header";
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
@@ -817,13 +816,11 @@ const Pairing: React.FC = () => {
                   </NowNoInfoTextConsider>
                 </NowNoInfoInHereConsider>
               ) : (
-                <>
-                  <UpcomingList
-                    getUpcomingListData={getUpcomingListData}
-                    setOpenMeeting={setOpenMeeting}
-                    setNowMeetingShelter={setNowMeetingShelter}
-                  />
-                </>
+                <UpcomingList
+                  getUpcomingListData={getUpcomingListData}
+                  setOpenMeeting={setOpenMeeting}
+                  setNowMeetingShelter={setNowMeetingShelter}
+                />
               )}
             </UpcomingListContainer>
           </>

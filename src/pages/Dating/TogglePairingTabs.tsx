@@ -100,10 +100,8 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         }}
         $isActive={props.tab === "considerAdopt"}
       >
-        {props.matchSuccessQty > 0 ? (
+        {props.matchSuccessQty > 0 && (
           <AlertMatchQty>+{props.matchSuccessQty}</AlertMatchQty>
-        ) : (
-          ""
         )}
         <PairingTab>考慮領養清單</PairingTab>
       </PairingTabContainer>
@@ -115,10 +113,8 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
         }}
         $isActive={props.tab === "upcomingDate"}
       >
-        {props.datingQty > 0 ? (
+        {props.datingQty > 0 && (
           <AlertMatchQty>+{props.datingQty}</AlertMatchQty>
-        ) : (
-          ""
         )}
         <PairingTab>即將到來的約會</PairingTab>
       </PairingTabContainer>

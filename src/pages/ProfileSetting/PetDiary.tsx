@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
-import { Profile, PetDiaryType } from "../../reducers/profile";
+import { Profile } from "../../reducers/profile";
 import {
   addDataWithUploadImage,
   db,

@@ -13,7 +13,10 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { Card, InviteDating } from "../../reducers/dating";
-import { setConsiderList } from "../../functions/datingReducerFunction";
+import {
+  setConsiderList,
+  setUpcomingDateList,
+} from "../../functions/datingReducerFunction";
 import { Profile } from "../../reducers/profile";
 import cutEgg from "./img/scissors.png";
 import findplace from "./img/loupe.png";
@@ -89,7 +92,7 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   flex: 1;
   flex-basis: 45%;
-  padding: 5px;
+  padding: 3px;
   margin-right: 15px;
   margin-top: 5px;
   font-size: 16px;
@@ -111,7 +114,7 @@ const PetCard = styled.div`
   flex-direction: column;
   background-color: #fff;
   left: 50%;
-  top: 20vh;
+  top: 15vh;
   transform: translateX(-50%);
   z-index: 2502;
   padding-bottom: 50px;
@@ -119,7 +122,7 @@ const PetCard = styled.div`
 
 const PetImg = styled.img`
   width: 350px;
-  height: 350px;
+  height: 300px;
   object-fit: cover;
 `;
 const PetInfoContainer = styled.div`
@@ -206,7 +209,7 @@ const InviteDatingBox = styled.div`
   width: 250px;
   position: fixed;
   left: 65%;
-  top: 20vh;
+  top: 10vh;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -224,7 +227,7 @@ const InviteDatingTitle = styled.div`
   margin-bottom: 10px;
 `;
 const InviteInfoContainer = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   display: flex;
   flex-direction: column;
 `;
@@ -234,7 +237,7 @@ const InviteInfoLabel = styled.label`
 const InviteInfoInput = styled.input`
   border: 2px solid #d1cfcf;
   border-radius: 5px;
-  padding: 10px 15px;
+  padding: 5px;
 `;
 
 const CloseInviteBoxBtn = styled.img`
@@ -830,6 +833,31 @@ const ConsiderPetDetail = (props: {
                 updateUpcomingDate(
                   dating.considerList[props.nowChosenPetIndex]
                 );
+                let newUpcomingDate = [...dating.upcomingDateList];
+                newUpcomingDate.push({
+                  id: dating.considerList[props.nowChosenPetIndex].id,
+                  area: dating.considerList[props.nowChosenPetIndex].area,
+                  shleterPkid:
+                    dating.considerList[props.nowChosenPetIndex].shleterPkid,
+                  shelterName:
+                    dating.considerList[props.nowChosenPetIndex].shelterName,
+                  shelterAddress:
+                    dating.considerList[props.nowChosenPetIndex].shelterAddress,
+                  shelterTel:
+                    dating.considerList[props.nowChosenPetIndex].shelterTel,
+                  kind: dating.considerList[props.nowChosenPetIndex].kind,
+                  sex: dating.considerList[props.nowChosenPetIndex].sex,
+                  color: dating.considerList[props.nowChosenPetIndex].color,
+                  sterilization:
+                    dating.considerList[props.nowChosenPetIndex].sterilization,
+                  image: dating.considerList[props.nowChosenPetIndex].image,
+                  datingDate: inviteDatingInfo.date as Date,
+                  inviter: inviteDatingInfo.name,
+                  time: inviteDatingInfo.time,
+                  way: inviteDatingInfo.way,
+                  doneWithMeeting: false,
+                });
+                dispatch(setUpcomingDateList(newUpcomingDate));
                 if (meetingWay === "視訊") {
                   updateShelterUpcomingDate(
                     dating.considerList[props.nowChosenPetIndex]
@@ -839,6 +867,7 @@ const ConsiderPetDetail = (props: {
                   dating.considerList[props.nowChosenPetIndex]
                 );
                 props.setDatingQty((prev) => prev + 1);
+                // 改成用陣列 filter
                 setInviteBoxOpen(false);
                 dispatch(
                   setNotification("申請成功！可至「即將到來的約會」查看")
