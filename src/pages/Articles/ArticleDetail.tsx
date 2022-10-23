@@ -244,7 +244,7 @@ const ArticleDetail = () => {
           img: profile.img as string,
         },
         useruid: profile.uid,
-        context: newCommentContext,
+        context: newCommentContext.trim(),
         commentTime: Date.now(),
       });
       setArticleComments(newCommentArray);
@@ -263,7 +263,7 @@ const ArticleDetail = () => {
         img: profile.img,
       },
       useruid: profile.uid,
-      context: newCommentContext,
+      context: newCommentContext.trim(),
       commentTime: Date.now(),
     });
     const articlesRef = doc(db, "petArticles", targetArticle.id);

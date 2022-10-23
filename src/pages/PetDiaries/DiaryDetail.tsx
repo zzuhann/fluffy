@@ -292,7 +292,7 @@ const DiaryDetail = () => {
         img: profile.img,
       },
       useruid: profile.uid,
-      context: newCommentContext,
+      context: newCommentContext.trim(),
       commentTime: Date.now(),
     });
     const articlesRef = doc(db, "petDiaries", targetDiary.id);
@@ -302,21 +302,27 @@ const DiaryDetail = () => {
     setNewCommentContext("");
     const newCommentCount = targetDiary.commentCount + 1;
     setTargetDiary({ ...targetDiary, commentCount: newCommentCount });
-    const newCommentArray = [...diaryComments];
-    newCommentArray.push({
-      user: {
-        name: profile.name,
-        img: profile.img as string,
-      },
-      useruid: profile.uid,
-      context: newCommentContext,
-      commentTime: Date.now(),
-    });
-    setDiaryComments(newCommentArray);
+    addCommentArrayUpdateState();
     if (commentSection.current) {
       setCommentScrollHeight(commentSection.current.scrollHeight + 100);
     }
     setLoadingComment(false);
+  }
+
+  function addCommentArrayUpdateState() {
+    if (newCommentContext) {
+      const newCommentArray = [...diaryComments];
+      newCommentArray.push({
+        user: {
+          name: profile.name,
+          img: profile.img as string,
+        },
+        useruid: profile.uid,
+        context: newCommentContext.trim(),
+        commentTime: Date.now(),
+      });
+      setDiaryComments(newCommentArray);
+    }
   }
 
   async function toggleLike() {
