@@ -1,7 +1,6 @@
 import React from "react";
 
-export type imgType = { file: File | string; url: string };
-export type UploadImgType = { file: File | null; url: string };
+export type imgType = { file: File | string | null; url: string };
 
 export const imgInitialState: imgType = {
   file: "",

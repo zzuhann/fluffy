@@ -33,7 +33,6 @@ import {
   EditContainer,
   EditInfoLabel,
   EditInfoInput,
-  CancelIcon,
 } from "./UserInfos";
 import {
   DeleteCheckBox,
@@ -46,14 +45,10 @@ import {
   NowNoInfoText,
 } from "./UserOwnPetInfos";
 import parse from "html-react-parser";
-import upload from "./img/upload.png";
 import noarticle from "./img/shigoto_zaitaku_cat_man.png";
-import { imgType, UploadImgType } from "../../functions/commonFunctionAndType";
+import { imgType } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import {
-  ToPreviewImgEmptyImgToString,
-  ToPreviewImgEmptyImgToNullArticle,
-} from "../../component/PreviewImg";
+import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 const FinishAddArticleBtn = styled(Btn)`
   bottom: 15px;
@@ -100,57 +95,6 @@ const CoverEditArticleLabel = styled(EditArticleLabel)`
   }
 `;
 
-const HintUploadImg = styled.div`
-  font-size: 18px;
-  color: #3c3c3c;
-  font-weight: bold;
-  position: absolute;
-  border: 2px solid #d1cfcf;
-  border-radius: 5px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: -10px;
-  right: -25px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: #db5452;
-  transition: 0.3s;
-  cursor: pointer;
-  &:hover {
-    background-color: #b54745;
-    color: #fff;
-  }
-  @media (max-width: 533px) {
-    bottom: -5px;
-    right: -15px;
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
-  }
-  @media (max-width: 465px) {
-    bottom: -8px;
-    right: -5px;
-  }
-`;
-
-const PetDetailImg = styled.label`
-  width: 350px;
-  height: 200px;
-  object-fit: cover;
-  position: relative;
-  padding-left: 15px;
-  @media (max-width: 533px) {
-    padding-left: 0px;
-  }
-`;
 const PetDetailInput = styled.input`
   display: none;
 `;
@@ -428,8 +372,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   const [editArticleContext, setEditArticleContext] = useState<EditArticleType>(
     { title: "", context: "" }
   );
-  const [editArticleCover, setEditArticleCover] = useState<UploadImgType>({
-    file: null,
+  const [editArticleCover, setEditArticleCover] = useState<imgType>({
+    file: "",
     url: "",
   });
   const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1);
@@ -537,8 +481,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       dispatch(setOwnArticle(updateOwnPetArticle));
       if (editArticleCover.file) {
         await updateNewArticleDataFirebase(
-          editArticleCover.file.name,
-          editArticleCover.file
+          (editArticleCover.file as File).name,
+          editArticleCover.file as File
         );
       }
     } else {
@@ -606,12 +550,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   function renderTellUserUploadPetArticleCover() {
     return (
       <>
-        <PetDetailImg htmlFor="cover">
-          <HintUploadImg>請在此上傳封面</HintUploadImg>
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </PetDetailImg>
+        <TellUserUploadImg recOrSqu="rec" />
         <PetDetailInput
           id="cover"
           type="file"
@@ -630,12 +569,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   function renderEditPetArticleToUploadCover() {
     return (
       <>
-        <PetDetailImg htmlFor="cover">
-          <HintUploadImg>請在此上傳封面</HintUploadImg>
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </PetDetailImg>
+        <TellUserUploadImg recOrSqu="rec" />
         <PetDetailInput
           id="cover"
           type="file"
@@ -692,9 +626,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             文章封面:{" "}
           </CoverEditArticleLabel>
           {props.articleCover.url ? (
-            <ToPreviewImgEmptyImgToString
+            <ToPreviewImg
               imgURL={props.articleCover.url}
               emptyImg={props.setArticleCover}
+              recOrSquare="rec"
             />
           ) : (
             renderTellUserUploadPetArticleCover()
@@ -733,9 +668,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             文章封面:{" "}
           </CoverEditArticleLabel>
           {editArticleCover.url ? (
-            <ToPreviewImgEmptyImgToNullArticle
+            <ToPreviewImg
               imgURL={editArticleCover.url}
               emptyImg={setEditArticleCover}
+              recOrSquare="rec"
             />
           ) : (
             renderEditPetArticleToUploadCover()

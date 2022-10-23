@@ -18,11 +18,10 @@ import {
 } from "firebase/firestore";
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
-import trash from "./img/bin.png";
 import defaultProfile from "./img/defaultprofile.png";
-import upload from "./img/upload.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import { imgType } from "../../functions/commonFunctionAndType";
+import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 export const Btn = styled.div`
   position: absolute;
@@ -81,6 +80,7 @@ const UserContainer = styled.div`
   align-items: center;
   @media (max-width: 617px) {
     flex-direction: column;
+    margin-top: 15px;
   }
 `;
 
@@ -158,50 +158,6 @@ export const EditInfoInput = styled.input`
   }
 `;
 
-const PreviewContainer = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-  @media (max-width: 614px) {
-    margin-bottom: 30px;
-  }
-`;
-
-const PreviewImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  object-fit: cover;
-  position: relative;
-`;
-
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: #db5452;
-  transition: 0.3s;
-  cursor: pointer;
-  &:hover {
-    background-color: #b54745;
-    color: #fff;
-  }
-`;
-
-export const CancelIcon = styled.img`
-  position: relative;
-  width: 35px;
-  height: 35px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-`;
-
 export const EditModeContainer = styled.div`
   display: flex;
   @media (max-width: 614px) {
@@ -213,24 +169,10 @@ export const EditModeContainer = styled.div`
 export const EditModeUserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
+
   @media (max-width: 614px) {
     margin-top: 30px;
   }
-`;
-
-export const ImageUploadLabel = styled.label`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-`;
-
-export const ProfileImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  position: relative;
 `;
 
 export const ImageUploadInput = styled.input`
@@ -370,30 +312,10 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     });
   }
 
-  function renderUserPreviewImg() {
-    return (
-      <PreviewContainer>
-        <PreviewImg src={newImg.url} alt="preview" />
-        <PreviewCancelBtn
-          onClick={() => {
-            setNewImg({ file: "", url: "" });
-          }}
-        >
-          <CancelIcon src={trash} alt="delete" />
-        </PreviewCancelBtn>
-      </PreviewContainer>
-    );
-  }
-
   function renderTellUserUploadImg() {
     return (
       <>
-        <ImageUploadLabel htmlFor="image">
-          <ProfileImg src={defaultProfile} alt="default-img" />
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </ImageUploadLabel>
+        <TellUserUploadImg recOrSqu="squ" />
         <ImageUploadInput
           id="image"
           type="file"
@@ -412,9 +334,15 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       <EditUserInfoContainer>
         <Title>編輯個人資訊</Title>
         <EditModeContainer>
-          {defaultUrl !== defaultProfile && newImg.url
-            ? renderUserPreviewImg()
-            : renderTellUserUploadImg()}
+          {defaultUrl !== defaultProfile && newImg.url ? (
+            <ToPreviewImg
+              imgURL={newImg.url}
+              emptyImg={setNewImg}
+              recOrSquare="square"
+            />
+          ) : (
+            renderTellUserUploadImg()
+          )}
           <UserContainer>
             <EditContainer>
               <EditInfoLabel>姓名: </EditInfoLabel>
