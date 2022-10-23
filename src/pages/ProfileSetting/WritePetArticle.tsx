@@ -609,7 +609,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         <PetDetailImg htmlFor="cover">
           <HintUploadImg>請在此上傳封面</HintUploadImg>
           <PreviewCancelBtn>
-            <CancelIcon src={upload} />
+            <CancelIcon src={upload} alt="upload" />
           </PreviewCancelBtn>
         </PetDetailImg>
         <PetDetailInput
@@ -633,7 +633,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         <PetDetailImg htmlFor="cover">
           <HintUploadImg>請在此上傳封面</HintUploadImg>
           <PreviewCancelBtn>
-            <CancelIcon src={upload} />
+            <CancelIcon src={upload} alt="upload" />
           </PreviewCancelBtn>
         </PetDetailImg>
         <PetDetailInput
@@ -838,7 +838,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
 
     return (
       <InfoContainer>
-        <ArticleCover src={articleCover} />
+        <ArticleCover src={articleCover} alt="article-cover" />
         <ArticleTitle>{articleTitle}</ArticleTitle>
         <ArticlePostTime>
           {artcilePostTime}
@@ -871,7 +871,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   function renderNowNoPetArticle() {
     return (
       <NowNoInfoInHere>
-        <NowNoInfoImg src={noarticle} />
+        <NowNoInfoImg src={noarticle} alt="now-no-article" />
         <NowNoInfoText>\ 目前沒有文章 點擊右上角可以新增 /</NowNoInfoText>
       </NowNoInfoInHere>
     );
@@ -905,7 +905,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                     });
                   }}
                 >
-                  <UserArticleImg src={article.img} />
+                  <UserArticleImg src={article.img} alt="article-cover" />
                   <UserArticleTitle>{article.title}</UserArticleTitle>
                 </UserArticle>
               ))}

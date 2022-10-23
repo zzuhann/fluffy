@@ -71,6 +71,7 @@ const Logo = styled(Link)`
 `;
 const LogoImg = styled.img`
   width: 150px;
+  height: 41px;
 `;
 
 const SidebarContainer = styled.ul<{ $isActive: boolean }>`
@@ -471,6 +472,7 @@ const Header = () => {
       <Wrapper>
         <BurgerMenu
           src={burgerMenu}
+          alt="sidebar"
           onClick={() =>
             clickBurgerMenu
               ? setClickBurgerMenu(false)
@@ -478,7 +480,7 @@ const Header = () => {
           }
         />
         <Logo to="/">
-          <LogoImg src={logo} alt="" />
+          <LogoImg src={logo} alt="fluffy" />
         </Logo>
         <NavBarTag>
           <NavBarContainer>
@@ -510,7 +512,7 @@ const Header = () => {
         {openPopupBox && (
           <>
             <PopUpMessage>
-              <PopImg src={catHand} />
+              <PopImg src={catHand} alt="loding-first" />
               <PopUpText>進入配對專區需先登入/註冊</PopUpText>
               <PopUpNote>
                 {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
@@ -528,7 +530,7 @@ const Header = () => {
                 : setOpenProfileBox(true)
             }
           >
-            <ProfileImg src={profile.img as string} />
+            <ProfileImg src={profile.img as string} alt="profile" />
             <ProfileNavBar>{profile.name}</ProfileNavBar>
             <ProfileHoverBox $isActive={openProfileBox === true}>
               <ProfileHoverUnit

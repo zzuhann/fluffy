@@ -23,15 +23,7 @@ import {
   where,
 } from "firebase/firestore";
 import close from "./img/close.png";
-
-const CloseBtn = styled.img`
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  right: 15px;
-  top: 15px;
-`;
+import { CloseBtn } from "./ShelterMeeting";
 
 const MeetingContainer = styled.div`
   width: 70vw;
@@ -340,7 +332,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
         <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
         {status === "開始通話" && (
           <PhoneBtn onClick={() => createOffer()}>
-            <ImgBtn src={phoneCall} />
+            <ImgBtn src={phoneCall} alt="call" />
             {"  "}撥打電話給收容所
           </PhoneBtn>
         )}
@@ -392,7 +384,11 @@ const Meeting: React.FC<MeetingType> = (props) => {
             結束視訊
           </PhoneBtn>
         )}
-        <CloseBtn src={close} onClick={() => props.setOpenMeeting(false)} />
+        <CloseBtn
+          src={close}
+          onClick={() => props.setOpenMeeting(false)}
+          alt="close"
+        />
       </MeetingContainer>
     </>
   );

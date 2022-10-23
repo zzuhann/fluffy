@@ -165,20 +165,20 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
           clickIndex === index ? (
             <>
               <ChooseMask></ChooseMask>
-              <AnimationChooseBtn src={notconsider} />
+              <AnimationChooseBtn src={notconsider} alt="not-consider" />
             </>
           ) : openAnimation &&
             pressBtn === "consider" &&
             clickIndex === index ? (
             <>
               <ChooseMask></ChooseMask>
-              <AnimationChooseBtn src={consider} />
+              <AnimationChooseBtn src={consider} alt="consider" />
             </>
           ) : (
             ""
           )}
 
-          <PetImg src={info.image} alt="" />
+          <PetImg src={info.image} alt="pet" />
           <ImgMask></ImgMask>
           <PetTextInfoContainer>
             <PetText>{info.id}</PetText>
@@ -193,6 +193,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
           </PetTextInfoContainer>
           <Cross
             src={notconsider}
+            alt="cross"
             onClick={async () => {
               await addDoc(
                 collection(
@@ -213,6 +214,7 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
             }}
           />
           <Circle
+            alt="circle"
             src={consider}
             onClick={async () => {
               await addDoc(

@@ -284,7 +284,7 @@ const AllPetDiaries = () => {
                   <FontAwesomeIcon icon={faComment} /> {diary.commentCount}
                 </LikeRecord>
               </HoverCard>
-              <DiaryImg src={diary.img} />
+              <DiaryImg src={diary.img} alt="diary" />
               <DiaryBottom>
                 <DiaryTitle>{diary.petName}</DiaryTitle>
                 <PetAge>

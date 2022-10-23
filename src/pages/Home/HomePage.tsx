@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { Btn } from "../ProfileSetting/UserInfos";
-import cover from "./img/indexcover.jpg";
-import pairingcover from "./img/pairingcover.jpg";
-import diarycover from "./img/diarycover.jpg";
-import articlecover from "./img/articlecover.jpg";
-import cliniccover from "./img/cliniccover.jpg";
+import cover from "./img/index.webp";
+import pairingcover from "./img/pairing.webp";
+import diarycover from "./img/diary.webp";
+import articlecover from "./img/article.webp";
+import cliniccover from "./img/clinic.webp";
 import {
   PopImg,
   PopUpMessage,
@@ -235,10 +235,10 @@ const Home = () => {
             但有寵物相伴的日子，會讓我們的心靈逐漸痊癒。
           </CoverText>
         </CoverTextContainer>
-        <CoverImg src={cover} />
+        <CoverImg src={cover} alt="home" />
       </CoverContainer>
       <SectionContainer>
-        <SectionFirstImg src={pairingcover} />
+        <SectionFirstImg src={pairingcover} alt="pairing" />
         <SectionFirstTextContainer>
           <SectionTitle>我們在 此時此刻相遇</SectionTitle>
           <SectionText>
@@ -275,10 +275,10 @@ const Home = () => {
             </SectionLinkBtn>
           </SectionText>
         </SectionFirstTextContainer>
-        <SectionFirstImg src={diarycover} />
+        <SectionFirstImg src={diarycover} alt="diary" />
       </SectionContainer>
       <SectionContainer>
-        <SectionFirstImg src={articlecover} />
+        <SectionFirstImg src={articlecover} alt="article" />
         <SectionFirstTextContainer>
           <SectionTitle>
             想要成為一個
@@ -317,7 +317,7 @@ const Home = () => {
             </SectionLinkBtn>
           </SectionText>
         </SectionFirstTextContainer>
-        <SectionFirstImg src={cliniccover} />
+        <SectionFirstImg src={cliniccover} alt="clinic" />
       </SectionContainer>
     </Wrapper>
   );

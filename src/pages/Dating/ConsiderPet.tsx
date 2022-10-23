@@ -357,7 +357,7 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
           }}
         >
           <ConsiderImgMask></ConsiderImgMask>
-          <ConsiderImg src={pet.image} />
+          <ConsiderImg src={pet.image} alt="pet" />
           <ConsiderTitle>
             {area[Number(pet.area) - 2]}
             {pet.color}
@@ -564,7 +564,7 @@ const ConsiderPetDetail = (props: {
       <PetCard>
         <PetImg
           src={dating.considerList[props.nowChosenPetIndex].image}
-          alt=""
+          alt="pet"
         />
         <PetInfoContainer>
           <InfoTitle>
@@ -576,7 +576,7 @@ const ConsiderPetDetail = (props: {
               : "♀"}
           </InfoTitle>
           <PetInfoImgContainer>
-            <PetInfoImg src={cutEgg} />
+            <PetInfoImg src={cutEgg} alt="sterilization" />
             <PetInfo>
               結紮狀態:
               {dating.considerList[props.nowChosenPetIndex].sterilization ===
@@ -586,21 +586,21 @@ const ConsiderPetDetail = (props: {
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
-            <PetInfoImg src={findplace} />
+            <PetInfoImg src={findplace} alt="place" />
             <PetInfo>
               發現地點:
               {dating.considerList[props.nowChosenPetIndex].foundPlace}
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
-            <PetInfoImg src={shelter} />
+            <PetInfoImg src={shelter} alt="shelter" />
             <PetInfo>
               目前位於:
               {dating.considerList[props.nowChosenPetIndex].shelterName}
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
-            <PetInfoImg src={googlemap} />
+            <PetInfoImg src={googlemap} alt="map" />
             <PetInfo>
               <PetShelterAddress
                 href={`https://www.google.com/maps/search/?api=1&query=${
@@ -624,7 +624,7 @@ const ConsiderPetDetail = (props: {
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
-            <PetInfoImg src={tel} />
+            <PetInfoImg src={tel} alt="phone" />
             <PetInfo>
               聯絡收容所:
               {dating.considerList[props.nowChosenPetIndex].shelterTel}
@@ -884,6 +884,7 @@ const ConsiderPetDetail = (props: {
               setInviteBoxOpen(false);
             }}
             src={close}
+            alt="close"
           />
         </InviteDatingBox>
       ) : (
