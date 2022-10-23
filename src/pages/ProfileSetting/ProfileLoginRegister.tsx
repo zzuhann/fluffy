@@ -334,6 +334,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           <LoginPopupCancel
             src={close}
             onClick={() => props.setOpenLoginBox(false)}
+            alt="close"
           />
         )}
         <RegisterLoginTitle>登入</RegisterLoginTitle>
@@ -438,6 +439,7 @@ export const LoginRegisterBox: React.FC<LoginRegisterType> = (props) => {
           <LoginPopupCancel
             src={close}
             onClick={() => props.setOpenLoginBox(false)}
+            alt="close"
           />
         )}
         <RegisterLoginTitle>註冊</RegisterLoginTitle>

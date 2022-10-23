@@ -22,7 +22,7 @@ import { db } from "../utils/firebase";
 import meetingBanner from "./img/meetingBanner.png";
 import close from "./img/close.png";
 
-const CloseBtn = styled.img`
+export const CloseBtn = styled.img`
   cursor: pointer;
   width: 20px;
   height: 20px;
@@ -315,7 +315,11 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
           <PhoneBtn onClick={createAnswer}>點擊接聽電話</PhoneBtn>
         )}
         {status === "通話中" && <PhoneBtn onClick={hangup}>結束視訊</PhoneBtn>}
-        <CloseBtn src={close} onClick={() => props.setOpenMeeting(false)} />
+        <CloseBtn
+          src={close}
+          onClick={() => props.setOpenMeeting(false)}
+          alt="close"
+        />
       </MeetingContainer>
     </>
   );

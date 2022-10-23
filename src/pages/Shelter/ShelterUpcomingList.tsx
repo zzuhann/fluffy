@@ -139,7 +139,7 @@ const UpcomingList: React.FC<Props> = (props) => {
       {props.shelterUpcomingList.map((date, index) => (
         <UpcomingListCard key={index}>
           <InvitePetImgContainer>
-            <InvitePetImg src={date.image} />
+            <InvitePetImg src={date.image} alt="pet" />
           </InvitePetImgContainer>
 
           <UpcomingInfoContainer>
@@ -148,19 +148,19 @@ const UpcomingList: React.FC<Props> = (props) => {
               {date.kind} {date.sex === "F" ? "♀" : "♂"}
             </UpcomingInfoTitle>
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={cutEgg} />
+              <UpcomingInfoImg src={cutEgg} alt="sterilization" />
               <UpcomingInfo>
                 結紮狀態：{date.sterilization === "T" ? "已結紮" : "未結紮"}
               </UpcomingInfo>
             </UpcomingInfoImgContainer>
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={shelter} />
+              <UpcomingInfoImg src={shelter} alt="shelter" />
               <UpcomingInfo>申請人：{date.inviter}</UpcomingInfo>
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={clock} />
-              {typeof date.datingDate === "number" ? (
+              <UpcomingInfoImg src={clock} alt="clock" />
+              {typeof date.datingDate === "number" && (
                 <UpcomingInfo>
                   預約時間：
                   {new Date(date.datingDate).getFullYear()}/
@@ -173,8 +173,6 @@ const UpcomingList: React.FC<Props> = (props) => {
                     : new Date(date.datingDate).getDate()}{" "}
                   {date.time}
                 </UpcomingInfo>
-              ) : (
-                ""
               )}
             </UpcomingInfoImgContainer>
           </UpcomingInfoContainer>

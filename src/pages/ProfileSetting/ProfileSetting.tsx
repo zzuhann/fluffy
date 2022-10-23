@@ -34,13 +34,6 @@ const Wrapper = styled.div`
   }
 `;
 
-export const ProfileImg = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-  object-fit: cover;
-`;
-
 export const EditContainer = styled.div`
   display: flex;
 `;

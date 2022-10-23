@@ -68,13 +68,13 @@ export const ToPreviewImgEmptyImgToString: React.FC<{
 }> = ({ imgURL, emptyImg }) => {
   return (
     <PreviewArticleContainer>
-      <PreviewArticleImg src={imgURL} alt="" />
+      <PreviewArticleImg src={imgURL} alt="preview" />
       <PreviewCancelBtn
         onClick={() => {
           emptyImg({ file: "", url: "" });
         }}
       >
-        <CancelIcon src={trash} />
+        <CancelIcon src={trash} alt="delete" />
       </PreviewCancelBtn>
     </PreviewArticleContainer>
   );
@@ -86,13 +86,13 @@ export const ToPreviewImgEmptyImgToNull: React.FC<{
 }> = ({ imgURL, emptyImg }) => {
   return (
     <PreviewContainer>
-      <PreviewImg src={imgURL} />
+      <PreviewImg src={imgURL} alt="preview" />
       <PreviewCancelBtn
         onClick={() => {
           emptyImg({ file: null, url: "" });
         }}
       >
-        <CancelIcon src={trash} />
+        <CancelIcon src={trash} alt="delete" />
       </PreviewCancelBtn>
     </PreviewContainer>
   );
@@ -110,7 +110,7 @@ export const ToPreviewImgEmptyImgToNullArticle: React.FC<{
           emptyImg({ file: null, url: "" });
         }}
       >
-        <CancelIcon src={trash} />
+        <CancelIcon src={trash} alt="delete" />
       </PreviewCancelBtn>
     </PreviewArticleContainer>
   );

@@ -453,13 +453,13 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         <EditModeContainer>
           {petImg.url ? (
             <PreviewContainer>
-              <PreviewImg src={petImg.url} />
+              <PreviewImg src={petImg.url} alt="preview" />
               <PreviewCancelBtn
                 onClick={() => {
                   setPetImg({ file: "", url: "" });
                 }}
               >
-                <CancelIcon src={trash} />
+                <CancelIcon src={trash} alt="delete" />
               </PreviewCancelBtn>
             </PreviewContainer>
           ) : (
@@ -467,7 +467,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               <ImageUploadLabel htmlFor="image">
                 <ProfileImg src={defaultProfile} alt="上傳" />
                 <PreviewCancelBtn>
-                  <CancelIcon src={upload} />
+                  <CancelIcon src={upload} alt="upload" />
                 </PreviewCancelBtn>
               </ImageUploadLabel>
               <ImageUploadInput
@@ -735,13 +735,13 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         <EditModeContainer>
           {petNewImg.url ? (
             <PreviewContainer>
-              <PreviewImg src={petNewImg.url} />
+              <PreviewImg src={petNewImg.url} alt="preview" />
               <PreviewCancelBtn
                 onClick={() => {
                   setPetNewImg({ file: "", url: "" });
                 }}
               >
-                <CancelIcon src={trash} />
+                <CancelIcon src={trash} alt="delete" />
               </PreviewCancelBtn>
             </PreviewContainer>
           ) : (
@@ -749,7 +749,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               <ImageUploadLabel htmlFor="image">
                 <ProfileImg src={defaultProfile} alt="上傳" />
                 <PreviewCancelBtn>
-                  <CancelIcon src={upload} />
+                  <CancelIcon src={upload} alt="upload" />
                 </PreviewCancelBtn>
               </ImageUploadLabel>
               <ImageUploadInput
@@ -875,7 +875,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
           <PetDeatilContainer>
             <PetTitle>寵物資訊</PetTitle>
             <PetSingleContainer>
-              <PetSingleImage src={petNewImg.url} />
+              <PetSingleImage src={petNewImg.url} alt="pet" />
               <PetSingleDetailTextContainer>
                 <PetSingleName>
                   姓名: {petNewInfo.name} (
@@ -989,7 +989,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                   });
                 }}
               >
-                <PetSimpleImage src={pet.img} alt="" />
+                <PetSimpleImage src={pet.img} alt="pet" />
                 <PetSimpleInfos>
                   <PetSimpleNameSex>
                     <PetSimpleName>{pet.name}</PetSimpleName>
@@ -1001,7 +1001,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
             ))
           ) : (
             <NowNoInfoInHere>
-              <NowNoInfoImg src={noPetNow} />
+              <NowNoInfoImg src={noPetNow} alt="now-no-pet" />
               <NowNoInfoText>\ 目前沒有寵物 點擊右上角可以新增 /</NowNoInfoText>
             </NowNoInfoInHere>
           )}
