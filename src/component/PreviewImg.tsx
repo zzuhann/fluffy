@@ -1,10 +1,18 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { imgType } from "../functions/commonFunctionAndType";
-import { CancelIcon } from "../pages/ProfileSetting/UserInfos";
 import trash from "./img/bin.png";
 import defaultProfile from "./img/defaultprofile.png";
 import upload from "./img/upload.png";
+
+const CancelIcon = styled.img`
+  position: relative;
+  width: 35px;
+  height: 35px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+`;
 
 const PreviewContainer = styled.div`
   position: relative;

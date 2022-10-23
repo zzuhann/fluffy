@@ -158,15 +158,6 @@ export const EditInfoInput = styled.input`
   }
 `;
 
-export const CancelIcon = styled.img`
-  position: relative;
-  width: 35px;
-  height: 35px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-`;
-
 export const EditModeContainer = styled.div`
   display: flex;
   @media (max-width: 614px) {
@@ -182,21 +173,6 @@ export const EditModeUserInfoContainer = styled.div`
   @media (max-width: 614px) {
     margin-top: 30px;
   }
-`;
-
-export const ImageUploadLabel = styled.label`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-`;
-
-export const ProfileImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  position: relative;
 `;
 
 export const ImageUploadInput = styled.input`
