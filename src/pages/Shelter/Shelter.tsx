@@ -108,7 +108,7 @@ const Shelter = () => {
         <UpcomingTitle>即將到來的約會</UpcomingTitle>
         {shelterUpcomingList.length === 0 ? (
           <NowNoInfoInHereConsider>
-            <NowNoInfoImg src={noUpcomingDate} />
+            <NowNoInfoImg src={noUpcomingDate} alt="now-no-upcoming-date" />
             <NowNoInfoTextConsider>
               目前沒有即將到來的約會，
               <br />

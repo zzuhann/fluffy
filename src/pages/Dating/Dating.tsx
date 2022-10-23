@@ -558,7 +558,7 @@ const Pairing: React.FC = () => {
         }}
         $Notification={matchSuccessQty > 0 || datingArr.length > 0}
       >
-        <OpenToggleTabsIcon src={menuburger} />
+        <OpenToggleTabsIcon src={menuburger} alt="how-to-use" />
       </OpenToggleTabs>
       <OpenTutorial
         onClick={() => {
@@ -567,7 +567,7 @@ const Pairing: React.FC = () => {
             : setOpenTutorialMenu(true);
         }}
       >
-        <OpenTutorialIcon src={question} />
+        <OpenTutorialIcon src={question} alt="question-mark" />
         <TutorialBox $isActive={openTutorialMenu === true}>
           <TutorialTitle>配對專區使用簡介</TutorialTitle>
           <TutorialContext>
@@ -632,6 +632,7 @@ const Pairing: React.FC = () => {
                       <CloseFilterBtn
                         src={close}
                         onClick={() => setOpenFilterBox(false)}
+                        alt="close"
                       />
                       <NomoreFilterInfoContainer>
                         <FilterInfoTitle>偏好種類</FilterInfoTitle>
@@ -690,7 +691,7 @@ const Pairing: React.FC = () => {
             ) : (
               <Cards>
                 <FilterContainer onClick={() => setOpenFilterBox(true)}>
-                  <FilterImg src={preferenceSet} />
+                  <FilterImg src={preferenceSet} alt="filter" />
                   <FilterTitle>偏好設定</FilterTitle>
                 </FilterContainer>
                 {openFilterBox ? (
@@ -698,6 +699,7 @@ const Pairing: React.FC = () => {
                     <CloseFilterBtn
                       src={close}
                       onClick={() => setOpenFilterBox(false)}
+                      alt="close"
                     />
                     <FilterInfoContainer>
                       <FilterInfoTitle>偏好種類</FilterInfoTitle>
@@ -776,7 +778,10 @@ const Pairing: React.FC = () => {
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
               {dating.considerList.length === 0 ? (
                 <NowNoInfoInHereConsider>
-                  <NowNoInfoImg src={noConsiderCard} />
+                  <NowNoInfoImg
+                    src={noConsiderCard}
+                    alt="now-no-consider-pet"
+                  />
                   <NowNoInfoTextConsider>
                     目前考慮領養清單無任何貓狗，
                     <br />
@@ -808,7 +813,10 @@ const Pairing: React.FC = () => {
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
               {dating.upcomingDateList.length === 0 ? (
                 <NowNoInfoInHereConsider>
-                  <NowNoInfoImg src={noUpcomingDate} />
+                  <NowNoInfoImg
+                    src={noUpcomingDate}
+                    alt="now-no-upcoming-date"
+                  />
                   <NowNoInfoTextConsider>
                     目前沒有即將到來的約會，
                     <br />

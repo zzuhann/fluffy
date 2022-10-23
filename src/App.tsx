@@ -4,31 +4,12 @@ import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
 import Header from "./component/Header";
-import NotoSansTCRegular from "./fonts/NotoSansTC-Regular.otf";
-import NotoSansTMedium from "./fonts/NotoSansTC-Medium.otf";
-import NotoSansTCBold from "./fonts/NotoSansTC-Bold.otf";
+
 import SideNotification from "./component/SideNotification";
 
 const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCRegular}) format('opentype');
-    font-weight: normal;
-  }
-  @font-face {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTMedium}) format('opentype');
-    font-weight: 500;
-  }
-
-  @font-face {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCBold}) format('opentype');
-    font-weight: bold;
-  }
   * {
     box-sizing: border-box;
-    
     &::-webkit-scrollbar {
       -webkit-appearance: none;
     }
@@ -55,23 +36,19 @@ const GlobalStyle = createGlobalStyle`
     letter-spacing:1px;
   }
   input::placeholder {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCBold}) format('opentype');
+    font-family: 'Noto Sans TC', sans-serif;
   }
   input::-webkit-input-placeholder {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCBold}) format('opentype');
+    font-family: 'Noto Sans TC', sans-serif;
   }
   input:-moz-placeholder {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCBold}) format('opentype');
+    font-family: 'Noto Sans TC', sans-serif;
   }
   input::-moz-placeholder {
-    font-family: NotoSansTC;
-    src: url(${NotoSansTCBold}) format('opentype');
+    font-family: 'Noto Sans TC', sans-serif;
   }
   body {
-    font-family: NotoSansTC;
+    font-family: 'Noto Sans TC', sans-serif;
     font-weight:400;
     color:#3C3C3C;
     overflow-x:hidden;

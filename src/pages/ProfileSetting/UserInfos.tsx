@@ -373,13 +373,13 @@ const UserInfos: React.FC<userInfoType> = (props) => {
   function renderUserPreviewImg() {
     return (
       <PreviewContainer>
-        <PreviewImg src={newImg.url} />
+        <PreviewImg src={newImg.url} alt="preview" />
         <PreviewCancelBtn
           onClick={() => {
             setNewImg({ file: "", url: "" });
           }}
         >
-          <CancelIcon src={trash} />
+          <CancelIcon src={trash} alt="delete" />
         </PreviewCancelBtn>
       </PreviewContainer>
     );
@@ -389,9 +389,9 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     return (
       <>
         <ImageUploadLabel htmlFor="image">
-          <ProfileImg src={defaultProfile} alt="上傳" />
+          <ProfileImg src={defaultProfile} alt="default-img" />
           <PreviewCancelBtn>
-            <CancelIcon src={upload} />
+            <CancelIcon src={upload} alt="upload" />
           </PreviewCancelBtn>
         </ImageUploadLabel>
         <ImageUploadInput
@@ -456,7 +456,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       <UserInfo>
         <Title>個人資訊</Title>
         <UserContainer>
-          <UserImage src={profile.img as string} />
+          <UserImage src={profile.img as string} alt="user" />
           <UserName>姓名: {profile.name}</UserName>
         </UserContainer>
         <EditBtn onClick={() => setEditProfileMode(true)}>編輯</EditBtn>

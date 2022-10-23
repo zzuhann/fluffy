@@ -8,15 +8,9 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import {
-  OwnArticle,
-  OwnPet,
-  PetDiaryType,
-  Profile,
-} from "../../reducers/profile";
+import { OwnArticle, OwnPet, PetDiaryType } from "../../reducers/profile";
 import {
   NowNoInfoInHere,
   NowNoInfoImg,
@@ -526,7 +520,7 @@ const UserProfile = () => {
     <Wrap>
       <Wrapper>
         <UserInfo>
-          <UserImage src={userInfo.img} />
+          <UserImage src={userInfo.img} alt="user" />
           <OutputCountContainer>
             <OutputTitle>日記</OutputTitle>
             <OutputCount>{userDiary.length}</OutputCount>
@@ -606,7 +600,7 @@ const UserProfile = () => {
                 {userDiary.length === 0 ? (
                   <NowNoInfoInHereConsider>
                     <NowNoInfoTextConsider>尚無日記</NowNoInfoTextConsider>
-                    <NowNoInfoImgUserProfile src={noDiary} />
+                    <NowNoInfoImgUserProfile src={noDiary} alt="now-no-diary" />
                   </NowNoInfoInHereConsider>
                 ) : nowChoosePet === "全部" ? (
                   userDiary.map((diary, index) => (
@@ -616,7 +610,7 @@ const UserProfile = () => {
                       likecount={diary.likedBy.length}
                       commentcount={diary.commentCount}
                     >
-                      <DiaryImg src={diary.img} />
+                      <DiaryImg src={diary.img} alt="diary" />
                       <DiaryBottom>
                         <DiaryTitle>{diary.petName}</DiaryTitle>
                         <PetAge>
@@ -639,7 +633,7 @@ const UserProfile = () => {
                         likecount={diary.likedBy.length}
                         commentcount={diary.commentCount}
                       >
-                        <DiaryImg src={diary.img} />
+                        <DiaryImg src={diary.img} alt="diary" />
                         <DiaryBottom>
                           <DiaryTitle>{diary.petName}</DiaryTitle>
                           <PetAge>
@@ -660,12 +654,12 @@ const UserProfile = () => {
               {userArticle.length === 0 ? (
                 <NowNoInfoInHereConsider>
                   <NowNoInfoTextConsider>尚無文章</NowNoInfoTextConsider>
-                  <NowNoInfoImgUserProfile src={noDiary} />
+                  <NowNoInfoImgUserProfile src={noDiary} alt="now-no-article" />
                 </NowNoInfoInHereConsider>
               ) : (
                 userArticle.map((article, index) => (
                   <ArticleCard key={index} to={`/articles/${article.id}`}>
-                    <ArticleCover src={article.img} />
+                    <ArticleCover src={article.img} alt="article" />
                     <ArticleCardBottom>
                       <ArticleTitle>{article.title}</ArticleTitle>
                       <HeartAndCommentRecordContainer>
@@ -682,12 +676,12 @@ const UserProfile = () => {
               {userPet.length === 0 ? (
                 <NowNoInfoInHereConsider>
                   <NowNoInfoTextConsider>尚無寵物</NowNoInfoTextConsider>
-                  <NowNoInfoImgUserProfile src={noDiary} />
+                  <NowNoInfoImgUserProfile src={noDiary} alt="now-no-pet" />
                 </NowNoInfoInHereConsider>
               ) : (
                 userPet.map((pet, index) => (
                   <PetSimpleCard key={index}>
-                    <PetSimpleImage src={pet.img} alt="" />
+                    <PetSimpleImage src={pet.img} alt="pet" />
                     <PetSimpleInfos>
                       <PetSimpleInfo>
                         {pet.name} {pet.sex === "M" ? "♂" : "♀"}

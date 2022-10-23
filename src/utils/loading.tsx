@@ -98,7 +98,7 @@ export const CatLoading = () => {
   return (
     <CatFootContainer>
       <LoadingText>Loading ...</LoadingText>
-      <CatFoot src={catHand} />
+      <CatFoot src={catHand} alt="loading" />
     </CatFootContainer>
   );
 };

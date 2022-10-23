@@ -136,7 +136,7 @@ const Topbar: React.FC<TopbarType> = (props) => {
     <SideBarWrapper>
       <SidebarProfileTab>
         <UserProfileContainer>
-          <ProfileImg src={profile.img as string} alt="" />
+          <ProfileImg src={profile.img as string} alt="user" />
           <ProfileName>{profile.name}</ProfileName>
         </UserProfileContainer>
         <SettingTabContainer>

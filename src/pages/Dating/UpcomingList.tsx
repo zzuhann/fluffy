@@ -260,7 +260,7 @@ const UpcomingList: React.FC<Props> = (props) => {
       {dating.upcomingDateList.map((date, index) => (
         <UpcomingListCard key={index}>
           <InvitePetImgContainer>
-            <InvitePetImg src={date.image} />
+            <InvitePetImg src={date.image} alt="pet" />
           </InvitePetImgContainer>
 
           <UpcomingInfoContainer>
@@ -269,18 +269,18 @@ const UpcomingList: React.FC<Props> = (props) => {
               {date.kind} {date.sex === "F" ? "♀" : "♂"}
             </UpcomingInfoTitle>
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={cutEgg} />
+              <UpcomingInfoImg src={cutEgg} alt="sterilization" />
               <UpcomingInfo>
                 結紮狀態：{date.sterilization === "T" ? "已結紮" : "未結紮"}
               </UpcomingInfo>
             </UpcomingInfoImgContainer>
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={shelter} />
+              <UpcomingInfoImg src={shelter} alt="shelter" />
               <UpcomingInfo>收容所地點：{date.shelterName}</UpcomingInfo>
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={googlemap} />
+              <UpcomingInfoImg src={googlemap} alt="map" />
               <UpcomingInfo>
                 地址：{" "}
                 <PetShelterAddress
@@ -302,18 +302,18 @@ const UpcomingList: React.FC<Props> = (props) => {
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={tel} />
+              <UpcomingInfoImg src={tel} alt="phone" />
               <UpcomingInfo>收容所電話：{date.shelterTel}</UpcomingInfo>
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={meetingWay} />
+              <UpcomingInfoImg src={meetingWay} alt="way" />
               <UpcomingInfo>約會形式：{date.way}</UpcomingInfo>
             </UpcomingInfoImgContainer>
 
             <UpcomingInfoImgContainer>
-              <UpcomingInfoImg src={clock} />
-              {typeof date.datingDate === "number" ? (
+              <UpcomingInfoImg src={clock} alt="clock" />
+              {typeof date.datingDate === "number" && (
                 <UpcomingInfo>
                   預約時間：
                   {new Date(date.datingDate).getFullYear()}/
@@ -326,8 +326,6 @@ const UpcomingList: React.FC<Props> = (props) => {
                     : new Date(date.datingDate).getDate()}{" "}
                   {date.time}
                 </UpcomingInfo>
-              ) : (
-                ""
               )}
             </UpcomingInfoImgContainer>
           </UpcomingInfoContainer>
@@ -355,6 +353,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                       onClick={() =>
                         setDatingDone({ id: 0, open: false, index: -1 })
                       }
+                      alt="close"
                     />
                     <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
                     <AnswerBtnContainer>
@@ -594,6 +593,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                         onClick={() =>
                           setDatingDone({ id: 0, open: false, index: -1 })
                         }
+                        alt="close"
                       />
                       <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
                       <AnswerBtnContainer>
@@ -792,6 +792,7 @@ const UpcomingList: React.FC<Props> = (props) => {
                       onClick={() =>
                         setDatingDone({ id: 0, open: false, index: -1 })
                       }
+                      alt="close"
                     />
                     <AskAdoptTitle>是否領養 {date.id} ?</AskAdoptTitle>
                     <AnswerBtnContainer>

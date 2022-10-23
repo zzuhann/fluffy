@@ -346,7 +346,7 @@ const ArticleDetail = () => {
     if (targetArticle) {
       return (
         <CoverAuthorContainer>
-          <ArticleCover src={targetArticle.img} />
+          <ArticleCover src={targetArticle.img} alt="article-cover" />
           <TitleContainer>
             <Title>{targetArticle.title}</Title>
             <ArticleDate>
@@ -372,6 +372,7 @@ const ArticleDetail = () => {
             onClick={() => {
               toggleLike();
             }}
+            alt="like"
           />
           <Record>{targetArticle.likedBy.length}</Record>
         </>
@@ -386,7 +387,7 @@ const ArticleDetail = () => {
           {targetArticle.likedBy.includes(profile.uid)
             ? renderHeartBtn(alreadyLike)
             : renderHeartBtn(notyetLike)}
-          <CommentRecordImg src={comment} />
+          <CommentRecordImg src={comment} alt="comment" />
           <Record>{targetArticle.commentCount}</Record>
         </RecordContainer>
       );
@@ -441,7 +442,7 @@ const ArticleDetail = () => {
           {articleComments.map((comment, index) => (
             <CommentCard key={index}>
               <CommentUserContainer>
-                <CommentUserImg src={comment.user.img} />
+                <CommentUserImg src={comment.user.img} alt="user" />
                 <CommentUserName>{comment.user.name}</CommentUserName>
               </CommentUserContainer>
               <CommentTime>

@@ -394,10 +394,10 @@ const DiaryDetail = () => {
   return (
     <Wrap>
       <DiaryContainer>
-        <DiaryImage src={targetDiary.img} />
+        <DiaryImage src={targetDiary.img} alt="diary" />
         <DiaryTextInfo>
           <DiaryAuthorContainer to={`/profile/${targetDiary.authorUid}`}>
-            <AuthorImg src={targetDiary.author.img} />
+            <AuthorImg src={targetDiary.author.img} alt="author" />
             <AuthorName>
               {targetDiary.author.name}/ {targetDiary.petName}(
               {`${new Date().getFullYear() - targetDiary.birthYear}`}y)
@@ -407,7 +407,7 @@ const DiaryDetail = () => {
             <DiaryAuthorContainerNoBorder
               to={`/profile/${targetDiary.authorUid}`}
             >
-              <AuthorImg src={targetDiary.author.img} />
+              <AuthorImg src={targetDiary.author.img} alt="author" />
               <AuthorName>{targetDiary.author.name}</AuthorName>
             </DiaryAuthorContainerNoBorder>
             <DiaryContext>{targetDiary.context}</DiaryContext>
@@ -428,7 +428,7 @@ const DiaryDetail = () => {
               {diaryComments.map((comment, index) => (
                 <CommentCard key={index}>
                   <CommentUserContainer>
-                    <CommentUserImg src={comment.user.img} />
+                    <CommentUserImg src={comment.user.img} alt="comment-user" />
                     <CommentUserName>{comment.user.name}</CommentUserName>
                   </CommentUserContainer>
                   <CommentTime>
@@ -456,6 +456,7 @@ const DiaryDetail = () => {
                   onClick={() => {
                     toggleLike();
                   }}
+                  alt="like"
                 />
                 <Record>{targetDiary.likedBy.length}</Record>
               </>
@@ -466,11 +467,12 @@ const DiaryDetail = () => {
                   onClick={() => {
                     toggleLike();
                   }}
+                  alt="like"
                 />
                 <Record>{targetDiary.likedBy.length}</Record>
               </>
             )}
-            <CommentRecordImg src={comment} />
+            <CommentRecordImg src={comment} alt="comment" />
             <Record>{targetDiary.commentCount}</Record>
           </RecordContainer>
           <AddComment>

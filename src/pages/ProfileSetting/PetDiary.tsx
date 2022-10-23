@@ -705,7 +705,7 @@ export const PetDiary: React.FC<{
         <PetDetailImg htmlFor="image">
           <ProfileImg src={defaultProfile} alt="上傳" />
           <PreviewCancelBtn>
-            <CancelIcon src={upload} />
+            <CancelIcon src={upload} alt="upload" />
           </PreviewCancelBtn>
         </PetDetailImg>
         <PetDetailInput
@@ -959,7 +959,10 @@ export const PetDiary: React.FC<{
       <PetDeatilContainer>
         <Title>日記資訊</Title>
         <PetSingleContainer>
-          <PetSingleImage src={profile.petDiary[ownPetDiaryIndex].img} />
+          <PetSingleImage
+            src={profile.petDiary[ownPetDiaryIndex].img}
+            alt="diary"
+          />
           <PetSingleDetailTextContainer>
             <PetSingleName>
               {petAge}
@@ -1000,7 +1003,7 @@ export const PetDiary: React.FC<{
         <ImageUploadLabel htmlFor="image">
           <ProfileImg src={defaultProfile} alt="上傳" />
           <PreviewCancelBtn>
-            <CancelIcon src={upload} />
+            <CancelIcon src={upload} alt="upload" />
           </PreviewCancelBtn>
         </ImageUploadLabel>
         <ImageUploadInput
@@ -1115,7 +1118,7 @@ export const PetDiary: React.FC<{
   function renderNoPetDiaryNow() {
     return (
       <NowNoInfoInHere>
-        <NowNoInfoImg src={noPetDiary} />
+        <NowNoInfoImg src={noPetDiary} alt="now-no-diary" />
         {profile.ownPets.length === 0 ? (
           <NowNoInfoText>\ 新增日記前須先新增寵物資料 /</NowNoInfoText>
         ) : (
@@ -1138,7 +1141,7 @@ export const PetDiary: React.FC<{
                     setDisplayClickPetDiaryInfo(index, diary.postTime);
                   }}
                 >
-                  <PetSimpleImage src={diary.img} alt="" />
+                  <PetSimpleImage src={diary.img} alt="diary" />
                   <PetSimpleInfos>
                     <PetSimpleInfo>{diary.petName}</PetSimpleInfo>
                   </PetSimpleInfos>

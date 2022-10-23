@@ -209,13 +209,13 @@ const AllArticles = () => {
         ) : (
           allPetArticles.map((article, index) => (
             <ArticleCard key={index} to={`/articles/${article.id}`}>
-              <ArticleCover src={article.img} />
+              <ArticleCover src={article.img} alt="article-cover" />
               <ArticleCardBottom>
                 <ArticleTitle>{article.title}</ArticleTitle>
                 <HeartAndCommentRecordContainer>
-                  <RecordImg src={notyetLike} />
+                  <RecordImg src={notyetLike} alt="like" />
                   <Record>{article.likedBy.length}</Record>
-                  <RecordImg src={comment} />
+                  <RecordImg src={comment} alt="comment" />
                   <Record>{article.commentCount}</Record>
                 </HeartAndCommentRecordContainer>
               </ArticleCardBottom>
