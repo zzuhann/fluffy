@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { Btn } from "../ProfileSetting/UserInfos";
-import cover from "./img/indexcover.jpg";
-import pairingcover from "./img/pairingcover.jpg";
-import diarycover from "./img/diarycover.jpg";
-import articlecover from "./img/articlecover.jpg";
-import cliniccover from "./img/cliniccover.jpg";
+import cover from "./img/index.webp";
+import pairingcover from "./img/pairing.webp";
+import diarycover from "./img/diary.webp";
+import articlecover from "./img/article.webp";
+import cliniccover from "./img/clinic.webp";
 import {
   PopImg,
   PopUpMessage,
