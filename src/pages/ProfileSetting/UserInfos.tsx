@@ -18,12 +18,11 @@ import {
 } from "firebase/firestore";
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
-import trash from "./img/bin.png";
 import defaultProfile from "./img/defaultprofile.png";
 import upload from "./img/upload.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import { imgType } from "../../functions/commonFunctionAndType";
-import { ToPreviewImgEmptyImgSquare } from "../../component/PreviewImg";
+import { ToPreviewImg } from "../../component/PreviewImg";
 
 export const Btn = styled.div`
   position: absolute;
@@ -157,25 +156,6 @@ export const EditInfoInput = styled.input`
   @media (max-width: 614px) {
     width: 150px;
   }
-`;
-
-const PreviewContainer = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-  @media (max-width: 614px) {
-    margin-bottom: 30px;
-  }
-`;
-
-const PreviewImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  object-fit: cover;
-  position: relative;
 `;
 
 const PreviewCancelBtn = styled.div`
@@ -372,21 +352,6 @@ const UserInfos: React.FC<userInfoType> = (props) => {
     });
   }
 
-  function renderUserPreviewImg() {
-    return (
-      <PreviewContainer>
-        <PreviewImg src={newImg.url} alt="preview" />
-        <PreviewCancelBtn
-          onClick={() => {
-            setNewImg({ file: "", url: "" });
-          }}
-        >
-          <CancelIcon src={trash} alt="delete" />
-        </PreviewCancelBtn>
-      </PreviewContainer>
-    );
-  }
-
   function renderTellUserUploadImg() {
     return (
       <>
@@ -415,9 +380,10 @@ const UserInfos: React.FC<userInfoType> = (props) => {
         <Title>編輯個人資訊</Title>
         <EditModeContainer>
           {defaultUrl !== defaultProfile && newImg.url ? (
-            <ToPreviewImgEmptyImgSquare
+            <ToPreviewImg
               imgURL={newImg.url}
               emptyImg={setNewImg}
+              recOrSquare="square"
             />
           ) : (
             renderTellUserUploadImg()

@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import { imgType, UploadImgType } from "../functions/commonFunctionAndType";
+import { imgType } from "../functions/commonFunctionAndType";
 import { CancelIcon } from "../pages/ProfileSetting/UserInfos";
 import trash from "./img/bin.png";
 
@@ -79,78 +79,6 @@ const SquarePreviewCancelBtn = styled.div`
     color: #fff;
   }
 `;
-
-export const ToPreviewImgEmptyImgToString: React.FC<{
-  imgURL: string;
-  emptyImg: Dispatch<SetStateAction<imgType>>;
-}> = ({ imgURL, emptyImg }) => {
-  return (
-    <PreviewArticleContainer>
-      <PreviewArticleImg src={imgURL} alt="preview" />
-      <PreviewCancelBtn
-        onClick={() => {
-          emptyImg({ file: "", url: "" });
-        }}
-      >
-        <CancelIcon src={trash} alt="delete" />
-      </PreviewCancelBtn>
-    </PreviewArticleContainer>
-  );
-};
-
-export const ToPreviewImgEmptyImgSquare: React.FC<{
-  imgURL: string;
-  emptyImg: Dispatch<SetStateAction<imgType>>;
-}> = ({ imgURL, emptyImg }) => {
-  return (
-    <PreviewContainer>
-      <PreviewImg src={imgURL} alt="preview" />
-      <PreviewCancelBtn
-        onClick={() => {
-          emptyImg({ file: "", url: "" });
-        }}
-      >
-        <CancelIcon src={trash} alt="delete" />
-      </PreviewCancelBtn>
-    </PreviewContainer>
-  );
-};
-
-export const ToPreviewImgEmptyImgToNull: React.FC<{
-  imgURL: string;
-  emptyImg: Dispatch<SetStateAction<UploadImgType>>;
-}> = ({ imgURL, emptyImg }) => {
-  return (
-    <PreviewContainer>
-      <PreviewImg src={imgURL} alt="preview" />
-      <PreviewCancelBtn
-        onClick={() => {
-          emptyImg({ file: null, url: "" });
-        }}
-      >
-        <CancelIcon src={trash} alt="delete" />
-      </PreviewCancelBtn>
-    </PreviewContainer>
-  );
-};
-
-export const ToPreviewImgEmptyImgToNullArticle: React.FC<{
-  imgURL: string;
-  emptyImg: Dispatch<SetStateAction<UploadImgType>>;
-}> = ({ imgURL, emptyImg }) => {
-  return (
-    <PreviewArticleContainer>
-      <PreviewArticleImg src={imgURL} />
-      <PreviewCancelBtn
-        onClick={() => {
-          emptyImg({ file: null, url: "" });
-        }}
-      >
-        <CancelIcon src={trash} alt="delete" />
-      </PreviewCancelBtn>
-    </PreviewArticleContainer>
-  );
-};
 
 export const ToPreviewImg: React.FC<{
   imgURL: string;
