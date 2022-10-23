@@ -48,12 +48,9 @@ import {
 import parse from "html-react-parser";
 import upload from "./img/upload.png";
 import noarticle from "./img/shigoto_zaitaku_cat_man.png";
-import { imgType, UploadImgType } from "../../functions/commonFunctionAndType";
+import { imgType } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import {
-  ToPreviewImgEmptyImgToString,
-  ToPreviewImgEmptyImgToNullArticle,
-} from "../../component/PreviewImg";
+import { ToPreviewImg } from "../../component/PreviewImg";
 
 const FinishAddArticleBtn = styled(Btn)`
   bottom: 15px;
@@ -428,8 +425,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
   const [editArticleContext, setEditArticleContext] = useState<EditArticleType>(
     { title: "", context: "" }
   );
-  const [editArticleCover, setEditArticleCover] = useState<UploadImgType>({
-    file: null,
+  const [editArticleCover, setEditArticleCover] = useState<imgType>({
+    file: "",
     url: "",
   });
   const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1);
@@ -537,8 +534,8 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       dispatch(setOwnArticle(updateOwnPetArticle));
       if (editArticleCover.file) {
         await updateNewArticleDataFirebase(
-          editArticleCover.file.name,
-          editArticleCover.file
+          (editArticleCover.file as File).name,
+          editArticleCover.file as File
         );
       }
     } else {
@@ -692,9 +689,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             文章封面:{" "}
           </CoverEditArticleLabel>
           {props.articleCover.url ? (
-            <ToPreviewImgEmptyImgToString
+            <ToPreviewImg
               imgURL={props.articleCover.url}
               emptyImg={props.setArticleCover}
+              recOrSquare="rec"
             />
           ) : (
             renderTellUserUploadPetArticleCover()
@@ -733,9 +731,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             文章封面:{" "}
           </CoverEditArticleLabel>
           {editArticleCover.url ? (
-            <ToPreviewImgEmptyImgToNullArticle
+            <ToPreviewImg
               imgURL={editArticleCover.url}
               emptyImg={setEditArticleCover}
+              recOrSquare="rec"
             />
           ) : (
             renderEditPetArticleToUploadCover()

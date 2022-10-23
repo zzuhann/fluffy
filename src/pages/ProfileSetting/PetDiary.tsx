@@ -52,8 +52,8 @@ import upload from "./img/upload.png";
 import defaultProfile from "./img/defaultprofile.png";
 import noPetDiary from "./img/pet_dog_woman.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import { ToPreviewImgEmptyImgToNull } from "../../component/PreviewImg";
-import { UploadImgType } from "../../functions/commonFunctionAndType";
+import { ToPreviewImg } from "../../component/PreviewImg";
+import { imgType } from "../../functions/commonFunctionAndType";
 
 const DiaryLabel = styled(EditInfoLabel)`
   width: 180px;
@@ -532,8 +532,8 @@ export const CalendarContainer = styled.div`
   }
 `;
 
-const uploadImgInitialState: UploadImgType = {
-  file: null,
+const uploadImgInitialState: imgType = {
+  file: "",
   url: "",
 };
 
@@ -554,9 +554,7 @@ export const PetDiary: React.FC<{
     (state) => state.profile
   ) as Profile;
   const [writeDiaryBoxOpen, setWriteDiaryBoxOpen] = useState<boolean>(false);
-  const [diaryImg, setDiaryImg] = useState<UploadImgType>(
-    uploadImgInitialState
-  );
+  const [diaryImg, setDiaryImg] = useState<imgType>(uploadImgInitialState);
   const [uploadDiaryInfo, setUploadDiaryInfo] = useState<UploadDiary>({
     petName: "",
     takePhotoTime: 0,
@@ -572,7 +570,7 @@ export const PetDiary: React.FC<{
     context: "",
     birthYear: 0,
   });
-  const [newDiaryImg, setNewDiaryImg] = useState<UploadImgType>(
+  const [newDiaryImg, setNewDiaryImg] = useState<imgType>(
     uploadImgInitialState
   );
   const [ownPetDiaryIndex, setOwnPetDiaryIndex] = useState<number>(-1);
@@ -670,8 +668,8 @@ export const PetDiary: React.FC<{
       };
       if (newDiaryImg.file) {
         await updateNewPetDiaryDataFirebase(
-          newDiaryImg.file.name,
-          newDiaryImg.file
+          (newDiaryImg.file as File).name,
+          newDiaryImg.file as File
         );
       }
     } else {
@@ -809,7 +807,7 @@ export const PetDiary: React.FC<{
     setDiaryImg({ file: null, url: "" });
     if (diaryImg.file) {
       addDataWithUploadImage(
-        `petDiary/${diaryImg.file.name}`,
+        `petDiary/${(diaryImg.file as File).name}`,
         diaryImg.file as File,
         addPetDiaryDoc
       );
@@ -836,9 +834,10 @@ export const PetDiary: React.FC<{
             取消
           </AddCloseDetailBtn>
           {diaryImg.url ? (
-            <ToPreviewImgEmptyImgToNull
+            <ToPreviewImg
               imgURL={diaryImg.url}
               emptyImg={setDiaryImg}
+              recOrSquare="square"
             />
           ) : (
             renderPetDiaryUploadImg()
@@ -1027,9 +1026,10 @@ export const PetDiary: React.FC<{
         <Title>編輯寵物日記</Title>
         <EditPetDiaryModeContainer>
           {newDiaryImg.url ? (
-            <ToPreviewImgEmptyImgToNull
+            <ToPreviewImg
               imgURL={newDiaryImg.url}
               emptyImg={setNewDiaryImg}
+              recOrSquare="square"
             />
           ) : (
             renderEditPetDiaryImageUpload()

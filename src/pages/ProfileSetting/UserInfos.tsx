@@ -23,6 +23,7 @@ import defaultProfile from "./img/defaultprofile.png";
 import upload from "./img/upload.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import { imgType } from "../../functions/commonFunctionAndType";
+import { ToPreviewImgEmptyImgSquare } from "../../component/PreviewImg";
 
 export const Btn = styled.div`
   position: absolute;
@@ -213,6 +214,7 @@ export const EditModeContainer = styled.div`
 export const EditModeUserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
+
   @media (max-width: 614px) {
     margin-top: 30px;
   }
@@ -412,9 +414,14 @@ const UserInfos: React.FC<userInfoType> = (props) => {
       <EditUserInfoContainer>
         <Title>編輯個人資訊</Title>
         <EditModeContainer>
-          {defaultUrl !== defaultProfile && newImg.url
-            ? renderUserPreviewImg()
-            : renderTellUserUploadImg()}
+          {defaultUrl !== defaultProfile && newImg.url ? (
+            <ToPreviewImgEmptyImgSquare
+              imgURL={newImg.url}
+              emptyImg={setNewImg}
+            />
+          ) : (
+            renderTellUserUploadImg()
+          )}
           <UserContainer>
             <EditContainer>
               <EditInfoLabel>姓名: </EditInfoLabel>

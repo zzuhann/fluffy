@@ -22,7 +22,6 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Title } from "./UserInfos";
-import trash from "./img/bin.png";
 import upload from "./img/upload.png";
 import defaultProfile from "./img/defaultprofile.png";
 import {
@@ -46,6 +45,7 @@ import {
   imgType,
 } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { ToPreviewImg } from "../../component/PreviewImg";
 
 export const InfoContainer = styled.div`
   max-width: 1120px;
@@ -174,21 +174,6 @@ const PetDetailCard = styled.div`
   @media (max-width: 882px) {
     padding-bottom: 70px;
   }
-`;
-
-const PreviewContainer = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 40px;
-  position: relative;
-`;
-
-const PreviewImg = styled.img`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  position: relative;
 `;
 
 const PreviewCancelBtn = styled.div`
@@ -406,6 +391,14 @@ export const NowNoInfoText = styled.div`
   }
 `;
 
+const EditModePetInfoContainer = styled(EditModeUserInfoContainer)`
+  margin-left: 15px;
+  @media (max-width: 614px) {
+    margin-top: 30px;
+    margin-left: 0px;
+  }
+`;
+
 type UserOwnPetInfosType = {
   setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
   incompleteInfo: boolean;
@@ -452,16 +445,11 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         <Title>新增寵物</Title>
         <EditModeContainer>
           {petImg.url ? (
-            <PreviewContainer>
-              <PreviewImg src={petImg.url} alt="preview" />
-              <PreviewCancelBtn
-                onClick={() => {
-                  setPetImg({ file: "", url: "" });
-                }}
-              >
-                <CancelIcon src={trash} alt="delete" />
-              </PreviewCancelBtn>
-            </PreviewContainer>
+            <ToPreviewImg
+              imgURL={petImg.url}
+              emptyImg={setPetImg}
+              recOrSquare="square"
+            />
           ) : (
             <>
               <ImageUploadLabel htmlFor="image">
@@ -483,7 +471,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               />
             </>
           )}
-          <EditModeUserInfoContainer>
+          <EditModePetInfoContainer>
             <EditContainer>
               <EditInfoLabel htmlFor="name">名字: </EditInfoLabel>
               <EditInfoInput
@@ -578,7 +566,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
             {props.incompleteInfo && (
               <WarningText>請填寫完整寵物資料</WarningText>
             )}
-          </EditModeUserInfoContainer>
+          </EditModePetInfoContainer>
           <AddPetBtn
             onClick={async () => {
               if (
@@ -734,16 +722,11 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
         <Title>編輯寵物資訊</Title>
         <EditModeContainer>
           {petNewImg.url ? (
-            <PreviewContainer>
-              <PreviewImg src={petNewImg.url} alt="preview" />
-              <PreviewCancelBtn
-                onClick={() => {
-                  setPetNewImg({ file: "", url: "" });
-                }}
-              >
-                <CancelIcon src={trash} alt="delete" />
-              </PreviewCancelBtn>
-            </PreviewContainer>
+            <ToPreviewImg
+              imgURL={petNewImg.url}
+              emptyImg={setPetNewImg}
+              recOrSquare="square"
+            />
           ) : (
             <>
               <ImageUploadLabel htmlFor="image">
