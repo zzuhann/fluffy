@@ -19,10 +19,9 @@ import {
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
 import defaultProfile from "./img/defaultprofile.png";
-import upload from "./img/upload.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
 import { imgType } from "../../functions/commonFunctionAndType";
-import { ToPreviewImg } from "../../component/PreviewImg";
+import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 export const Btn = styled.div`
   position: absolute;
@@ -81,6 +80,7 @@ const UserContainer = styled.div`
   align-items: center;
   @media (max-width: 617px) {
     flex-direction: column;
+    margin-top: 15px;
   }
 `;
 
@@ -155,22 +155,6 @@ export const EditInfoInput = styled.input`
   border-radius: 5px;
   @media (max-width: 614px) {
     width: 150px;
-  }
-`;
-
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: #db5452;
-  transition: 0.3s;
-  cursor: pointer;
-  &:hover {
-    background-color: #b54745;
-    color: #fff;
   }
 `;
 
@@ -355,12 +339,7 @@ const UserInfos: React.FC<userInfoType> = (props) => {
   function renderTellUserUploadImg() {
     return (
       <>
-        <ImageUploadLabel htmlFor="image">
-          <ProfileImg src={defaultProfile} alt="default-img" />
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </ImageUploadLabel>
+        <TellUserUploadImg recOrSqu="squ" />
         <ImageUploadInput
           id="image"
           type="file"

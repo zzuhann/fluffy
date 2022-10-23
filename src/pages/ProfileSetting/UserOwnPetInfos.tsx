@@ -22,14 +22,9 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Title } from "./UserInfos";
-import upload from "./img/upload.png";
-import defaultProfile from "./img/defaultprofile.png";
 import {
   Btn,
   EditModeContainer,
-  CancelIcon,
-  ImageUploadLabel,
-  ProfileImg,
   ImageUploadInput,
   EditModeUserInfoContainer,
   CancelUpdateBtn,
@@ -45,7 +40,7 @@ import {
   imgType,
 } from "../../functions/commonFunctionAndType";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import { ToPreviewImg } from "../../component/PreviewImg";
+import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 export const InfoContainer = styled.div`
   max-width: 1120px;
@@ -176,21 +171,6 @@ const PetDetailCard = styled.div`
   }
 `;
 
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: #db5452;
-  transition: 0.3s;
-  cursor: pointer;
-  &:hover {
-    background-color: #b54745;
-    color: #fff;
-  }
-`;
 const PetDetailSexBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   margin-left: 10px;
@@ -452,12 +432,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
             />
           ) : (
             <>
-              <ImageUploadLabel htmlFor="image">
-                <ProfileImg src={defaultProfile} alt="上傳" />
-                <PreviewCancelBtn>
-                  <CancelIcon src={upload} alt="upload" />
-                </PreviewCancelBtn>
-              </ImageUploadLabel>
+              <TellUserUploadImg recOrSqu="squ" />
               <ImageUploadInput
                 id="image"
                 type="file"
@@ -729,12 +704,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
             />
           ) : (
             <>
-              <ImageUploadLabel htmlFor="image">
-                <ProfileImg src={defaultProfile} alt="上傳" />
-                <PreviewCancelBtn>
-                  <CancelIcon src={upload} alt="upload" />
-                </PreviewCancelBtn>
-              </ImageUploadLabel>
+              <TellUserUploadImg recOrSqu="squ" />
               <ImageUploadInput
                 id="image"
                 type="file"

@@ -24,12 +24,9 @@ import {
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { setOwnPetDiary } from "../../functions/profileReducerFunction";
 import {
-  CancelIcon,
   EditModeContainer,
   EditModeUserInfoContainer,
   ImageUploadInput,
-  ImageUploadLabel,
-  ProfileImg,
   Title,
   EditContainer,
   EditInfoLabel,
@@ -48,11 +45,9 @@ import {
   PetTitle,
 } from "./UserOwnPetInfos";
 import { Btn } from "./UserInfos";
-import upload from "./img/upload.png";
-import defaultProfile from "./img/defaultprofile.png";
 import noPetDiary from "./img/pet_dog_woman.png";
 import { useNotifyDispatcher } from "../../functions/SidebarNotify";
-import { ToPreviewImg } from "../../component/PreviewImg";
+import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 import { imgType } from "../../functions/commonFunctionAndType";
 
 const DiaryLabel = styled(EditInfoLabel)`
@@ -175,30 +170,6 @@ const PetDetailCard = styled.div`
   border-radius: 5px;
   padding: 15px;
   position: relative;
-`;
-
-const PetDetailImg = styled.label`
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 40px;
-  position: relative;
-`;
-
-const PreviewCancelBtn = styled.div`
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: #db5452;
-  transition: 0.3s;
-  cursor: pointer;
-  &:hover {
-    background-color: #b54745;
-    color: #fff;
-  }
 `;
 
 const PetDetailInput = styled.input`
@@ -700,12 +671,7 @@ export const PetDiary: React.FC<{
   function renderPetDiaryUploadImg() {
     return (
       <>
-        <PetDetailImg htmlFor="image">
-          <ProfileImg src={defaultProfile} alt="上傳" />
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </PetDetailImg>
+        <TellUserUploadImg recOrSqu="squ" />
         <PetDetailInput
           id="image"
           type="file"
@@ -999,12 +965,7 @@ export const PetDiary: React.FC<{
   function renderEditPetDiaryImageUpload() {
     return (
       <>
-        <ImageUploadLabel htmlFor="image">
-          <ProfileImg src={defaultProfile} alt="上傳" />
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </ImageUploadLabel>
+        <TellUserUploadImg recOrSqu="squ" />
         <ImageUploadInput
           id="image"
           type="file"
