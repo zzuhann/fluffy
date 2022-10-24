@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
@@ -37,7 +37,7 @@ import burgerMenu from "./img/bar.png";
 import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
 import { navbars } from "../utils/ConstantInfo";
-import { useNotifyDispatcher } from "../functions/SidebarNotify";
+import { useNotifyDispatcher } from "./SidebarNotify";
 
 const Wrapper = styled.header`
   display: flex;
@@ -334,7 +334,6 @@ const Header = () => {
   ) as Profile;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const nowLocation = useLocation();
   const notifyDispatcher = useNotifyDispatcher();
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
@@ -435,9 +434,6 @@ const Header = () => {
         dispatch(checkIfLogged(false));
         dispatch(clearProfileInfo());
         notifyDispatcher("登出成功");
-        if (nowLocation.pathname === "/dating") {
-          navigate("/");
-        }
       })
       .catch((error) => {
         console.log(error);

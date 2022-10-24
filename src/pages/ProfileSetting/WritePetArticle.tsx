@@ -47,7 +47,7 @@ import {
 import parse from "html-react-parser";
 import noarticle from "./img/shigoto_zaitaku_cat_man.png";
 import { imgType } from "../../functions/commonFunctionAndType";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 const FinishAddArticleBtn = styled(Btn)`

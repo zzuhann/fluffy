@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Profile } from "../../reducers/profile";
 import { Btn } from "../ProfileSetting/UserInfos";
@@ -190,6 +190,7 @@ const Home = () => {
   const [openPopupBox, setOpenPopupBox] = useState(false);
   const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
   const navigate = useNavigate();
+  const fromPage: string = useLocation().state as string;
 
   function gotoProfilePage() {
     setNavigateToProfileTime(3);
@@ -207,6 +208,12 @@ const Home = () => {
       });
     }, 1000);
   }
+
+  useEffect(() => {
+    if (fromPage === "/dating" && profile.isLogged) {
+      navigate(fromPage);
+    }
+  }, [fromPage, navigate, profile.isLogged]);
 
   return (
     <Wrapper>
