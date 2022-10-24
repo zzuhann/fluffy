@@ -25,7 +25,7 @@ import {
   DeleteCheckBoxBtn,
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 
 const UpcomingListCard = styled.div`
   display: flex;

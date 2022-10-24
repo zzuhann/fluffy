@@ -8,7 +8,7 @@ import shelter from "./img/animal-shelter.png";
 import clock from "./img/clock.png";
 import { Btn } from "../ProfileSetting/UserInfos";
 import { setUpcomingDateList } from "../../functions/datingReducerFunction";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 
 const UpcomingListCard = styled.div`
   display: flex;

@@ -39,7 +39,7 @@ import {
   imgInitialState,
   imgType,
 } from "../../functions/commonFunctionAndType";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 
 export const InfoContainer = styled.div`

@@ -393,6 +393,7 @@ const Pairing: React.FC = () => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [preference, setPreference] = useState({ kind: "all", location: "0" });
   const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
   const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1);
@@ -414,11 +415,10 @@ const Pairing: React.FC = () => {
     userName: string;
     index: number;
   }>({ petId: 0, shelterName: "", userName: "", index: -1 });
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!profile.isLogged) {
-      navigate("/");
+      navigate("/", { state: "/dating" });
     }
   }, [profile.isLogged, navigate]);
 

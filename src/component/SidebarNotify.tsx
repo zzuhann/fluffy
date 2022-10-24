@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { setNotification } from "./profileReducerFunction";
+import { setNotification } from "../functions/profileReducerFunction";
 
 export const useNotifyDispatcher = () => {
   const dispatch = useDispatch();

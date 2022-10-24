@@ -23,7 +23,7 @@ import ProfileSetting from "./ProfileSetting";
 import defaultProfile from "./img/defaultprofile.png";
 import close from "./img/close.png";
 import { Loading } from "../../utils/loading";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 import { BlackMask } from "../../component/Header";
 
 const WarningText = styled.div`
