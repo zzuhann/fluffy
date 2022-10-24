@@ -46,7 +46,7 @@ import {
 } from "./UserOwnPetInfos";
 import { Btn } from "./UserInfos";
 import noPetDiary from "./img/pet_dog_woman.png";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 import { imgType } from "../../functions/commonFunctionAndType";
 

@@ -19,7 +19,7 @@ import {
 import { setImage, setName } from "../../functions/profileReducerFunction";
 import { Profile } from "../../reducers/profile";
 import defaultProfile from "./img/defaultprofile.png";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 import { imgType } from "../../functions/commonFunctionAndType";
 import { TellUserUploadImg, ToPreviewImg } from "../../component/PreviewImg";
 

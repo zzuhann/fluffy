@@ -36,7 +36,7 @@ import {
   WarningDeleteBtn,
 } from "../ProfileSetting/UserOwnPetInfos";
 import { BlackMask } from "../../component/Header";
-import { useNotifyDispatcher } from "../../functions/SidebarNotify";
+import { useNotifyDispatcher } from "../../component/SidebarNotify";
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
