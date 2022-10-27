@@ -90,6 +90,9 @@ const TimeBtnContainer = styled.div`
 
 const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 1;
   flex-basis: 45%;
   padding: 3px;
@@ -398,6 +401,7 @@ const ConsiderPetDetail = (props: {
     "14:30",
     "15:00",
     "15:30",
+    "Right Now",
   ]);
   const [timeIndex, setTimeIndex] = useState<number>(-1);
   const [repeatInvite, setRepeatInvite] = useState(false);
@@ -457,7 +461,7 @@ const ConsiderPetDetail = (props: {
         setNowNoTimeSelect(true);
       }
     } else {
-      setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+      setTimeSelect(["14:00", "14:30", "15:00", "15:30", "Right Now"]);
     }
   }
 
@@ -818,15 +822,24 @@ const ConsiderPetDetail = (props: {
                     $isActive={timeIndex === index}
                     key={index}
                     onClick={() => {
-                      setTimeIndex(index);
-                      setInviteDatingInfo({
-                        ...inviteDatingInfo,
-                        time: timeSelect[index],
-                        dateAndTime: (inviteDatingInfo.date as Date).setHours(
-                          Number(timeSelect[index].split(":")[0]),
-                          Number(timeSelect[index].split(":")[1])
-                        ),
-                      });
+                      if (timeSelect[index] === "Right Now") {
+                        setTimeIndex(index);
+                        setInviteDatingInfo({
+                          ...inviteDatingInfo,
+                          time: `${new Date().getHours()}:${new Date().getMinutes()}`,
+                          dateAndTime: Number(new Date()),
+                        });
+                      } else {
+                        setTimeIndex(index);
+                        setInviteDatingInfo({
+                          ...inviteDatingInfo,
+                          time: timeSelect[index],
+                          dateAndTime: (inviteDatingInfo.date as Date).setHours(
+                            Number(timeSelect[index].split(":")[0]),
+                            Number(timeSelect[index].split(":")[1])
+                          ),
+                        });
+                      }
                     }}
                   >
                     {time}

@@ -324,7 +324,13 @@ const UpcomingList: React.FC<Props> = (props) => {
                   {new Date(date.datingDate).getDate() < 10
                     ? `0${new Date(date.datingDate).getDate()}`
                     : new Date(date.datingDate).getDate()}{" "}
-                  {date.time}
+                  {new Date(date.datingDate).getHours() < 10
+                    ? `0${new Date(date.datingDate).getHours()}`
+                    : new Date(date.datingDate).getHours()}
+                  :
+                  {new Date(date.datingDate).getMinutes() < 10
+                    ? `0${new Date(date.datingDate).getMinutes()}`
+                    : new Date(date.datingDate).getMinutes()}
                 </UpcomingInfo>
               )}
             </UpcomingInfoImgContainer>
