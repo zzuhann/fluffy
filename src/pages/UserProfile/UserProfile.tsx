@@ -173,6 +173,10 @@ const SelectGroup = styled.div`
   z-index: 1000;
 `;
 const NowChooseOption = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 30px;
+  white-space: nowrap;
   &:after {
     content: "ˇ";
     position: absolute;
@@ -194,7 +198,6 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
 `;
 const OptionName = styled.li`
   display: flex;
-  justify-content: center;
   padding: 8px 10px;
   transition: 0.2s;
   &:hover {
@@ -255,6 +258,7 @@ const DiaryImg = styled.img`
 const DiaryBottom = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: absolute;
   background-color: rgba(0, 0, 0, 0.3);
   color: #fff;
