@@ -556,10 +556,15 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(
-              e.target.files as FileList,
-              props.setArticleCover
-            );
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(
+                e.target.files as FileList,
+                props.setArticleCover
+              );
+            }
           }}
         />
       </>
@@ -575,10 +580,15 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(
-              e.target.files as FileList,
-              setEditArticleCover
-            );
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(
+                e.target.files as FileList,
+                setEditArticleCover
+              );
+            }
           }}
         />
       </>

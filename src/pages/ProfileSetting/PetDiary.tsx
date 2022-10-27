@@ -679,7 +679,12 @@ export const PetDiary: React.FC<{
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
+            }
           }}
         />
       </>
@@ -973,10 +978,15 @@ export const PetDiary: React.FC<{
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(
-              e.target.files as FileList,
-              setNewDiaryImg
-            );
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(
+                e.target.files as FileList,
+                setNewDiaryImg
+              );
+            }
           }}
         />
       </>
