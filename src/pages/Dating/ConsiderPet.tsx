@@ -442,26 +442,52 @@ const ConsiderPetDetail = (props: {
       }
     });
 
-    filterDateTime(sameDate);
+    filterDateTime(sameDate, year, month, day);
     return sameDate;
   }
 
-  function filterDateTime(thatDayDate: InviteDating[]) {
+  function filterDateTime(
+    thatDayDate: InviteDating[],
+    year: number,
+    month: number,
+    day: number
+  ) {
     const dateTime: string[] = [];
     thatDayDate.forEach((date) => {
       dateTime.push(date.time);
     });
-
-    if (dateTime.length > 0) {
-      const newTimeSelect = timeSelect.filter((e) =>
-        dateTime.indexOf(e) > -1 ? false : true
-      );
-      setTimeSelect(newTimeSelect);
-      if (dateTime.length === 4) {
-        setNowNoTimeSelect(true);
+    if (
+      year === new Date().getFullYear() &&
+      day === new Date().getDate() &&
+      month === new Date().getMonth() + 1
+    ) {
+      if (dateTime.length > 0) {
+        const newTimeSelect = [
+          "14:00",
+          "14:30",
+          "15:00",
+          "15:30",
+          "Right Now",
+        ].filter((e) => (dateTime.indexOf(e) > -1 ? false : true));
+        setTimeSelect(newTimeSelect);
+        if (dateTime.length === 4) {
+          setNowNoTimeSelect(true);
+        }
+      } else {
+        setTimeSelect(["14:00", "14:30", "15:00", "15:30", "Right Now"]);
       }
     } else {
-      setTimeSelect(["14:00", "14:30", "15:00", "15:30", "Right Now"]);
+      if (dateTime.length > 0) {
+        const newTimeSelect = ["14:00", "14:30", "15:00", "15:30"].filter((e) =>
+          dateTime.indexOf(e) > -1 ? false : true
+        );
+        setTimeSelect(newTimeSelect);
+        if (dateTime.length === 4) {
+          setNowNoTimeSelect(true);
+        }
+      } else {
+        setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+      }
     }
   }
 

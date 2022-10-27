@@ -983,6 +983,11 @@ const UpcomingList: React.FC<Props> = (props) => {
                       "id",
                       date.id
                     );
+                    deleteFirebaseData(
+                      `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`,
+                      "id",
+                      date.id
+                    );
                     const newUpcomingList = dating.upcomingDateList;
                     newUpcomingList.splice(index, 1);
                     dispatch(setUpcomingDateList(newUpcomingList));
