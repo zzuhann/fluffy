@@ -187,8 +187,10 @@ const NowChooseOption = styled.div`
 const OptionGroup = styled.ul<{ $isActive: boolean }>`
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
-  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  overflow-y: scroll;
+  max-height: ${(props) => (props.$isActive ? "300px" : "0px")};
+  transition: max-height 0.15s ease-out;
+  border: ${(props) => (props.$isActive ? "solid 3px #d1cfcf" : "none")};
   position: absolute;
   background-color: #fff;
   width: 200px;
