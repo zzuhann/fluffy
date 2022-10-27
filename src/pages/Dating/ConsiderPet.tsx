@@ -90,6 +90,9 @@ const TimeBtnContainer = styled.div`
 
 const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 1;
   flex-basis: 45%;
   padding: 3px;
@@ -398,6 +401,7 @@ const ConsiderPetDetail = (props: {
     "14:30",
     "15:00",
     "15:30",
+    "Right Now",
   ]);
   const [timeIndex, setTimeIndex] = useState<number>(-1);
   const [repeatInvite, setRepeatInvite] = useState(false);
@@ -438,26 +442,52 @@ const ConsiderPetDetail = (props: {
       }
     });
 
-    filterDateTime(sameDate);
+    filterDateTime(sameDate, year, month, day);
     return sameDate;
   }
 
-  function filterDateTime(thatDayDate: InviteDating[]) {
+  function filterDateTime(
+    thatDayDate: InviteDating[],
+    year: number,
+    month: number,
+    day: number
+  ) {
     const dateTime: string[] = [];
     thatDayDate.forEach((date) => {
       dateTime.push(date.time);
     });
-
-    if (dateTime.length > 0) {
-      const newTimeSelect = timeSelect.filter((e) =>
-        dateTime.indexOf(e) > -1 ? false : true
-      );
-      setTimeSelect(newTimeSelect);
-      if (dateTime.length === 4) {
-        setNowNoTimeSelect(true);
+    if (
+      year === new Date().getFullYear() &&
+      day === new Date().getDate() &&
+      month === new Date().getMonth() + 1
+    ) {
+      if (dateTime.length > 0) {
+        const newTimeSelect = [
+          "14:00",
+          "14:30",
+          "15:00",
+          "15:30",
+          "Right Now",
+        ].filter((e) => (dateTime.indexOf(e) > -1 ? false : true));
+        setTimeSelect(newTimeSelect);
+        if (dateTime.length === 4) {
+          setNowNoTimeSelect(true);
+        }
+      } else {
+        setTimeSelect(["14:00", "14:30", "15:00", "15:30", "Right Now"]);
       }
     } else {
-      setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+      if (dateTime.length > 0) {
+        const newTimeSelect = ["14:00", "14:30", "15:00", "15:30"].filter((e) =>
+          dateTime.indexOf(e) > -1 ? false : true
+        );
+        setTimeSelect(newTimeSelect);
+        if (dateTime.length === 4) {
+          setNowNoTimeSelect(true);
+        }
+      } else {
+        setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+      }
     }
   }
 
@@ -818,15 +848,24 @@ const ConsiderPetDetail = (props: {
                     $isActive={timeIndex === index}
                     key={index}
                     onClick={() => {
-                      setTimeIndex(index);
-                      setInviteDatingInfo({
-                        ...inviteDatingInfo,
-                        time: timeSelect[index],
-                        dateAndTime: (inviteDatingInfo.date as Date).setHours(
-                          Number(timeSelect[index].split(":")[0]),
-                          Number(timeSelect[index].split(":")[1])
-                        ),
-                      });
+                      if (timeSelect[index] === "Right Now") {
+                        setTimeIndex(index);
+                        setInviteDatingInfo({
+                          ...inviteDatingInfo,
+                          time: `${new Date().getHours()}:${new Date().getMinutes()}`,
+                          dateAndTime: Number(new Date()),
+                        });
+                      } else {
+                        setTimeIndex(index);
+                        setInviteDatingInfo({
+                          ...inviteDatingInfo,
+                          time: timeSelect[index],
+                          dateAndTime: (inviteDatingInfo.date as Date).setHours(
+                            Number(timeSelect[index].split(":")[0]),
+                            Number(timeSelect[index].split(":")[1])
+                          ),
+                        });
+                      }
                     }}
                   >
                     {time}

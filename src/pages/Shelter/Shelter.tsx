@@ -116,14 +116,12 @@ const Shelter = () => {
             </NowNoInfoTextConsider>
           </NowNoInfoInHereConsider>
         ) : (
-          <>
-            <UpcomingList
-              shelterUpcomingList={shelterUpcomingList}
-              setOpenMeeting={setOpenMeeting}
-              setNowMeetingShelter={setNowMeetingShelter}
-              setShelterUpcomingList={setShelterUpcomingList}
-            />
-          </>
+          <UpcomingList
+            shelterUpcomingList={shelterUpcomingList}
+            setOpenMeeting={setOpenMeeting}
+            setNowMeetingShelter={setNowMeetingShelter}
+            setShelterUpcomingList={setShelterUpcomingList}
+          />
         )}
       </UpcomingListContainer>
     </Wrap>

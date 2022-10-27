@@ -438,10 +438,15 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  updateUseStateInputImage(
-                    e.target.files as FileList,
-                    setPetImg
-                  );
+                  if (
+                    e.target.files &&
+                    e.target.files[0].type.split("/")[0] === "image"
+                  ) {
+                    updateUseStateInputImage(
+                      e.target.files as FileList,
+                      setPetImg
+                    );
+                  }
                 }}
               />
             </>
@@ -710,10 +715,15 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  updateUseStateInputImage(
-                    e.target.files as FileList,
-                    setPetNewImg
-                  );
+                  if (
+                    e.target.files &&
+                    e.target.files[0].type.split("/")[0] === "image"
+                  ) {
+                    updateUseStateInputImage(
+                      e.target.files as FileList,
+                      setPetNewImg
+                    );
+                  }
                 }}
               />
             </>

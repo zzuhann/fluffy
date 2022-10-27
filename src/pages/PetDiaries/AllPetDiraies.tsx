@@ -55,16 +55,26 @@ const AllDiariesContainer = styled.div`
     padding-left: 50px;
     padding-right: 50px;
   }
-  @media (max-width: 725px) {
+  @media (max-width: 889px) {
+    grid-template-columns: repeat(auto-fill, 350px);
+  }
+  @media (max-width: 830px) {
     justify-content: center;
     grid-template-columns: repeat(auto-fill, 300px);
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  @media (max-width: 679px) {
+    grid-template-columns: repeat(auto-fill, 450px);
+  }
+  @media (max-width: 495px) {
+    grid-template-columns: repeat(auto-fill, 400px);
   }
   @media (max-width: 432px) {
     grid-template-columns: repeat(auto-fill, 250px);
   }
 `;
 const DiaryCard = styled(Link)`
-  /* margin-bottom: 30px; */
   transition: 0.2s;
   bottom: 0;
   flex-shrink: 0;
@@ -113,8 +123,17 @@ const DiaryImg = styled.img`
   width: 250px;
   height: 250px;
   object-fit: cover;
-  @media (max-width: 725px) {
+  @media (max-width: 889px) {
+    width: 350px;
+  }
+  @media (max-width: 830px) {
     width: 300px;
+  }
+  @media (max-width: 679px) {
+    width: 450px;
+  }
+  @media (max-width: 495px) {
+    width: 400px;
   }
   @media (max-width: 432px) {
     width: 250px;

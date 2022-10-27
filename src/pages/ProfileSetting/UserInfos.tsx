@@ -321,8 +321,13 @@ const UserInfos: React.FC<userInfoType> = (props) => {
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(e.target.files as FileList, setNewImg);
-            setDefaultUrl("");
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(e.target.files as FileList, setNewImg);
+              setDefaultUrl("");
+            }
           }}
         />
       </>

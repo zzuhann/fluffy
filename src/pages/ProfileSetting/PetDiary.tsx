@@ -211,12 +211,14 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
-  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  max-height: ${(props) => (props.$isActive ? "272px" : "0px")};
   position: absolute;
   background-color: #fff;
   width: 200px;
   top: 50px;
   left: 0;
+  transition: max-height 0.15s ease-out;
+  border: ${(props) => (props.$isActive ? "solid 3px #d1cfcf" : "none")};
   @media (max-width: 653px) {
     width: 150px;
   }
@@ -677,7 +679,12 @@ export const PetDiary: React.FC<{
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(e.target.files as FileList, setDiaryImg);
+            }
           }}
         />
       </>
@@ -971,10 +978,15 @@ export const PetDiary: React.FC<{
           type="file"
           accept="image/*"
           onChange={(e) => {
-            updateUseStateInputImage(
-              e.target.files as FileList,
-              setNewDiaryImg
-            );
+            if (
+              e.target.files &&
+              e.target.files[0].type.split("/")[0] === "image"
+            ) {
+              updateUseStateInputImage(
+                e.target.files as FileList,
+                setNewDiaryImg
+              );
+            }
           }}
         />
       </>

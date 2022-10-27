@@ -173,6 +173,10 @@ const SelectGroup = styled.div`
   z-index: 1000;
 `;
 const NowChooseOption = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 30px;
+  white-space: nowrap;
   &:after {
     content: "ˇ";
     position: absolute;
@@ -183,8 +187,10 @@ const NowChooseOption = styled.div`
 const OptionGroup = styled.ul<{ $isActive: boolean }>`
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
-  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  overflow-y: scroll;
+  max-height: ${(props) => (props.$isActive ? "300px" : "0px")};
+  transition: max-height 0.15s ease-out;
+  border: ${(props) => (props.$isActive ? "solid 3px #d1cfcf" : "none")};
   position: absolute;
   background-color: #fff;
   width: 200px;
@@ -194,7 +200,6 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
 `;
 const OptionName = styled.li`
   display: flex;
-  justify-content: center;
   padding: 8px 10px;
   transition: 0.2s;
   &:hover {
@@ -255,6 +260,7 @@ const DiaryImg = styled.img`
 const DiaryBottom = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: absolute;
   background-color: rgba(0, 0, 0, 0.3);
   color: #fff;

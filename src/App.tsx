@@ -1,6 +1,6 @@
 import store from "../src/store/configureStore";
 import { Provider } from "react-redux";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { Reset } from "styled-reset";
 import Header from "./component/Header";
