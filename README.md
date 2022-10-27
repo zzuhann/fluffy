@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+<div align="center">
+<a href="https://fluffy-18025.web.app/" target="_blank"><img src="https://github.com/zzuhann/fluffyStorage/blob/main/logotogithub.png?raw=true" alt="fluffy" width="200"/></a>
+<br/>
+<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span>
+</div>
+<h2 id="Intro">Intro</h2>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Fluffy is a pet platform desires to promote stray animals in shelters in Taiwan. People who want to adopt a pet can meet lovely dogs and cats, and those who have pets can also share their daily lives with other people.✨
 
-## Available Scripts
+<h2 id="Tech">Tech</h2>
+<span><picture><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="typescript"/></picture></span>
+<span><picture><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="reactJS"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white" alt="redux"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white" alt="styledcomponent"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white" alt="reactRouter"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/Socket.io-010101?&style=for-the-badge&logo=Socket.io&logoColor=white" alt="socketIO"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="figma"></picture></span>
 
-In the project directory, you can run:
+<h2 id="Features">Features</h2>
+<ul>
+<li>Developed the SPA with <b>React/React Router</b> and wrote in <b>TypeScript</b></li>
+<li>Applied <b>Redux</b> to manage users’ state (such as user authentication, and dogs or cats that users like)</li>
+<li>Handled <b>WebRTC</b> real-time peer-to-peer video chat between users and shelters</li>
+<li>Built the Signaling Server with <b>Node.js</b> and <b>WebSocket</b> and deployed it on Heroku</li>
+<li>Utilized <b>styled-components</b> for RWD layouts</li>
+<li>Realized CRUD in a user profile and pet diary/article page by <b>React Hooks</b></li>
+<li>Designed a <b>custom hook</b> to push notifications to users and show that the states had been updated</li>
+<li>Integrated data management with <b>Firebase Firestore database</b></li>
+<li>Obtained 24-hour veterinary clinics in Taiwan through web crawling by <b>Node.js, request, and cheerio</b></li>
+<li>Customized calendar with <b>React Calendar</b></li>
+</ul>
 
-### `npm start`
+<h2 id="Flow_Chart">Flow Chart</h2>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/Desktop%20-%201%20(1).png?raw=true" alt="flowChart"/>
+</picture>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<h2 id="Demo">Demo</h2>
+<p>▼ Home Page</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E9%A6%96%E9%A0%81demo.gif?raw=true"/>
+</picture>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<p>▼ Pairing: to press love button if you are willing to adopt dogs or cats</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E9%85%8D%E5%B0%8D.gif?raw=true"/>
+</picture>
 
-### `npm test`
+<p>▼ Meeting: peer-to-peer video chat between shelters and users who want to adopt animals</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E8%A6%96%E8%A8%8A.gif?raw=true"/>
+</picture>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p>▼ Pet Diary: users can browse all pet diaries and comment or press the like button</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E5%AF%B5%E7%89%A9%E6%97%A5%E8%A8%98.gif?raw=true"/>
+</picture>
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<p>▼ User Profile Page</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/new%E4%BD%9C%E8%80%85%E5%80%8B%E4%BA%BA%E9%A0%81%E9%9D%A2.gif?raw=true"/>
+</picture>
