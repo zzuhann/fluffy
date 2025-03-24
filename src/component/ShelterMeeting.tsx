@@ -15,7 +15,7 @@ import React, {
 } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { Btn } from "../pages/ProfileSetting/UserInfos";
+import { Btn } from "../app/profile/components/UserInfos";
 import { InviteDating } from "../reducers/dating";
 import { Profile } from "../reducers/profile";
 import { db } from "../utils/firebase";
@@ -305,7 +305,7 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         <MeetingPerson
           ref={remoteVideoRef}
           autoPlay
-          poster={meetingBanner}
+          poster={meetingBanner.src}
         ></MeetingPerson>
         <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
         {status === "開始通話" && (
@@ -316,7 +316,7 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         )}
         {status === "通話中" && <PhoneBtn onClick={hangup}>結束視訊</PhoneBtn>}
         <CloseBtn
-          src={close}
+          src={close.src}
           onClick={() => props.setOpenMeeting(false)}
           alt="close"
         />

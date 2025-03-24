@@ -1,12 +1,12 @@
 export const navbars = [
   {
     name: "配對專區",
-    targetLink: "/dating",
+    targetLink: "/pairing",
     needToLogin: true,
   },
   {
     name: "寵物日記",
-    targetLink: "/petdiary",
+    targetLink: "/pet-diary",
     needToLogin: false,
   },
   {

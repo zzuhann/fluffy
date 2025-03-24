@@ -25,3 +25,7 @@ yarn-error.log*
 firebase.json
 .firebaserc
 .firebase
+
+.next
+next-env.d.ts
+dist

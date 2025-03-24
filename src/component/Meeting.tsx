@@ -8,7 +8,7 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
-import { Btn } from "../pages/ProfileSetting/UserInfos";
+import { Btn } from "../app/profile/components/UserInfos";
 import { Dating } from "../reducers/dating";
 import { Profile } from "../reducers/profile";
 import meetingBanner from "./img/meetingBanner.png";
@@ -327,12 +327,12 @@ const Meeting: React.FC<MeetingType> = (props) => {
         <MeetingPerson
           ref={remoteVideoRef}
           autoPlay
-          poster={meetingBanner}
+          poster={meetingBanner.src}
         ></MeetingPerson>
         <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
         {status === "開始通話" && (
           <PhoneBtn onClick={() => createOffer()}>
-            <ImgBtn src={phoneCall} alt="call" />
+            <ImgBtn src={phoneCall.src} alt="call" />
             {"  "}撥打電話給收容所
           </PhoneBtn>
         )}
@@ -385,7 +385,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
           </PhoneBtn>
         )}
         <CloseBtn
-          src={close}
+          src={close.src}
           onClick={() => props.setOpenMeeting(false)}
           alt="close"
         />

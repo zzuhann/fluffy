@@ -1,8 +1,9 @@
+"use client";
+
 import React, { useState } from "react";
 import logo from "./img/fluffylogo.png";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
@@ -38,6 +39,8 @@ import { InviteDating } from "../reducers/dating";
 import { setUpcomingDateList } from "../functions/datingReducerFunction";
 import { navbars } from "../utils/ConstantInfo";
 import { useNotifyDispatcher } from "./SidebarNotify";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Wrapper = styled.header`
   display: flex;
@@ -64,7 +67,7 @@ const BurgerMenu = styled.img`
   }
 `;
 
-const Logo = styled(Link)`
+const Logo = styled.a`
   @media (max-width: 1025px) {
     margin-right: auto;
   }
@@ -321,7 +324,7 @@ export const PopUpNote = styled.div`
   margin-top: 15px;
 `;
 
-export const PopImg = styled.img`
+export const PopImg = styled(Image)`
   width: 100px;
   height: 100px;
   object-fit: cover;
@@ -333,7 +336,7 @@ const Header = () => {
     (state) => state.profile
   ) as Profile;
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const notifyDispatcher = useNotifyDispatcher();
   const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
   const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
@@ -416,7 +419,7 @@ const Header = () => {
           if (docSnap.data().img) {
             dispatch(setImage(docSnap.data().img));
           } else {
-            dispatch(setImage(defaultProfile));
+            dispatch(setImage(defaultProfile.src));
           }
         } else {
           console.log("No such document!");
@@ -448,7 +451,7 @@ const Header = () => {
         if (prev <= 0) {
           clearInterval(coundDownTimer);
           setOpenPopupBox(false);
-          navigate("/profile");
+          router.push("/profile");
           return 0;
         } else {
           return prev - 1;
@@ -467,7 +470,7 @@ const Header = () => {
       />
       <Wrapper>
         <BurgerMenu
-          src={burgerMenu}
+          src={burgerMenu.src}
           alt="sidebar"
           onClick={() =>
             clickBurgerMenu
@@ -475,8 +478,8 @@ const Header = () => {
               : setClickBurgerMenu(true)
           }
         />
-        <Logo to="/">
-          <LogoImg src={logo} alt="fluffy" />
+        <Logo href="/">
+          <LogoImg src={logo.src} alt="fluffy" />
         </Logo>
         <NavBarTag>
           <NavBarContainer>
@@ -487,7 +490,7 @@ const Header = () => {
                   if (navbar.needToLogin && !profile.isLogged) {
                     gotoProfilePage();
                   } else {
-                    navigate(navbar.targetLink);
+                    router.push(navbar.targetLink);
                   }
                 }}
               >
@@ -497,7 +500,7 @@ const Header = () => {
             {profile.isShelter && (
               <NavBar
                 onClick={() => {
-                  navigate("/shelter");
+                  router.push("/shelter");
                 }}
               >
                 所有視訊申請
@@ -508,7 +511,12 @@ const Header = () => {
         {openPopupBox && (
           <>
             <PopUpMessage>
-              <PopImg src={catHand} alt="loding-first" />
+              <PopImg
+                src={catHand.src}
+                alt="loding-first"
+                width={100}
+                height={100}
+              />
               <PopUpText>進入配對專區需先登入/註冊</PopUpText>
               <PopUpNote>
                 {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
@@ -526,15 +534,23 @@ const Header = () => {
                 : setOpenProfileBox(true)
             }
           >
-            <ProfileImg src={profile.img as string} alt="profile" />
+            {/* {typeof profile.img === "string" && profile.img !== "" && (
+              <ProfileImg src={profile.img} alt="profile" />
+            )}
+            {typeof profile.img === "object" && (
+              <ProfileImg
+                src={URL.createObjectURL(profile.img)}
+                alt="profile"
+              />
+            )} */}
             <ProfileNavBar>{profile.name}</ProfileNavBar>
             <ProfileHoverBox $isActive={openProfileBox === true}>
               <ProfileHoverUnit
-                onClick={() => navigate(`/profile/${profile.uid}`)}
+                onClick={() => router.push(`/profile/${profile.uid}`)}
               >
                 個人頁面
               </ProfileHoverUnit>
-              <ProfileHoverUnit onClick={() => navigate("/profile")}>
+              <ProfileHoverUnit onClick={() => router.push("/profile")}>
                 會員設定
               </ProfileHoverUnit>
               <ProfileHoverUnit onClick={() => signOutProfile()}>
@@ -547,7 +563,7 @@ const Header = () => {
             <LoginRegisterBtn
               onClick={() => {
                 dispatch(targetRegisterOrLogin("register"));
-                navigate("/profile");
+                router.push("/profile");
               }}
             >
               註冊
@@ -555,7 +571,7 @@ const Header = () => {
             <LoginRegisterBtn
               onClick={() => {
                 dispatch(targetRegisterOrLogin("login"));
-                navigate("/profile");
+                router.push("/profile");
               }}
             >
               登入
@@ -571,7 +587,7 @@ const Header = () => {
               if (navbar.needToLogin && !profile.isLogged) {
                 gotoProfilePage();
               } else {
-                navigate(navbar.targetLink);
+                router.push(navbar.targetLink);
               }
             }}
             key={index}
@@ -583,7 +599,7 @@ const Header = () => {
           <NavBar
             onClick={() => {
               setClickBurgerMenu(false);
-              navigate("/shelter");
+              router.push("/shelter");
             }}
           >
             所有視訊申請
