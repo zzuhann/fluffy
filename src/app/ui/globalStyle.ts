@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyle = createGlobalStyle`
   /* Reset CSS */
@@ -85,4 +85,4 @@ export const GlobalStyle = createGlobalStyle`
     max-width: 100%;
     height: auto;
   }
-`;
+`

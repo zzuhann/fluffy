@@ -1,7 +1,8 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-import { Profile } from "../../reducers/profile";
+import type { Dispatch, SetStateAction } from 'react'
+import type { Profile } from '../../reducers/profile'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import styled from 'styled-components'
 
 const SideBarWrapper = styled.div`
   width: 100%;
@@ -23,7 +24,7 @@ const SideBarWrapper = styled.div`
     padding-left: 0px;
     padding-right: 0px;
   }
-`;
+`
 
 const SidebarProfileTab = styled.div`
   display: flex;
@@ -35,7 +36,7 @@ const SidebarProfileTab = styled.div`
     margin: 0;
     padding-top: 0;
   }
-`;
+`
 
 const UserProfileContainer = styled.div`
   display: flex;
@@ -43,14 +44,14 @@ const UserProfileContainer = styled.div`
   @media (max-width: 953px) {
     display: none;
   }
-`;
+`
 
 const ProfileImg = styled.img`
   width: 60px;
   height: 60px;
   border-radius: 30px;
   object-fit: cover;
-`;
+`
 
 const ProfileName = styled.div`
   font-size: 22px;
@@ -62,7 +63,7 @@ const ProfileName = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 32px;
-`;
+`
 
 const SettingTabContainer = styled.div`
   display: flex;
@@ -78,7 +79,7 @@ const SettingTabContainer = styled.div`
     padding-left: 10px;
     padding-right: 10px;
   }
-`;
+`
 
 const SettingTab = styled.div<{ $isActive: boolean }>`
   display: flex;
@@ -92,7 +93,7 @@ const SettingTab = styled.div<{ $isActive: boolean }>`
   position: relative;
   &:after {
     content: "";
-    width: ${(props) => (props.$isActive ? "100%" : "0%")};
+    width: ${props => (props.$isActive ? '100%' : '0%')};
     height: 3px;
     background-color: #b7b0a8;
     position: absolute;
@@ -119,18 +120,18 @@ const SettingTab = styled.div<{ $isActive: boolean }>`
   @media (max-width: 380px) {
     font-size: 16px;
   }
-`;
+`
 
-type TopbarType = {
-  tabs: string[];
-  selectedTab: string;
-  setSelectedTab: Dispatch<SetStateAction<string>>;
-};
+interface TopbarType {
+  tabs: string[]
+  selectedTab: string
+  setSelectedTab: Dispatch<SetStateAction<string>>
+}
 
 const Topbar: React.FC<TopbarType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
+    state => state.profile,
+  ) as Profile
 
   return (
     <SideBarWrapper>
@@ -144,8 +145,8 @@ const Topbar: React.FC<TopbarType> = (props) => {
             <SettingTab
               key={index}
               onClick={(e) => {
-                const target = e.target as HTMLDivElement;
-                props.setSelectedTab(target.textContent as string);
+                const target = e.target as HTMLDivElement
+                props.setSelectedTab(target.textContent as string)
               }}
               $isActive={props.selectedTab === props.tabs[index]}
             >
@@ -155,7 +156,7 @@ const Topbar: React.FC<TopbarType> = (props) => {
         </SettingTabContainer>
       </SidebarProfileTab>
     </SideBarWrapper>
-  );
-};
+  )
+}
 
-export default Topbar;
+export default Topbar

@@ -1,14 +1,13 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { setNotification } from "../functions/profileReducerFunction";
+import { useDispatch } from 'react-redux'
+import { setNotification } from '../functions/profileReducerFunction'
 
-export const useNotifyDispatcher = () => {
-  const dispatch = useDispatch();
+export function useNotifyDispatcher() {
+  const dispatch = useDispatch()
 
   return (notification: string) => {
-    dispatch(setNotification(notification));
+    dispatch(setNotification(notification))
     setTimeout(() => {
-      dispatch(setNotification(""));
-    }, 3000);
-  };
-};
+      dispatch(setNotification(''))
+    }, 3000)
+  }
+}

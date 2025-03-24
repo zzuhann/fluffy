@@ -1,19 +1,19 @@
-import { Metadata } from "next";
-import Header from "src/component/Header";
-import { Providers } from "src/reducers/providers";
-import SideNotification from "src/component/SideNotification";
-import { GlobalStyle } from "./ui/globalStyle";
-import StyledJsxRegistry from "./registry";
+import type { Metadata } from 'next'
+import Header from 'src/component/Header'
+import SideNotification from 'src/component/SideNotification'
+import { Providers } from 'src/reducers/providers'
+import StyledJsxRegistry from './registry'
+import { GlobalStyle } from './ui/globalStyle'
 
 export const metadata: Metadata = {
-  title: "Fluffy",
-  description: "Fluffy is the best!",
-};
+  title: 'Fluffy',
+  description: 'Fluffy is the best!',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
@@ -29,5 +29,5 @@ export default function RootLayout({
         </StyledJsxRegistry>
       </body>
     </html>
-  );
+  )
 }

@@ -1,34 +1,34 @@
 export enum ActionType {
-  toggleDetailInfo = "toggleDetailInfo",
-  setUserDirection = "setUserDirection",
-  setAllCardInfrontOfUser = "setAllCardInfrontOfUser",
-  setConsiderList = "setConsiderList",
-  setUpcomingDateList = "setUpcomingDateList",
+  toggleDetailInfo = 'toggleDetailInfo',
+  setUserDirection = 'setUserDirection',
+  setAllCardInfrontOfUser = 'setAllCardInfrontOfUser',
+  setConsiderList = 'setConsiderList',
+  setUpcomingDateList = 'setUpcomingDateList',
 }
 
 interface toggleDetailInfo {
-  type: ActionType.toggleDetailInfo;
-  payload: { openDetail: boolean };
+  type: ActionType.toggleDetailInfo
+  payload: { openDetail: boolean }
 }
 
 interface setUserDirection {
-  type: ActionType.setUserDirection;
-  payload: { direction: string };
+  type: ActionType.setUserDirection
+  payload: { direction: string }
 }
 
 interface setAllCardInfrontOfUser {
-  type: ActionType.setAllCardInfrontOfUser;
-  payload: { allCards: Card[] };
+  type: ActionType.setAllCardInfrontOfUser
+  payload: { allCards: Card[] }
 }
 
 interface setConsiderList {
-  type: ActionType.setConsiderList;
-  payload: { considerList: Card[] };
+  type: ActionType.setConsiderList
+  payload: { considerList: Card[] }
 }
 
 interface setUpcomingDateList {
-  type: ActionType.setUpcomingDateList;
-  payload: { upcomingDateList: InviteDating[] };
+  type: ActionType.setUpcomingDateList
+  payload: { upcomingDateList: InviteDating[] }
 }
 
 export type DatingActions =
@@ -36,94 +36,94 @@ export type DatingActions =
   | setUserDirection
   | setAllCardInfrontOfUser
   | setConsiderList
-  | setUpcomingDateList;
+  | setUpcomingDateList
 
-export type Dating = {
-  openDetail: boolean;
-  direction: string;
-  allCards: Card[];
-  considerList: Card[];
-  upcomingDateList: InviteDating[];
-};
+export interface Dating {
+  openDetail: boolean
+  direction: string
+  allCards: Card[]
+  considerList: Card[]
+  upcomingDateList: InviteDating[]
+}
 
-export type InviteDating = {
-  id: number;
-  area: number;
-  shleterPkid: number;
-  shelterName: string;
-  shelterAddress: string;
-  shelterTel: string;
-  kind: string;
-  sex: string;
-  color: string;
-  sterilization: string;
-  image: string;
-  datingDate: Date | number;
-  inviter: string;
-  time: string;
-  way: string;
-  doneWithMeeting: boolean;
-};
+export interface InviteDating {
+  id: number
+  area: number
+  shleterPkid: number
+  shelterName: string
+  shelterAddress: string
+  shelterTel: string
+  kind: string
+  sex: string
+  color: string
+  sterilization: string
+  image: string
+  datingDate: Date | number
+  inviter: string
+  time: string
+  way: string
+  doneWithMeeting: boolean
+}
 
-export type Card = {
-  id: number;
-  area: number;
-  shleterPkid: number;
-  shelterName: string;
-  shelterAddress: string;
-  shelterTel: string;
-  kind: string;
-  sex: string;
-  color: string;
-  sterilization: string;
-  foundPlace: string;
-  image: string;
-};
+export interface Card {
+  id: number
+  area: number
+  shleterPkid: number
+  shelterName: string
+  shelterAddress: string
+  shelterTel: string
+  kind: string
+  sex: string
+  color: string
+  sterilization: string
+  foundPlace: string
+  image: string
+}
 
-export type petCardInfo = {
-  animal_id: number;
-  animal_area_pkid: number;
-  animal_shelter_pkid: number;
-  animal_place: string;
-  shelter_address: string;
-  shelter_tel: string;
-  animal_kind: string;
-  animal_sex: string;
-  animal_colour: string;
-  animal_sterilization: string;
-  animal_foundplace: string;
-  album_file: string;
-};
+export interface petCardInfo {
+  animal_id: number
+  animal_area_pkid: number
+  animal_shelter_pkid: number
+  animal_place: string
+  shelter_address: string
+  shelter_tel: string
+  animal_kind: string
+  animal_sex: string
+  animal_colour: string
+  animal_sterilization: string
+  animal_foundplace: string
+  album_file: string
+}
 
 const initialState: Dating = {
   openDetail: false,
-  direction: "",
+  direction: '',
   allCards: [],
   considerList: [],
   upcomingDateList: [],
-};
+}
 
-const DatingReducer = (state: Dating = initialState, action: DatingActions) => {
+function DatingReducer(state: Dating = initialState, action: DatingActions) {
   switch (action.type) {
     case ActionType.toggleDetailInfo: {
-      return { ...state, openDetail: action.payload.openDetail };
+      return { ...state, openDetail: action.payload.openDetail }
     }
     case ActionType.setUserDirection: {
-      return { ...state, direction: action.payload.direction };
+      return { ...state, direction: action.payload.direction }
     }
     case ActionType.setAllCardInfrontOfUser: {
-      return { ...state, allCards: action.payload.allCards };
+      return { ...state, allCards: action.payload.allCards }
     }
     case ActionType.setConsiderList: {
-      return { ...state, considerList: action.payload.considerList };
+      return { ...state, considerList: action.payload.considerList }
     }
     case ActionType.setUpcomingDateList: {
-      return { ...state, upcomingDateList: action.payload.upcomingDateList };
+      return { ...state, upcomingDateList: action.payload.upcomingDateList }
     }
     default:
-      return state;
+      return state
   }
-};
-export type DatingReducerType = typeof DatingReducer;
+}
+export type DatingReducerType = typeof DatingReducer
 
-export default DatingReducer;
+export default DatingReducer

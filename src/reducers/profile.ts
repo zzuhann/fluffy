@@ -1,87 +1,87 @@
 export enum ActionType {
-  setProfileLogin = "setProfileLogin",
-  setProfileName = "setProfileName",
-  setShelter = "setShelter",
-  setProfileEmail = "setProfileEmail",
-  setProfilePassword = "setProfilePassword",
-  setProfileImage = "setProfileImage",
-  clearProfileInfo = "clearProfileInfo",
-  checkIfLogged = "checkIfLogged",
-  setProfileUid = "setProfileUid",
-  clickLoginOrRegister = "clickLoginOrRegister",
-  afterRegisterSaveName = "afterRegisterSaveName",
-  setOwnPets = "setOwnPets",
-  setOwnPetDiary = "setOwnPetDiary",
-  setOwnArticle = "setOwnArticle",
-  setNotification = "setNotification",
+  setProfileLogin = 'setProfileLogin',
+  setProfileName = 'setProfileName',
+  setShelter = 'setShelter',
+  setProfileEmail = 'setProfileEmail',
+  setProfilePassword = 'setProfilePassword',
+  setProfileImage = 'setProfileImage',
+  clearProfileInfo = 'clearProfileInfo',
+  checkIfLogged = 'checkIfLogged',
+  setProfileUid = 'setProfileUid',
+  clickLoginOrRegister = 'clickLoginOrRegister',
+  afterRegisterSaveName = 'afterRegisterSaveName',
+  setOwnPets = 'setOwnPets',
+  setOwnPetDiary = 'setOwnPetDiary',
+  setOwnArticle = 'setOwnArticle',
+  setNotification = 'setNotification',
 }
 
 interface setProfileName {
-  type: ActionType.setProfileName;
-  payload: { name: string };
+  type: ActionType.setProfileName
+  payload: { name: string }
 }
 
 interface setShelter {
-  type: ActionType.setShelter;
-  payload: { isShelter: boolean };
+  type: ActionType.setShelter
+  payload: { isShelter: boolean }
 }
 
 interface setProfileEmail {
-  type: ActionType.setProfileEmail;
-  payload: { email: string };
+  type: ActionType.setProfileEmail
+  payload: { email: string }
 }
 
 interface setProfilePassword {
-  type: ActionType.setProfilePassword;
-  payload: { password: string };
+  type: ActionType.setProfilePassword
+  payload: { password: string }
 }
 
 interface setProfileImage {
-  type: ActionType.setProfileImage;
-  payload: { img: File | string };
+  type: ActionType.setProfileImage
+  payload: { img: File | string }
 }
 
 interface clearProfileInfo {
-  type: ActionType.clearProfileInfo;
+  type: ActionType.clearProfileInfo
 }
 
 interface checkIsLogged {
-  type: ActionType.checkIfLogged;
-  payload: { isLogged: boolean };
+  type: ActionType.checkIfLogged
+  payload: { isLogged: boolean }
 }
 
 interface setProfileUid {
-  type: ActionType.setProfileUid;
-  payload: { uid: string };
+  type: ActionType.setProfileUid
+  payload: { uid: string }
 }
 
 interface clickLoginOrRegister {
-  type: ActionType.clickLoginOrRegister;
-  payload: { target: string };
+  type: ActionType.clickLoginOrRegister
+  payload: { target: string }
 }
 
 interface afterRegisterSaveName {
-  type: ActionType.afterRegisterSaveName;
+  type: ActionType.afterRegisterSaveName
 }
 
 interface setOwnPets {
-  type: ActionType.setOwnPets;
-  payload: { ownPets: OwnPet[] };
+  type: ActionType.setOwnPets
+  payload: { ownPets: OwnPet[] }
 }
 
 interface setOwnPetDiary {
-  type: ActionType.setOwnPetDiary;
-  payload: { petDiary: PetDiaryType[] };
+  type: ActionType.setOwnPetDiary
+  payload: { petDiary: PetDiaryType[] }
 }
 
 interface setOwnArticle {
-  type: ActionType.setOwnArticle;
-  payload: { ownArticles: OwnArticle[] };
+  type: ActionType.setOwnArticle
+  payload: { ownArticles: OwnArticle[] }
 }
 
 interface setNotification {
-  type: ActionType.setNotification;
-  payload: { notification: string };
+  type: ActionType.setNotification
+  payload: { notification: string }
 }
 
 export type ProfileActions =
@@ -98,143 +98,140 @@ export type ProfileActions =
   | setOwnPetDiary
   | setOwnArticle
   | setNotification
-  | setShelter;
+  | setShelter
 
-export type OwnPet = {
-  name: string;
-  img: string;
-  birthYear: number;
-  kind: string;
-  sex: string;
-  shelterName: string | boolean;
-};
+export interface OwnPet {
+  name: string
+  img: string
+  birthYear: number
+  kind: string
+  sex: string
+  shelterName: string | boolean
+}
 
-export type OwnArticle = {
-  title: string;
-  context: string;
-  authorUid: string;
-  postTime: number;
-  likedBy: string[];
-  img: string;
-  commentCount: number;
+export interface OwnArticle {
+  title: string
+  context: string
+  authorUid: string
+  postTime: number
+  likedBy: string[]
+  img: string
+  commentCount: number
   author: {
-    name: string;
-    img: string;
-  };
-  id: string;
-};
+    name: string
+    img: string
+  }
+  id: string
+}
 
-export type PetDiaryType = {
-  petName: string;
-  takePhotoTime: number;
-  context: string;
+export interface PetDiaryType {
+  petName: string
+  takePhotoTime: number
+  context: string
   author: {
-    name: string;
-    img: string;
-  };
-  commentCount: number;
-  likedBy: string[];
-  img: string;
-  postTime: number;
-  authorUid: string;
-  id: string;
-  birthYear: number;
-};
+    name: string
+    img: string
+  }
+  commentCount: number
+  likedBy: string[]
+  img: string
+  postTime: number
+  authorUid: string
+  id: string
+  birthYear: number
+}
 
-export type Profile = {
-  name: string;
-  password: string;
-  email: string;
-  img: string | File;
-  isLogged: boolean;
-  clickLoginOrRegister: string;
-  uid: string;
-  ownPets: OwnPet[];
-  petDiary: PetDiaryType[];
-  ownArticles: OwnArticle[];
-  notification: string;
-  isShelter: boolean;
-};
+export interface Profile {
+  name: string
+  password: string
+  email: string
+  img: string | File
+  isLogged: boolean
+  clickLoginOrRegister: string
+  uid: string
+  ownPets: OwnPet[]
+  petDiary: PetDiaryType[]
+  ownArticles: OwnArticle[]
+  notification: string
+  isShelter: boolean
+}
 
 const initialState: Profile = {
-  name: "",
-  password: "",
-  email: "",
-  img: "",
+  name: '',
+  password: '',
+  email: '',
+  img: '',
   isLogged: false,
-  clickLoginOrRegister: "",
-  uid: "",
+  clickLoginOrRegister: '',
+  uid: '',
   ownPets: [],
   petDiary: [],
   ownArticles: [],
-  notification: "",
+  notification: '',
   isShelter: false,
-};
+}
 
-const ProfileReducer = (
-  state: Profile = initialState,
-  action: ProfileActions
-) => {
+function ProfileReducer(state: Profile = initialState, action: ProfileActions) {
   switch (action.type) {
     case ActionType.setProfileName: {
-      return { ...state, name: action.payload.name };
+      return { ...state, name: action.payload.name }
     }
     case ActionType.setProfileEmail: {
-      return { ...state, email: action.payload.email };
+      return { ...state, email: action.payload.email }
     }
     case ActionType.setProfilePassword: {
-      return { ...state, password: action.payload.password };
+      return { ...state, password: action.payload.password }
     }
     case ActionType.setProfileImage: {
-      return { ...state, img: action.payload.img };
+      return { ...state, img: action.payload.img }
     }
     case ActionType.checkIfLogged: {
-      return { ...state, isLogged: action.payload.isLogged };
+      return { ...state, isLogged: action.payload.isLogged }
     }
     case ActionType.clearProfileInfo: {
       return {
         ...state,
-        email: "",
-        name: "",
-        password: "",
-        img: "",
-        uid: "",
+        email: '',
+        name: '',
+        password: '',
+        img: '',
+        uid: '',
         ownPets: [],
         petDiary: [],
         ownArticles: [],
-      };
+      }
     }
     case ActionType.afterRegisterSaveName: {
       return {
         ...state,
-        password: "",
-        email: "",
-      };
+        password: '',
+        email: '',
+      }
     }
     case ActionType.setProfileUid: {
-      return { ...state, uid: action.payload.uid };
+      return { ...state, uid: action.payload.uid }
     }
     case ActionType.clickLoginOrRegister: {
-      return { ...state, clickLoginOrRegister: action.payload.target };
+      return { ...state, clickLoginOrRegister: action.payload.target }
     }
     case ActionType.setOwnPets: {
-      return { ...state, ownPets: action.payload.ownPets };
+      return { ...state, ownPets: action.payload.ownPets }
     }
     case ActionType.setOwnPetDiary: {
-      return { ...state, petDiary: action.payload.petDiary };
+      return { ...state, petDiary: action.payload.petDiary }
     }
     case ActionType.setOwnArticle: {
-      return { ...state, ownArticles: action.payload.ownArticles };
+      return { ...state, ownArticles: action.payload.ownArticles }
     }
     case ActionType.setNotification: {
-      return { ...state, notification: action.payload.notification };
+      return { ...state, notification: action.payload.notification }
     }
     case ActionType.setShelter: {
-      return { ...state, isShelter: action.payload.isShelter };
+      return { ...state, isShelter: action.payload.isShelter }
     }
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default ProfileReducer;
+export default ProfileReducer

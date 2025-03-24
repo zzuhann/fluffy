@@ -1,11 +1,9 @@
-"use client";
+'use client'
 
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
-import { db } from "../../utils/firebase";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import React, { useEffect, useState } from 'react'
+import styled, { keyframes } from 'styled-components'
+import { db } from '../../utils/firebase'
 
 export const PageTitle = styled.h1`
   font-size: 32px;
@@ -30,7 +28,7 @@ export const PageTitle = styled.h1`
     transform: translateX(-50%);
     font-size: 28px;
   }
-`;
+`
 
 const Wrap = styled.div`
   width: 100%;
@@ -38,7 +36,7 @@ const Wrap = styled.div`
   height: 100%;
   background-color: #fafafa;
   position: relative;
-`;
+`
 
 const AllDiariesContainer = styled.div`
   max-width: 1120px;
@@ -74,7 +72,7 @@ const AllDiariesContainer = styled.div`
   @media (max-width: 432px) {
     grid-template-columns: repeat(auto-fill, 250px);
   }
-`;
+`
 const DiaryCard = styled.a`
   transition: 0.2s;
   bottom: 0;
@@ -93,18 +91,7 @@ const DiaryCard = styled.a`
     box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
     bottom: 5px;
   }
-`;
-const LikeRecord = styled.div`
-  display: flex;
-  margin-right: 30px;
-  &:last-child {
-    margin-right: 0;
-  }
-  svg {
-    margin-right: 10px;
-    font-size: 25px;
-  }
-`;
+`
 
 const HoverCard = styled.div<{ $isActive: boolean }>`
   background-color: rgba(0, 0, 0, 0.5);
@@ -116,9 +103,9 @@ const HoverCard = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: ${(props) => (props.$isActive ? 1 : 0)};
+  opacity: ${props => (props.$isActive ? 1 : 0)};
   transition: 0.2s;
-`;
+`
 
 const DiaryImg = styled.img`
   width: 250px;
@@ -139,7 +126,7 @@ const DiaryImg = styled.img`
   @media (max-width: 432px) {
     width: 250px;
   }
-`;
+`
 const DiaryBottom = styled.div`
   display: flex;
   justify-content: space-between;
@@ -152,15 +139,15 @@ const DiaryBottom = styled.div`
   padding: 10px 15px;
   font-size: 22px;
   letter-spacing: 1.5px;
-`;
+`
 const DiaryTitle = styled.div`
   max-width: 150px;
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 30px;
   white-space: nowrap;
-`;
-const PetAge = styled.div``;
+`
+const PetAge = styled.div``
 
 const PetDiaryNote = styled.div`
   font-size: 18px;
@@ -179,24 +166,24 @@ const PetDiaryNote = styled.div`
     font-size: 16px;
     text-align: center;
   }
-`;
+`
 
-export type AllPetDiariesType = {
-  petName: string;
-  context: string;
-  authorUid: string;
-  postTime: number;
-  takePhotoTime: number;
-  likedBy: string[];
-  img: string;
-  commentCount: number;
+export interface AllPetDiariesType {
+  petName: string
+  context: string
+  authorUid: string
+  postTime: number
+  takePhotoTime: number
+  likedBy: string[]
+  img: string
+  commentCount: number
   author: {
-    name: string;
-    img: string;
-  };
-  id: string;
-  birthYear: number;
-};
+    name: string
+    img: string
+  }
+  id: string
+  birthYear: number
+}
 
 const slide = keyframes`
   from {
@@ -205,7 +192,7 @@ const slide = keyframes`
   to {
     left: 100%;
   }
-`;
+`
 
 const SkeletonDiaryCard = styled.div`
   margin-bottom: 30px;
@@ -241,31 +228,31 @@ const SkeletonDiaryCard = styled.div`
   @media (max-width: 432px) {
     width: 250px;
   }
-`;
+`
 
-const AllPetDiaries = () => {
-  const [allPetDiraies, setAllPetArticles] = useState<AllPetDiariesType[]>([]);
-  const [openLikeBox, setOpenLikeBox] = useState<boolean>(false);
-  const [nowid, setNowId] = useState<number>(-1);
+function AllPetDiaries() {
+  const [allPetDiraies, setAllPetArticles] = useState<AllPetDiariesType[]>([])
+  const [openLikeBox, setOpenLikeBox] = useState<boolean>(false)
+  const [nowid, setNowId] = useState<number>(-1)
 
   useEffect(() => {
     async function getPetDiaries() {
-      const authorPetDiaries: AllPetDiariesType[] = [];
+      const authorPetDiaries: AllPetDiariesType[] = []
       const q = query(
-        collection(db, "petDiaries"),
-        orderBy("postTime", "desc")
-      );
-      const querySnapshot = await getDocs(q);
+        collection(db, 'petDiaries'),
+        orderBy('postTime', 'desc'),
+      )
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
         authorPetDiaries.push({
           id: info.id,
           ...info.data(),
-        } as AllPetDiariesType);
-      });
-      setAllPetArticles(authorPetDiaries);
+        } as AllPetDiariesType)
+      })
+      setAllPetArticles(authorPetDiaries)
     }
-    getPetDiaries();
-  }, []);
+    getPetDiaries()
+  }, [])
   return (
     <Wrap>
       <AllDiariesContainer>
@@ -273,27 +260,34 @@ const AllPetDiaries = () => {
         <PetDiaryNote>登入後，透過日記紀錄你與寵物共同擁有的回憶</PetDiaryNote>
         {allPetDiraies.length === 0 ? (
           <>
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>{" "}
-            <SkeletonDiaryCard></SkeletonDiaryCard>
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
+            {' '}
+            <SkeletonDiaryCard />
           </>
         ) : (
           (allPetDiraies ?? []).map((diary, index) => (
             <DiaryCard
-              key={index}
+              key={diary.id}
               href={`/pet-diary/${diary.id}`}
               onMouseEnter={() => {
-                setOpenLikeBox(true);
-                setNowId(index);
+                setOpenLikeBox(true)
+                setNowId(index)
               }}
               onMouseLeave={() => {
-                setOpenLikeBox(false);
-                setNowId(-1);
+                setOpenLikeBox(false)
+                setNowId(-1)
               }}
             >
               <HoverCard $isActive={openLikeBox === true && nowid === index}>
@@ -309,8 +303,8 @@ const AllPetDiaries = () => {
                 <DiaryTitle>{diary.petName}</DiaryTitle>
                 <PetAge>
                   {`${
-                    new Date(diary.takePhotoTime).getFullYear() -
-                    diary.birthYear
+                    new Date(diary.takePhotoTime).getFullYear()
+                      - diary.birthYear
                   }`}
                   y
                 </PetAge>
@@ -320,7 +314,7 @@ const AllPetDiaries = () => {
         )}
       </AllDiariesContainer>
     </Wrap>
-  );
-};
+  )
+}
 
-export default AllPetDiaries;
+export default AllPetDiaries

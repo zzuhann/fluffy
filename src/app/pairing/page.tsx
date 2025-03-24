@@ -1,68 +1,68 @@
-"use client";
+'use client'
 
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import styled, { keyframes } from "styled-components";
+import type { Card, Dating, InviteDating, petCardInfo } from '../../reducers/dating'
+import type { Profile } from '../../reducers/profile'
+import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { useRouter } from 'next/navigation'
+import close from 'public/img/close.png'
+import noConsiderCard from 'public/img/dog_family.png'
+import question from 'public/img/help-sing.png'
+import noUpcomingDate from 'public/img/kataomoi_woman-01.png'
+import menuburger from 'public/img/menuburger.png'
+import preferenceSet from 'public/img/preference.png'
+import React, { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import styled, { keyframes } from 'styled-components'
+import Meeting from '../../component/Meeting'
 import {
   setAllCardInfrontOfUser,
   setConsiderList,
   setUpcomingDateList,
-} from "../../functions/datingReducerFunction";
-import { Card, Dating, petCardInfo, InviteDating } from "../../reducers/dating";
-import api from "../../utils/api";
-import { db } from "../../utils/firebase";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { Profile } from "../../reducers/profile";
-import preferenceSet from "public/img/preference.png";
-import { area } from "../../utils/ConstantInfo";
-import close from "public/img/close.png";
-import menuburger from "public/img/menuburger.png";
-import question from "public/img/help-sing.png";
-import { CatLoading } from "../../utils/loading";
-import noConsiderCard from "public/img/dog_family.png";
-import noUpcomingDate from "public/img/kataomoi_woman-01.png";
-import Meeting from "../../component/Meeting";
+} from '../../functions/datingReducerFunction'
+import api from '../../utils/api'
+import { area } from '../../utils/ConstantInfo'
+import { db } from '../../utils/firebase'
+import { CatLoading } from '../../utils/loading'
+import { Btn, Title } from '../profile/components/UserInfos'
 import {
   NowNoInfoImg,
   NowNoInfoInHere,
-} from "../profile/components/UserOwnPetInfos";
-import { NowNoInfoText } from "../profile/components/UserOwnPetInfos";
-import { Btn, Title } from "../profile/components/UserInfos";
-import { useRouter } from "next/navigation";
-import TogglePairingTabs from "./components/TogglePairingTabs";
-import PetCardDetail from "./components/PairingFeature";
+  NowNoInfoText,
+} from '../profile/components/UserOwnPetInfos'
 import ConsiderPetDetail, {
   ConsiderEverySinglePetCard,
-} from "./components/ConsiderPet";
-import UpcomingList from "./components/UpcomingList";
+} from './components/ConsiderPet'
+import PetCardDetail from './components/PairingFeature'
+import TogglePairingTabs from './components/TogglePairingTabs'
+import UpcomingList from './components/UpcomingList'
 
 export const NowNoInfoInHereConsider = styled(NowNoInfoInHere)`
   flex-direction: column;
   top: 100px;
-`;
+`
 
 export const NowNoInfoTextConsider = styled(NowNoInfoText)`
   line-height: 30px;
   text-align: center;
-`;
+`
 
 const PopupAnimation = keyframes`
   0% {right: -300px}
   70% {right:0}
   100% {right: -300px}
-`;
+`
 
 export const PopupHint = styled.div<{ $Top: number }>`
   background-color: #b54745;
   color: #fff;
   position: absolute;
   right: -200px;
-  top: ${(props) => props.$Top + 120}px;
+  top: ${props => props.$Top + 120}px;
   padding: 15px 20px;
   letter-spacing: 1.5px;
   z-index: 100;
   animation: ${PopupAnimation} 3s ease infinite;
-`;
+`
 
 const ConsiderTitle = styled(Title)`
   position: absolute;
@@ -72,12 +72,12 @@ const ConsiderTitle = styled(Title)`
     left: 50%;
     transform: translateX(-50%);
   }
-`;
+`
 
 const UpcomingTitle = styled(Title)`
   position: absolute;
   top: 0px;
-`;
+`
 
 const Wrap = styled.div`
   width: 100%;
@@ -88,7 +88,7 @@ const Wrap = styled.div`
   padding-top: 120px;
   padding-bottom: 50px;
   overflow: hidden;
-`;
+`
 
 const Cards = styled.div`
   position: relative;
@@ -109,7 +109,7 @@ const Cards = styled.div`
     width: 300px;
     height: 450px;
   }
-`;
+`
 
 const FilterContainer = styled.div`
   display: flex;
@@ -122,19 +122,19 @@ const FilterContainer = styled.div`
   &:hover {
     opacity: 1;
   }
-`;
+`
 
 const FilterImg = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 10px;
-`;
+`
 
 const FilterTitle = styled.div`
   font-size: 16px;
   position: relative;
   top: 2px;
-`;
+`
 
 const CloseFilterBtn = styled.img`
   position: absolute;
@@ -149,7 +149,7 @@ const CloseFilterBtn = styled.img`
   &:hover {
     opacity: 1;
   }
-`;
+`
 
 const FilterInsideContainer = styled.div`
   position: absolute;
@@ -169,7 +169,7 @@ const FilterInsideContainer = styled.div`
   @media (max-width: 385px) {
     width: 280px;
   }
-`;
+`
 
 const NomoreFilterInsideContainer = styled(FilterInsideContainer)`
   top: 140px;
@@ -185,7 +185,7 @@ const NomoreFilterInsideContainer = styled(FilterInsideContainer)`
   @media (max-width: 393px) {
     width: 280px;
   }
-`;
+`
 
 const FilterInfoContainer = styled.div`
   display: flex;
@@ -195,17 +195,17 @@ const FilterInfoContainer = styled.div`
   &:first-child {
     margin-top: 0;
   }
-`;
+`
 
 const NomoreFilterInfoContainer = styled(FilterInfoContainer)`
   align-items: flex-start;
-`;
-const FilterInfoTitle = styled.div``;
+`
+const FilterInfoTitle = styled.div``
 const FilterOptionGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 8px;
-`;
+`
 const FilterInfoOption = styled(Btn)`
   width: auto;
   font-size: 16px;
@@ -225,14 +225,14 @@ const FilterInfoOption = styled(Btn)`
   @media (max-width: 385px) {
     padding: 5px 10px;
   }
-`;
+`
 
 const KindOption = styled(FilterInfoOption)<{ $isActive: boolean }>`
-  background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
-`;
+  background-color: ${props => (props.$isActive ? '#B7B0A8' : '#fff')};
+`
 const AreaOption = styled(FilterInfoOption)<{ $isActive: boolean }>`
-  background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
-`;
+  background-color: ${props => (props.$isActive ? '#B7B0A8' : '#fff')};
+`
 const NoCardSWrapper = styled.div`
   max-width: 1120px;
   display: flex;
@@ -241,7 +241,7 @@ const NoCardSWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-`;
+`
 
 const NoCardsTitle = styled.div`
   font-size: 22px;
@@ -250,31 +250,31 @@ const NoCardsTitle = styled.div`
   color: #3c3c3c;
   text-align: center;
   line-height: 40px;
-`;
+`
 
 const NoCardsBtn = styled(Btn)`
   width: 250px;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-`;
+`
 
 const RequestMoreCardsBtn = styled(NoCardsBtn)`
   top: 40px;
-`;
+`
 
 const NomoreRequestMoreCardsBtn = styled(RequestMoreCardsBtn)`
   z-index: 100;
   width: 300px;
-`;
+`
 
 const LookConsiderListBtn = styled(NoCardsBtn)`
   top: 70px;
-`;
+`
 
 const NomoreLookConsiderListBtn = styled(LookConsiderListBtn)`
   width: 300px;
-`;
+`
 
 const ConsiderList = styled.div`
   position: relative;
@@ -291,7 +291,7 @@ const ConsiderList = styled.div`
   @media (max-width: 539px) {
     justify-content: center;
   }
-`;
+`
 
 const UpcomingListContainer = styled.div`
   display: flex;
@@ -303,7 +303,7 @@ const UpcomingListContainer = styled.div`
   padding: 20px;
   padding-top: 70px;
   min-height: 340px;
-`;
+`
 
 const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
   width: 50px;
@@ -312,17 +312,17 @@ const OpenToggleTabs = styled.div<{ $Notification: boolean }>`
   position: fixed;
   bottom: 20px;
   left: 20px;
-  background-color: ${(props) =>
-    props.$Notification ? "#DB5452" : " #FFB9B8"};
+  background-color: ${props =>
+    props.$Notification ? '#DB5452' : ' #FFB9B8'};
   z-index: 500;
   cursor: pointer;
   transition: 0.2s;
   box-shadow: 0px 0px 4px 2px rgba(219, 84, 82, 0.4);
   &:hover {
-    background-color: ${(props) =>
-      props.$Notification ? "#B54745" : " #E4B2B1"};
+    background-color: ${props =>
+      props.$Notification ? '#B54745' : ' #E4B2B1'};
   }
-`;
+`
 const OpenToggleTabsIcon = styled.img`
   width: 40px;
   height: 40px;
@@ -330,7 +330,7 @@ const OpenToggleTabsIcon = styled.img`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-`;
+`
 
 const OpenTutorial = styled.div`
   width: 50px;
@@ -347,7 +347,7 @@ const OpenTutorial = styled.div`
   &:hover {
     background-color: #ececec;
   }
-`;
+`
 const OpenTutorialIcon = styled.img`
   width: 30px;
   height: 30px;
@@ -355,145 +355,149 @@ const OpenTutorialIcon = styled.img`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-`;
+`
 
 const TutorialBox = styled.div<{ $isActive: boolean }>`
   width: 250px;
   position: absolute;
   top: -320px;
   right: 0;
-  height: ${(props) => (props.$isActive ? "auto" : "0")};
+  height: ${props => (props.$isActive ? 'auto' : '0')};
   overflow: hidden;
   background-color: #fff;
   display: flex;
   flex-direction: column;
   transition: 0.3s;
-  padding: ${(props) => (props.$isActive ? "10px 15px" : "0")};
+  padding: ${props => (props.$isActive ? '10px 15px' : '0')};
   border-radius: 5px;
-  box-shadow: ${(props) =>
-    props.$isActive ? "2px 2px 6px 3px rgba(0, 0, 0, 0.1)" : "0"};
+  box-shadow: ${props =>
+    props.$isActive ? '2px 2px 6px 3px rgba(0, 0, 0, 0.1)' : '0'};
   background-color: #fbfbfb;
-`;
+`
 
 const TutorialTitle = styled.div`
   font-size: 22px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 15px;
-`;
+`
 
 const TutorialContext = styled.div`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 1.5px;
   margin-bottom: 5px;
-`;
+`
 
 const Pairing: React.FC = () => {
   const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
+    state => state.dating,
+  ) as Dating
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const [preference, setPreference] = useState({ kind: "all", location: "0" });
-  const [considerDetail, setConsiderDetail] = useState<Boolean>(false);
-  const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1);
-  const [tab, setTab] = useState<string>("pairing");
-  const [areaTabIndex, setAreaTabIndex] = useState<number>(-1);
-  const [kindTabIndex, setKindTabIndex] = useState<number>(-1);
-  const [openFilterBox, setOpenFilterBox] = useState<boolean>(false);
-  const chosenIdRef = useRef<number[]>([]);
-  const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0);
-  const [datingArr, setDatingArr] = useState<number[]>([]);
-  const [openDatingFeatureMenu, setOpenDatingFeatureMenu] =
-    useState<boolean>(false);
-  const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState(false);
-  const [openMeeting, setOpenMeeting] = useState(false);
+    state => state.profile,
+  ) as Profile
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const [preference, setPreference] = useState({ kind: 'all', location: '0' })
+  const [considerDetail, setConsiderDetail] = useState<boolean>(false)
+  const [nowChosenPetIndex, setNowChosenPetIndex] = useState<number>(-1)
+  const [tab, setTab] = useState<string>('pairing')
+  const [areaTabIndex, setAreaTabIndex] = useState<number>(-1)
+  const [kindTabIndex, setKindTabIndex] = useState<number>(-1)
+  const [openFilterBox, setOpenFilterBox] = useState<boolean>(false)
+  const chosenIdRef = useRef<number[]>([])
+  const [matchSuccessQty, setMatchSuccessQty] = useState<number>(0)
+  const [datingArr, setDatingArr] = useState<number[]>([])
+  const [openDatingFeatureMenu, setOpenDatingFeatureMenu]
+    = useState<boolean>(false)
+  const [openTutorialMenu, setOpenTutorialMenu] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState(false)
+  const [openMeeting, setOpenMeeting] = useState(false)
   const [nowMeetingShelter, setNowMeetingShelter] = useState<{
-    petId: number;
-    shelterName: string;
-    userName: string;
-    index: number;
-  }>({ petId: 0, shelterName: "", userName: "", index: -1 });
+    petId: number
+    shelterName: string
+    userName: string
+    index: number
+  }>({ petId: 0, shelterName: '', userName: '', index: -1 })
 
   useEffect(() => {
     // if (!profile.isLogged) {
     // router.push("/");
     // }
-  }, [profile.isLogged, router]);
+  }, [profile.isLogged, router])
 
   useEffect(() => {
-    if (preference.kind !== "all" || preference.location !== "0") {
-      setOpenFilterBox(false);
-      setLoading(true);
-      checkChosenAndAppendNewPet(100);
+    if (preference.kind !== 'all' || preference.location !== '0') {
+      setOpenFilterBox(false)
+      setLoading(true)
+      checkChosenAndAppendNewPet(100)
       setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+        setLoading(false)
+      }, 1500)
     }
-  }, [preference, profile.uid]);
+  }, [preference, profile.uid])
 
   useEffect(() => {
     if (dating.allCards.length === 0) {
-      setLoading(true);
-      checkChosenAndAppendNewPet(100);
+      setLoading(true)
+      checkChosenAndAppendNewPet(100)
     }
     if (
-      dating.allCards.length > 0 &&
-      preference.kind === "all" &&
-      preference.location === "0"
+      dating.allCards.length > 0
+      && preference.kind === 'all'
+      && preference.location === '0'
     ) {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [dating.allCards, profile.uid]);
+  }, [dating.allCards, profile.uid])
 
   async function checkChosenAndAppendNewPet(quantity: number) {
-    await getListsData();
-    await choosePreference(quantity);
+    await getListsData()
+    await choosePreference(quantity)
   }
 
   async function getListsData() {
-    if (!profile.uid) return;
-    let userChosenId: number[] = [];
-    let consider: Card[] = [];
+    if (!profile.uid)
+      return
+    const userChosenId: number[] = []
+    const consider: Card[] = []
     const q = query(
-      collection(db, "memberProfiles", profile.uid, "considerLists"),
-      orderBy("area")
-    );
-    const querySnapshot = await getDocs(q);
+      collection(db, 'memberProfiles', profile.uid, 'considerLists'),
+      orderBy('area'),
+    )
+    const querySnapshot = await getDocs(q)
     querySnapshot.forEach((info) => {
-      userChosenId.push(info.data().id);
-      consider.push(info.data() as Card);
-    });
-    dispatch(setConsiderList(consider));
+      userChosenId.push(info.data().id)
+      consider.push(info.data() as Card)
+    })
+    dispatch(setConsiderList(consider))
 
-    const p = collection(db, "memberProfiles", profile.uid, "notConsiderLists");
-    const querySecond = await getDocs(p);
+    const p = collection(db, 'memberProfiles', profile.uid, 'notConsiderLists')
+    const querySecond = await getDocs(p)
     querySecond.forEach((info) => {
-      userChosenId.push(info.data().id);
-    });
-    chosenIdRef.current = userChosenId;
+      userChosenId.push(info.data().id)
+    })
+    chosenIdRef.current = userChosenId
   }
 
   function pushCardsinAllCards(info: petCardInfo[], totalCards: number) {
-    let cards: Card[] = [];
-    let repeatId: number[] = [];
+    const cards: Card[] = []
+    const repeatId: number[] = []
 
     for (let i = 0; i < totalCards; i++) {
-      if (!info[i]) continue;
-      if (!info[i].hasOwnProperty("animal_id") || !info[i].animal_id) continue;
-      if (!info[i].hasOwnProperty("animal_id") || !info[i].album_file) continue;
+      if (!info[i])
+        continue
+      if (!info[i].hasOwnProperty('animal_id') || !info[i].animal_id)
+        continue
+      if (!info[i].hasOwnProperty('animal_id') || !info[i].album_file)
+        continue
       for (let j = 0; j < chosenIdRef.current.length; j++) {
         if (chosenIdRef.current[j] === info[i].animal_id) {
-          repeatId.push(chosenIdRef.current[j]);
+          repeatId.push(chosenIdRef.current[j])
         }
       }
       if (repeatId.includes(info[i].animal_id)) {
-        continue;
+        continue
       }
       cards.push({
         id: info[i].animal_id,
@@ -508,49 +512,52 @@ const Pairing: React.FC = () => {
         sterilization: info[i].animal_sterilization,
         foundPlace: info[i].animal_foundplace,
         image: info[i].album_file,
-      });
-      dispatch(setAllCardInfrontOfUser(cards));
+      })
+      dispatch(setAllCardInfrontOfUser(cards))
     }
   }
 
   async function choosePreference(quantity: number) {
-    if (preference.kind === "all" && preference.location === "0") {
-      api.getAnimalAPI().then((res) => pushCardsinAllCards(res.Data, quantity));
+    if (preference.kind === 'all' && preference.location === '0') {
+      api.getAnimalAPI().then(res => pushCardsinAllCards(res.Data, quantity))
     }
-    if (preference.kind !== "all" && preference.location !== "0") {
+    if (preference.kind !== 'all' && preference.location !== '0') {
       api
         .getAnimapAPIWithAreaAndKind(preference.location, preference.kind)
         .then((res) => {
-          pushCardsinAllCards(res.Data, quantity);
-        });
-    } else if (preference.kind !== "all") {
+          pushCardsinAllCards(res.Data, quantity)
+        })
+    }
+    else if (preference.kind !== 'all') {
       api.getAnimapAPIWithKind(preference.kind).then((res) => {
-        pushCardsinAllCards(res.Data, quantity);
-      });
-    } else if (preference.location !== "0") {
+        pushCardsinAllCards(res.Data, quantity)
+      })
+    }
+    else if (preference.location !== '0') {
       api.getAnimapAPIWithArea(preference.location).then((res) => {
-        pushCardsinAllCards(res.Data, quantity);
-      });
+        pushCardsinAllCards(res.Data, quantity)
+      })
     }
   }
 
   async function getUpcomingListData() {
-    let upcomingDate: InviteDating[] = [];
+    const upcomingDate: InviteDating[] = []
     const q = query(
-      collection(db, "memberProfiles", profile.uid, "upcomingDates"),
-      orderBy("datingDate")
-    );
-    const querySnapshot = await getDocs(q);
+      collection(db, 'memberProfiles', profile.uid, 'upcomingDates'),
+      orderBy('datingDate'),
+    )
+    const querySnapshot = await getDocs(q)
     querySnapshot.forEach((info) => {
       upcomingDate.push({
         ...info.data(),
         datingDate: info.data().dateAndTime,
-      } as InviteDating);
-    });
-    dispatch(setUpcomingDateList(upcomingDate));
+      } as InviteDating)
+    })
+    dispatch(setUpcomingDateList(upcomingDate))
   }
 
-  if (!dating.allCards) return null;
+  if (!dating.allCards)
+    return null
   return (
     <>
       <OpenToggleTabs
@@ -558,7 +565,7 @@ const Pairing: React.FC = () => {
         onClick={() => {
           openDatingFeatureMenu
             ? setOpenDatingFeatureMenu(false)
-            : setOpenDatingFeatureMenu(true);
+            : setOpenDatingFeatureMenu(true)
         }}
         $Notification={matchSuccessQty > 0 || datingArr.length > 0}
       >
@@ -568,7 +575,7 @@ const Pairing: React.FC = () => {
         onClick={() => {
           openTutorialMenu
             ? setOpenTutorialMenu(false)
-            : setOpenTutorialMenu(true);
+            : setOpenTutorialMenu(true)
         }}
       >
         <OpenTutorialIcon src={question.src} alt="question-mark" />
@@ -605,169 +612,179 @@ const Pairing: React.FC = () => {
         openDatingFeatureMenu={openDatingFeatureMenu}
       />
       <Wrap>
-        {tab === "pairing" ? (
-          <>
-            {dating.allCards.length <= 0 ? (
-              isLoading ? (
-                <CatLoading />
-              ) : (
-                <NoCardSWrapper>
-                  <NoCardsTitle>
-                    當前偏好設定已無動物進行配對！接下來您可以選擇 ...
-                  </NoCardsTitle>
-                  <NomoreRequestMoreCardsBtn
-                    onClick={() => {
-                      setOpenFilterBox(true);
-                    }}
-                  >
-                    選擇其他動物種類或地區偏好
-                  </NomoreRequestMoreCardsBtn>
-                  <NomoreLookConsiderListBtn
-                    onClick={() => {
-                      setTab("considerAdopt");
-                      getListsData();
-                      setConsiderDetail(false);
-                    }}
-                  >
-                    看目前考慮領養清單
-                  </NomoreLookConsiderListBtn>
-                  {openFilterBox && (
-                    <NomoreFilterInsideContainer>
-                      <CloseFilterBtn
-                        src={close.src}
-                        onClick={() => setOpenFilterBox(false)}
-                        alt="close"
-                      />
-                      <NomoreFilterInfoContainer>
-                        <FilterInfoTitle>偏好種類</FilterInfoTitle>
-                        <FilterOptionGroup>
-                          <KindOption
-                            onClick={() => {
-                              setPreference({
-                                ...preference,
-                                kind: "%E7%8B%97",
-                              });
-                              setKindTabIndex(0);
-                            }}
-                            $isActive={kindTabIndex === 0}
-                          >
-                            狗
-                          </KindOption>
-                          <KindOption
-                            onClick={() => {
-                              setPreference({
-                                ...preference,
-                                kind: "%E8%B2%93",
-                              });
-                              setKindTabIndex(1);
-                            }}
-                            $isActive={kindTabIndex === 1}
-                          >
-                            貓
-                          </KindOption>
-                        </FilterOptionGroup>
-                      </NomoreFilterInfoContainer>
-                      <NomoreFilterInfoContainer>
-                        <FilterInfoTitle>偏好地區</FilterInfoTitle>
-                        <FilterOptionGroup>
-                          {area.map((loc, index) => (
-                            <AreaOption
-                              id={`${index + 2}`}
-                              key={index}
-                              onClick={(e) => {
-                                setPreference({
-                                  ...preference,
-                                  location: (e.target as HTMLElement).id,
-                                });
-                                setAreaTabIndex(index);
-                              }}
-                              $isActive={index === areaTabIndex}
-                            >
-                              {loc}
-                            </AreaOption>
-                          ))}
-                        </FilterOptionGroup>
-                      </NomoreFilterInfoContainer>
-                    </NomoreFilterInsideContainer>
-                  )}
-                </NoCardSWrapper>
-              )
-            ) : (
-              <Cards>
-                <FilterContainer onClick={() => setOpenFilterBox(true)}>
-                  <FilterImg src={preferenceSet.src} alt="filter" />
-                  <FilterTitle>偏好設定</FilterTitle>
-                </FilterContainer>
-                {openFilterBox ? (
-                  <FilterInsideContainer>
-                    <CloseFilterBtn
-                      src={close.src}
-                      onClick={() => setOpenFilterBox(false)}
-                      alt="close"
-                    />
-                    <FilterInfoContainer>
-                      <FilterInfoTitle>偏好種類</FilterInfoTitle>
-                      <FilterOptionGroup>
-                        <KindOption
-                          onClick={() => {
-                            setPreference({ ...preference, kind: "%E7%8B%97" });
-                            setKindTabIndex(0);
-                          }}
-                          $isActive={kindTabIndex === 0}
-                        >
-                          狗
-                        </KindOption>
-                        <KindOption
-                          onClick={() => {
-                            setPreference({ ...preference, kind: "%E8%B2%93" });
-                            setKindTabIndex(1);
-                          }}
-                          $isActive={kindTabIndex === 1}
-                        >
-                          貓
-                        </KindOption>
-                      </FilterOptionGroup>
-                    </FilterInfoContainer>
-                    <FilterInfoContainer>
-                      <FilterInfoTitle>偏好地區</FilterInfoTitle>
-                      <FilterOptionGroup>
-                        {area.map((loc, index) => (
-                          <AreaOption
-                            id={`${index + 2}`}
-                            key={index}
-                            onClick={(e) => {
-                              setPreference({
-                                ...preference,
-                                location: (e.target as HTMLElement).id,
-                              });
-                              setAreaTabIndex(index);
-                            }}
-                            $isActive={index === areaTabIndex}
-                          >
-                            {loc}
-                          </AreaOption>
-                        ))}
-                      </FilterOptionGroup>
-                    </FilterInfoContainer>
-                  </FilterInsideContainer>
-                ) : (
-                  ""
-                )}
-                {isLoading ? (
-                  <CatLoading />
-                ) : (
-                  <PetCardDetail
-                    setMatchSuccessQty={setMatchSuccessQty}
-                    petInfo={dating.allCards}
-                  />
-                )}
-              </Cards>
+        {tab === 'pairing'
+          ? (
+              <>
+                {dating.allCards.length <= 0
+                  ? (
+                      isLoading
+                        ? (
+                            <CatLoading />
+                          )
+                        : (
+                            <NoCardSWrapper>
+                              <NoCardsTitle>
+                                當前偏好設定已無動物進行配對！接下來您可以選擇 ...
+                              </NoCardsTitle>
+                              <NomoreRequestMoreCardsBtn
+                                onClick={() => {
+                                  setOpenFilterBox(true)
+                                }}
+                              >
+                                選擇其他動物種類或地區偏好
+                              </NomoreRequestMoreCardsBtn>
+                              <NomoreLookConsiderListBtn
+                                onClick={() => {
+                                  setTab('considerAdopt')
+                                  getListsData()
+                                  setConsiderDetail(false)
+                                }}
+                              >
+                                看目前考慮領養清單
+                              </NomoreLookConsiderListBtn>
+                              {openFilterBox && (
+                                <NomoreFilterInsideContainer>
+                                  <CloseFilterBtn
+                                    src={close.src}
+                                    onClick={() => setOpenFilterBox(false)}
+                                    alt="close"
+                                  />
+                                  <NomoreFilterInfoContainer>
+                                    <FilterInfoTitle>偏好種類</FilterInfoTitle>
+                                    <FilterOptionGroup>
+                                      <KindOption
+                                        onClick={() => {
+                                          setPreference({
+                                            ...preference,
+                                            kind: '%E7%8B%97',
+                                          })
+                                          setKindTabIndex(0)
+                                        }}
+                                        $isActive={kindTabIndex === 0}
+                                      >
+                                        狗
+                                      </KindOption>
+                                      <KindOption
+                                        onClick={() => {
+                                          setPreference({
+                                            ...preference,
+                                            kind: '%E8%B2%93',
+                                          })
+                                          setKindTabIndex(1)
+                                        }}
+                                        $isActive={kindTabIndex === 1}
+                                      >
+                                        貓
+                                      </KindOption>
+                                    </FilterOptionGroup>
+                                  </NomoreFilterInfoContainer>
+                                  <NomoreFilterInfoContainer>
+                                    <FilterInfoTitle>偏好地區</FilterInfoTitle>
+                                    <FilterOptionGroup>
+                                      {area.map((loc, index) => (
+                                        <AreaOption
+                                          id={`${index + 2}`}
+                                          key={index}
+                                          onClick={(e) => {
+                                            setPreference({
+                                              ...preference,
+                                              location: (e.target as HTMLElement).id,
+                                            })
+                                            setAreaTabIndex(index)
+                                          }}
+                                          $isActive={index === areaTabIndex}
+                                        >
+                                          {loc}
+                                        </AreaOption>
+                                      ))}
+                                    </FilterOptionGroup>
+                                  </NomoreFilterInfoContainer>
+                                </NomoreFilterInsideContainer>
+                              )}
+                            </NoCardSWrapper>
+                          )
+                    )
+                  : (
+                      <Cards>
+                        <FilterContainer onClick={() => setOpenFilterBox(true)}>
+                          <FilterImg src={preferenceSet.src} alt="filter" />
+                          <FilterTitle>偏好設定</FilterTitle>
+                        </FilterContainer>
+                        {openFilterBox
+                          ? (
+                              <FilterInsideContainer>
+                                <CloseFilterBtn
+                                  src={close.src}
+                                  onClick={() => setOpenFilterBox(false)}
+                                  alt="close"
+                                />
+                                <FilterInfoContainer>
+                                  <FilterInfoTitle>偏好種類</FilterInfoTitle>
+                                  <FilterOptionGroup>
+                                    <KindOption
+                                      onClick={() => {
+                                        setPreference({ ...preference, kind: '%E7%8B%97' })
+                                        setKindTabIndex(0)
+                                      }}
+                                      $isActive={kindTabIndex === 0}
+                                    >
+                                      狗
+                                    </KindOption>
+                                    <KindOption
+                                      onClick={() => {
+                                        setPreference({ ...preference, kind: '%E8%B2%93' })
+                                        setKindTabIndex(1)
+                                      }}
+                                      $isActive={kindTabIndex === 1}
+                                    >
+                                      貓
+                                    </KindOption>
+                                  </FilterOptionGroup>
+                                </FilterInfoContainer>
+                                <FilterInfoContainer>
+                                  <FilterInfoTitle>偏好地區</FilterInfoTitle>
+                                  <FilterOptionGroup>
+                                    {area.map((loc, index) => (
+                                      <AreaOption
+                                        id={`${index + 2}`}
+                                        key={index}
+                                        onClick={(e) => {
+                                          setPreference({
+                                            ...preference,
+                                            location: (e.target as HTMLElement).id,
+                                          })
+                                          setAreaTabIndex(index)
+                                        }}
+                                        $isActive={index === areaTabIndex}
+                                      >
+                                        {loc}
+                                      </AreaOption>
+                                    ))}
+                                  </FilterOptionGroup>
+                                </FilterInfoContainer>
+                              </FilterInsideContainer>
+                            )
+                          : (
+                              ''
+                            )}
+                        {isLoading
+                          ? (
+                              <CatLoading />
+                            )
+                          : (
+                              <PetCardDetail
+                                setMatchSuccessQty={setMatchSuccessQty}
+                                petInfo={dating.allCards}
+                              />
+                            )}
+                      </Cards>
+                    )}
+              </>
+            )
+          : (
+              ''
             )}
-          </>
-        ) : (
-          ""
-        )}
-        {tab === "considerAdopt" && (
+        {tab === 'considerAdopt' && (
           <>
             {considerDetail && (
               <ConsiderPetDetail
@@ -780,32 +797,34 @@ const Pairing: React.FC = () => {
             )}
             <ConsiderList>
               <ConsiderTitle>考慮領養清單</ConsiderTitle>
-              {dating.considerList.length === 0 ? (
-                <NowNoInfoInHereConsider>
-                  <NowNoInfoImg
-                    src={noConsiderCard.src}
-                    alt="now-no-consider-pet"
-                  />
-                  <NowNoInfoTextConsider>
-                    目前考慮領養清單無任何貓狗，
-                    <br />
-                    到配對系統選擇心儀的寵物吧！
-                  </NowNoInfoTextConsider>
-                </NowNoInfoInHereConsider>
-              ) : (
-                <ConsiderEverySinglePetCard
-                  setNowChosenPetIndex={setNowChosenPetIndex}
-                  setConsiderDetail={setConsiderDetail}
-                  tab={tab}
-                  considerDetail={considerDetail}
-                  nowChosenPetIndex={nowChosenPetIndex}
-                  getUpcomingListData={getUpcomingListData}
-                />
-              )}
+              {dating.considerList.length === 0
+                ? (
+                    <NowNoInfoInHereConsider>
+                      <NowNoInfoImg
+                        src={noConsiderCard.src}
+                        alt="now-no-consider-pet"
+                      />
+                      <NowNoInfoTextConsider>
+                        目前考慮領養清單無任何貓狗，
+                        <br />
+                        到配對系統選擇心儀的寵物吧！
+                      </NowNoInfoTextConsider>
+                    </NowNoInfoInHereConsider>
+                  )
+                : (
+                    <ConsiderEverySinglePetCard
+                      setNowChosenPetIndex={setNowChosenPetIndex}
+                      setConsiderDetail={setConsiderDetail}
+                      tab={tab}
+                      considerDetail={considerDetail}
+                      nowChosenPetIndex={nowChosenPetIndex}
+                      getUpcomingListData={getUpcomingListData}
+                    />
+                  )}
             </ConsiderList>
           </>
         )}
-        {tab === "upcomingDate" && (
+        {tab === 'upcomingDate' && (
           <>
             {openMeeting && (
               <Meeting
@@ -815,30 +834,32 @@ const Pairing: React.FC = () => {
             )}
             <UpcomingListContainer>
               <UpcomingTitle>即將到來的約會</UpcomingTitle>
-              {dating.upcomingDateList.length === 0 ? (
-                <NowNoInfoInHereConsider>
-                  <NowNoInfoImg
-                    src={noUpcomingDate.src}
-                    alt="now-no-upcoming-date"
-                  />
-                  <NowNoInfoTextConsider>
-                    目前沒有即將到來的約會，
-                    <br />
-                    到考慮領養清單邀請心儀的寵物來場約會吧！
-                  </NowNoInfoTextConsider>
-                </NowNoInfoInHereConsider>
-              ) : (
-                <UpcomingList
-                  getUpcomingListData={getUpcomingListData}
-                  setOpenMeeting={setOpenMeeting}
-                  setNowMeetingShelter={setNowMeetingShelter}
-                />
-              )}
+              {dating.upcomingDateList.length === 0
+                ? (
+                    <NowNoInfoInHereConsider>
+                      <NowNoInfoImg
+                        src={noUpcomingDate.src}
+                        alt="now-no-upcoming-date"
+                      />
+                      <NowNoInfoTextConsider>
+                        目前沒有即將到來的約會，
+                        <br />
+                        到考慮領養清單邀請心儀的寵物來場約會吧！
+                      </NowNoInfoTextConsider>
+                    </NowNoInfoInHereConsider>
+                  )
+                : (
+                    <UpcomingList
+                      getUpcomingListData={getUpcomingListData}
+                      setOpenMeeting={setOpenMeeting}
+                      setNowMeetingShelter={setNowMeetingShelter}
+                    />
+                  )}
             </UpcomingListContainer>
           </>
         )}
       </Wrap>
     </>
-  );
-};
-export default Pairing;
+  )
+}
+export default Pairing

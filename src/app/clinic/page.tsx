@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { useEffect, useRef, useState } from "react";
-import { db } from "../../utils/firebase";
-import { collection, getDocs } from "firebase/firestore";
-import styled from "styled-components";
-import { areaList } from "../../utils/ConstantInfo";
+import { collection, getDocs } from 'firebase/firestore'
+import { useEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
+import { areaList } from '../../utils/ConstantInfo'
+import { db } from '../../utils/firebase'
 
 const Wrap = styled.div`
   width: 100%;
@@ -12,7 +12,7 @@ const Wrap = styled.div`
   height: 100%;
   background-color: #fafafa;
   position: relative;
-`;
+`
 
 const ClinicListContainer = styled.div`
   display: flex;
@@ -27,7 +27,7 @@ const ClinicListContainer = styled.div`
   @media (max-width: 778px) {
     padding: 220px 30px 80px 30px;
   }
-`;
+`
 
 const ClinicCard = styled.div`
   margin-bottom: 25px;
@@ -48,7 +48,7 @@ const ClinicCard = styled.div`
   @media (max-width: 376px) {
     padding: 10px;
   }
-`;
+`
 
 const ClinicLoc = styled.div`
   font-size: 22px;
@@ -64,7 +64,7 @@ const ClinicLoc = styled.div`
     top: 10px;
     right: 10px;
   }
-`;
+`
 
 const ClinicTitle = styled.div`
   font-size: 22px;
@@ -73,7 +73,7 @@ const ClinicTitle = styled.div`
   @media (max-width: 472px) {
     font-size: 18px;
   }
-`;
+`
 const ClinicInfo = styled.div`
   font-size: 18px;
   margin-bottom: 15px;
@@ -81,11 +81,11 @@ const ClinicInfo = styled.div`
   &:last-child {
     margin-bottom: 0;
   }
-`;
+`
 
 const PhoneLink = styled.a`
   color: #db5452;
-`;
+`
 const AreaTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
@@ -100,7 +100,7 @@ const AreaTitle = styled.h1`
     position: absolute;
     left: 0;
   }
-`;
+`
 
 const SelectGroup = styled.div`
   position: absolute;
@@ -130,7 +130,7 @@ const SelectGroup = styled.div`
     width: 120px;
     font-size: 18px;
   }
-`;
+`
 const NowChooseOption = styled.div`
   &:after {
     content: "ˇ";
@@ -138,12 +138,12 @@ const NowChooseOption = styled.div`
     right: 10px;
     top: 15px;
   }
-`;
+`
 const OptionGroup = styled.ul<{ $isActive: boolean }>`
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
-  height: ${(props) => (props.$isActive ? "auto" : "0px")};
+  height: ${props => (props.$isActive ? 'auto' : '0px')};
   position: absolute;
   background-color: #fff;
   width: 200px;
@@ -157,7 +157,7 @@ const OptionGroup = styled.ul<{ $isActive: boolean }>`
     width: 120px;
     font-size: 18px;
   }
-`;
+`
 const OptionName = styled.li`
   display: flex;
   /* justify-content: center; */
@@ -167,99 +167,102 @@ const OptionName = styled.li`
     background-color: #d1cfcf;
     color: #3c3c3c;
   }
-`;
+`
 
-type ClinicType = {
-  name: string;
-  location: string;
-  country: string;
-  phone: string;
-  note: string;
-};
+interface ClinicType {
+  name: string
+  location: string
+  country: string
+  phone: string
+  note: string
+}
 
-const VetClinic = () => {
-  const clinicRef = useRef<ClinicType[]>([]);
-  const [clinics, setClinics] = useState<ClinicType[]>([]);
-  const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false);
-  const [nowCountry, setNowCountry] = useState<string>("全台診所");
+function VetClinic() {
+  const clinicRef = useRef<ClinicType[]>([])
+  const [clinics, setClinics] = useState<ClinicType[]>([])
+  const [optionBoxOpen, setOptionBoxOpen] = useState<boolean>(false)
+  const [nowCountry, setNowCountry] = useState<string>('全台診所')
 
   useEffect(() => {
     async function getVetClinicData() {
-      const allClinic: ClinicType[] = [];
-      const p = collection(db, "24HoursVetClinics");
-      const querySecond = await getDocs(p);
+      const allClinic: ClinicType[] = []
+      const p = collection(db, '24HoursVetClinics')
+      const querySecond = await getDocs(p)
       querySecond.forEach((info) => {
         allClinic.push(
           info.data() as {
-            name: string;
-            location: string;
-            country: string;
-            phone: string;
-            note: string;
-          }
-        );
-      });
-      clinicRef.current = allClinic;
-      setClinics(allClinic);
+            name: string
+            location: string
+            country: string
+            phone: string
+            note: string
+          },
+        )
+      })
+      clinicRef.current = allClinic
+      setClinics(allClinic)
     }
 
-    getVetClinicData();
-  }, []);
+    getVetClinicData()
+  }, [])
 
   function changePreferenceArea(target: string) {
-    const displayClinic: ClinicType[] = [];
+    const displayClinic: ClinicType[] = []
     clinicRef.current.forEach((clinic) => {
       if (
-        target === "北部地區" &&
-        [
-          "臺北市",
-          "新北市",
-          "桃園市",
-          "新竹市",
-          " 臺北市",
-          " 新北市",
-          " 桃園市",
-          " 新竹市",
-        ].indexOf(clinic.country) > -1
+        target === '北部地區'
+        && [
+          '臺北市',
+          '新北市',
+          '桃園市',
+          '新竹市',
+          ' 臺北市',
+          ' 新北市',
+          ' 桃園市',
+          ' 新竹市',
+        ].includes(clinic.country)
       ) {
-        displayClinic.push(clinic);
-      } else if (
-        target === "中部地區" &&
-        [
-          "臺中市",
-          "苗栗縣",
-          "彰化縣",
-          "南投縣",
-          "雲林縣",
-          " 臺中市",
-          " 苗栗縣",
-          " 彰化縣",
-          " 南投縣",
-          " 雲林縣",
-        ].indexOf(clinic.country) > -1
-      ) {
-        displayClinic.push(clinic);
-      } else if (
-        target === "南部地區" &&
-        [
-          "高雄市",
-          "臺南市",
-          "嘉義市",
-          "嘉義縣",
-          "屏東縣",
-          " 高雄市",
-          " 臺南市",
-          " 嘉義市",
-          " 嘉義縣",
-          " 屏東縣",
-        ].indexOf(clinic.country) > -1
-      ) {
-        displayClinic.push(clinic);
-      } else if (target === "全台診所") {
-        displayClinic.push(clinic);
+        displayClinic.push(clinic)
       }
-    });
-    setClinics(displayClinic);
+      else if (
+        target === '中部地區'
+        && [
+          '臺中市',
+          '苗栗縣',
+          '彰化縣',
+          '南投縣',
+          '雲林縣',
+          ' 臺中市',
+          ' 苗栗縣',
+          ' 彰化縣',
+          ' 南投縣',
+          ' 雲林縣',
+        ].includes(clinic.country)
+      ) {
+        displayClinic.push(clinic)
+      }
+      else if (
+        target === '南部地區'
+        && [
+          '高雄市',
+          '臺南市',
+          '嘉義市',
+          '嘉義縣',
+          '屏東縣',
+          ' 高雄市',
+          ' 臺南市',
+          ' 嘉義市',
+          ' 嘉義縣',
+          ' 屏東縣',
+        ].includes(clinic.country)
+      ) {
+        displayClinic.push(clinic)
+      }
+      else if (target === '全台診所') {
+        displayClinic.push(clinic)
+      }
+    })
+    setClinics(displayClinic)
   }
 
   return (
@@ -268,10 +271,10 @@ const VetClinic = () => {
         <SelectGroup>
           <NowChooseOption
             onMouseEnter={() => {
-              setOptionBoxOpen(true);
+              setOptionBoxOpen(true)
             }}
             onClick={() => {
-              optionBoxOpen ? setOptionBoxOpen(false) : setOptionBoxOpen(true);
+              optionBoxOpen ? setOptionBoxOpen(false) : setOptionBoxOpen(true)
             }}
           >
             {nowCountry}
@@ -279,17 +282,17 @@ const VetClinic = () => {
           <OptionGroup
             $isActive={optionBoxOpen === true}
             onMouseLeave={() => {
-              setOptionBoxOpen(false);
+              setOptionBoxOpen(false)
             }}
           >
-            {areaList.map((area, index) => (
+            {areaList.map(area => (
               <OptionName
-                key={index}
+                key={area}
                 value={area}
                 onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  changePreferenceArea(target.innerText);
-                  setNowCountry(target.innerText);
+                  const target = e.target as HTMLElement
+                  changePreferenceArea(target.textContent || '')
+                  setNowCountry(target.textContent || '')
                 }}
               >
                 {area}
@@ -298,8 +301,8 @@ const VetClinic = () => {
           </OptionGroup>
         </SelectGroup>
         <AreaTitle>{nowCountry}</AreaTitle>
-        {clinics.map((clinic, index) => (
-          <ClinicCard key={index}>
+        {clinics.map(clinic => (
+          <ClinicCard key={clinic.name}>
             <ClinicTitle>{clinic.name}</ClinicTitle>
             <ClinicLoc>{clinic.country}</ClinicLoc>
             <ClinicInfo>{clinic.location}</ClinicInfo>
@@ -311,7 +314,7 @@ const VetClinic = () => {
         ))}
       </ClinicListContainer>
     </Wrap>
-  );
-};
+  )
+}
 
-export default VetClinic;
+export default VetClinic

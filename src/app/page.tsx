@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-import { Btn } from "src/app/profile/components/UserInfos";
-import { Profile } from "src/reducers/profile";
+import type { Profile } from 'src/reducers/profile'
+import Image from 'next/image'
+import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Btn } from 'src/app/profile/components/UserInfos'
 import {
   BlackMask,
   PopImg,
   PopUpMessage,
   PopUpNote,
   PopUpText,
-} from "src/component/Header";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+} from 'src/component/Header'
+import styled from 'styled-components'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-`;
+`
 
 const CoverContainer = styled.div`
   display: flex;
@@ -31,7 +31,7 @@ const CoverContainer = styled.div`
     height: 100vh;
     margin-bottom: 10px;
   }
-`;
+`
 const CoverImg = styled(Image)`
   flex: 1;
   width: 65%;
@@ -48,7 +48,7 @@ const CoverImg = styled(Image)`
     width: 100%;
     position: absolute;
   }
-`;
+`
 const CoverTextContainer = styled.div`
   flex: 1;
   flex-shrink: 0;
@@ -78,7 +78,7 @@ const CoverTextContainer = styled.div`
   @media (max-width: 413px) {
     left: -20px;
   }
-`;
+`
 const CoverTitle = styled.h1`
   font-size: 32px;
   letter-spacing: 2px;
@@ -94,7 +94,7 @@ const CoverTitle = styled.h1`
     line-height: 40px;
     font-size: 22px;
   }
-`;
+`
 const CoverText = styled.div`
   margin-top: 20px;
   line-height: 30px;
@@ -103,7 +103,7 @@ const CoverText = styled.div`
   @media (max-width: 489px) {
     display: none;
   }
-`;
+`
 
 const SectionContainer = styled.div`
   display: flex;
@@ -114,7 +114,7 @@ const SectionContainer = styled.div`
     }
     margin-bottom: 60px;
   }
-`;
+`
 
 const SectionFirstTextContainer = styled.div`
   flex: 1;
@@ -129,7 +129,7 @@ const SectionFirstTextContainer = styled.div`
     width: 100%;
     align-items: center;
   }
-`;
+`
 
 const SectionTitle = styled.div`
   font-size: 32px;
@@ -143,7 +143,7 @@ const SectionTitle = styled.div`
     font-size: 22px;
     line-height: 30px;
   }
-`;
+`
 const SectionText = styled.h2`
   margin-top: 20px;
   line-height: 30px;
@@ -152,7 +152,7 @@ const SectionText = styled.h2`
   @media (max-width: 892px) {
     text-align: center;
   }
-`;
+`
 const SectionFirstImg = styled(Image)`
   flex: 1;
   width: 65%;
@@ -167,7 +167,7 @@ const SectionFirstImg = styled(Image)`
   @media (max-width: 892px) {
     width: 100%;
   }
-`;
+`
 
 const SectionLinkBtn = styled(Btn)`
   bottom: -65px;
@@ -178,40 +178,41 @@ const SectionLinkBtn = styled(Btn)`
     transform: translateX(-50%);
     width: 220px;
   }
-`;
+`
 
-const Home = () => {
+function Home() {
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const [openPopupBox, setOpenPopupBox] = useState(false);
-  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const fromPage: string = searchParams?.get("from") as string;
+    state => state.profile,
+  ) as Profile
+  const [openPopupBox, setOpenPopupBox] = useState(false)
+  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromPage: string = searchParams?.get('from') as string
 
   function gotoProfilePage() {
-    setNavigateToProfileTime(3);
-    setOpenPopupBox(true);
+    setNavigateToProfileTime(3)
+    setOpenPopupBox(true)
     const coundDownTimer = setInterval(() => {
       setNavigateToProfileTime((prev) => {
         if (prev <= 0) {
-          clearInterval(coundDownTimer);
-          setOpenPopupBox(false);
-          router.push("/profile");
-          return 0;
-        } else {
-          return prev - 1;
+          clearInterval(coundDownTimer)
+          setOpenPopupBox(false)
+          router.push('/profile')
+          return 0
         }
-      });
-    }, 1000);
+        else {
+          return prev - 1
+        }
+      })
+    }, 1000)
   }
 
   useEffect(() => {
-    if (fromPage === "/dating" && profile.isLogged) {
-      router.push(fromPage);
+    if (fromPage === '/dating' && profile.isLogged) {
+      router.push(fromPage)
     }
-  }, [fromPage, router, profile.isLogged]);
+  }, [fromPage, router, profile.isLogged])
 
   return (
     <Wrapper>
@@ -226,7 +227,9 @@ const Home = () => {
             />
             <PopUpText>進入配對專區需先登入/註冊</PopUpText>
             <PopUpNote>
-              {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
+              {navigateToProfileTime}
+              {' '}
+              秒後自動跳轉至登入頁面 ...
             </PopUpNote>
           </PopUpMessage>
           <BlackMask $isActive={openPopupBox === true} />
@@ -270,9 +273,10 @@ const Home = () => {
             <SectionLinkBtn
               onClick={() => {
                 if (!profile.isLogged) {
-                  gotoProfilePage();
-                } else {
-                  router.push("/pairing");
+                  gotoProfilePage()
+                }
+                else {
+                  router.push('/pairing')
                 }
               }}
             >
@@ -290,7 +294,7 @@ const Home = () => {
             透過這個小小的空間，把你們的世界都濃縮在這裡
             <SectionLinkBtn
               onClick={() => {
-                router.push("/pet-diary");
+                router.push('/pet-diary')
               }}
             >
               前往寵物日記專區
@@ -327,7 +331,7 @@ const Home = () => {
             透過文章，獲得更多關於寵物的知識
             <SectionLinkBtn
               onClick={() => {
-                router.push("/articles");
+                router.push('/articles')
               }}
             >
               前往寵物文章補給
@@ -344,7 +348,7 @@ const Home = () => {
             保護這些小小的生命，是我們的使命
             <SectionLinkBtn
               onClick={() => {
-                router.push("/clinic");
+                router.push('/clinic')
               }}
             >
               24 小時動物醫院專區
@@ -360,7 +364,7 @@ const Home = () => {
         />
       </SectionContainer>
     </Wrapper>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

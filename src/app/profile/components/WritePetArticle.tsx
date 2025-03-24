@@ -1,9 +1,26 @@
-"use client";
+'use client'
 
-import React, { useState, Dispatch, SetStateAction } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
-import { Profile } from "src/reducers/profile";
+import type { Dispatch, SetStateAction } from 'react'
+import type { imgType } from 'src/functions/commonFunctionAndType'
+import type { Profile } from 'src/reducers/profile'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import parse from 'html-react-parser'
+import noarticle from 'public/img/shigoto_zaitaku_cat_man.png'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { TellUserUploadImg, ToPreviewImg } from 'src/component/PreviewImg'
+import { useNotifyDispatcher } from 'src/component/SidebarNotify'
+import { setOwnArticle } from 'src/functions/profileReducerFunction'
 import {
   addDataWithUploadImage,
   db,
@@ -11,57 +28,41 @@ import {
   storage,
   updateFirebaseDataMutipleWhere,
   updateUseStateInputImage,
-} from "src/utils/firebase";
-import {
-  getDocs,
-  collection,
-  addDoc,
-  query,
-  where,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { setOwnArticle } from "src/functions/profileReducerFunction";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-
-import {
-  Btn,
-  Title,
-  EditContainer,
-  EditInfoLabel,
-  EditInfoInput,
-} from "./UserInfos";
-import {
-  DeleteCheckBox,
-  DeleteCheckText,
-  DeleteCheckBoxBtnContainer,
-  DeleteCheckBoxBtn,
-  WarningDeleteBtn,
-  NowNoInfoInHere,
-  NowNoInfoImg,
-  NowNoInfoText,
-} from "./UserOwnPetInfos";
-import parse from "html-react-parser";
-import noarticle from "public/img/shigoto_zaitaku_cat_man.png";
-import { imgType } from "src/functions/commonFunctionAndType";
-import { useNotifyDispatcher } from "src/component/SidebarNotify";
-import { TellUserUploadImg, ToPreviewImg } from "src/component/PreviewImg";
+} from 'src/utils/firebase'
+import styled from 'styled-components'
 import {
   ContextDetails,
   EditContextDetails,
   EditPetArticle,
   PetArticle,
-} from "./PetArticle";
+} from './PetArticle'
+import {
+  Btn,
+  EditContainer,
+  EditInfoInput,
+  EditInfoLabel,
+  Title,
+} from './UserInfos'
+import {
+  DeleteCheckBox,
+  DeleteCheckBoxBtn,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckText,
+  NowNoInfoImg,
+  NowNoInfoInHere,
+  NowNoInfoText,
+  WarningDeleteBtn,
+} from './UserOwnPetInfos'
 
 const FinishAddArticleBtn = styled(Btn)`
   bottom: 15px;
   right: 100px;
-`;
+`
 
 const CancelBtn = styled(Btn)`
   bottom: 15px;
   right: 15px;
-`;
+`
 
 const EditTitleInput = styled(EditInfoInput)`
   width: 300px;
@@ -73,7 +74,7 @@ const EditTitleInput = styled(EditInfoInput)`
     margin-left: 5px;
     width: 100%;
   }
-`;
+`
 
 const EditArticleLabel = styled(EditInfoLabel)`
   width: 100px;
@@ -82,7 +83,7 @@ const EditArticleLabel = styled(EditInfoLabel)`
     font-size: 18px;
     flex-shrink: 0;
   }
-`;
+`
 
 const WarningText = styled.div`
   font-size: 22px;
@@ -90,17 +91,17 @@ const WarningText = styled.div`
   @media (max-width: 533px) {
     font-size: 18px;
   }
-`;
+`
 
 const CoverEditArticleLabel = styled(EditArticleLabel)`
   @media (max-width: 533px) {
     display: none;
   }
-`;
+`
 
 const PetDetailInput = styled.input`
   display: none;
-`;
+`
 
 const ArticleDeleteBox = styled(DeleteCheckBox)`
   top: 25%;
@@ -108,7 +109,7 @@ const ArticleDeleteBox = styled(DeleteCheckBox)`
   @media (max-width: 605px) {
     top: 20%;
   }
-`;
+`
 
 const ArticleSectionTitle = styled(Title)`
   @media (max-width: 470px) {
@@ -118,7 +119,7 @@ const ArticleSectionTitle = styled(Title)`
     left: 0;
     top: 10px;
   }
-`;
+`
 
 const AddArticleBtn = styled(Btn)`
   top: 20px;
@@ -133,7 +134,7 @@ const AddArticleBtn = styled(Btn)`
   @media (max-width: 403px) {
     right: 10px;
   }
-`;
+`
 
 const InfoContainer = styled.div`
   width: 100%;
@@ -154,11 +155,11 @@ const InfoContainer = styled.div`
     padding: 10px;
     padding-bottom: 70px;
   }
-`;
+`
 
 const AddArticleInfoContainer = styled(InfoContainer)`
   padding-bottom: 70px;
-`;
+`
 
 const UserArticleContainer = styled.div`
   display: flex;
@@ -172,7 +173,7 @@ const UserArticleContainer = styled.div`
   @media (max-width: 742px) {
     flex-direction: column;
   }
-`;
+`
 
 const UserArticle = styled.div`
   display: flex;
@@ -206,7 +207,7 @@ const UserArticle = styled.div`
   @media (max-width: 470px) {
     padding: 10px;
   }
-`;
+`
 
 const UserArticleImg = styled.img`
   width: 100%;
@@ -230,7 +231,7 @@ const UserArticleImg = styled.img`
   @media (max-width: 470px) {
     height: 150px;
   }
-`;
+`
 
 const UserArticleTitle = styled.div`
   font-size: 22px;
@@ -252,7 +253,7 @@ const UserArticleTitle = styled.div`
   @media (max-width: 558px) {
     font-size: 22px;
   }
-`;
+`
 
 const ArticleCover = styled.img`
   width: 100%;
@@ -267,7 +268,7 @@ const ArticleCover = styled.img`
   @media (max-width: 542px) {
     height: 250px;
   }
-`;
+`
 
 const ArticleTitle = styled.div`
   font-size: 32px;
@@ -281,13 +282,13 @@ const ArticleTitle = styled.div`
   @media (max-width: 416px) {
     font-size: 22px;
   }
-`;
+`
 
 const ArticleContext = styled.div`
   margin-top: 25px;
   line-height: 34px;
   font-size: 18px;
-`;
+`
 
 const ArticlePostTime = styled.div`
   padding-bottom: 20px;
@@ -295,7 +296,7 @@ const ArticlePostTime = styled.div`
   color: #d1cfcf;
   font-weight: bold;
   position: relative;
-`;
+`
 
 const EditArticleBtn = styled(Btn)`
   padding: 5px 10px;
@@ -312,7 +313,7 @@ const EditArticleBtn = styled(Btn)`
   @media (max-width: 403px) {
     right: 110px;
   }
-`;
+`
 
 const DeteleArticleBtn = styled(Btn)`
   padding: 5px 10px;
@@ -329,7 +330,7 @@ const DeteleArticleBtn = styled(Btn)`
   @media (max-width: 403px) {
     right: 55px;
   }
-`;
+`
 
 const CancelDetailBtn = styled(Btn)`
   padding: 5px 10px;
@@ -345,46 +346,46 @@ const CancelDetailBtn = styled(Btn)`
   @media (max-width: 416px) {
     padding: 5px;
   }
-`;
+`
 
-type PetArticleType = {
+interface PetArticleType {
   addArticleInfo: {
-    title: string;
-    context: string;
-  };
+    title: string
+    context: string
+  }
   setAddArticleInfo: Dispatch<
-    SetStateAction<{ title: string; context: string }>
-  >;
-  articleCover: imgType;
-  setArticleCover: Dispatch<SetStateAction<imgType>>;
-  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  incompleteInfo: boolean;
-};
+    SetStateAction<{ title: string, context: string }>
+  >
+  articleCover: imgType
+  setArticleCover: Dispatch<SetStateAction<imgType>>
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>
+  incompleteInfo: boolean
+}
 
-type EditArticleType = {
-  title: string;
-  context: string;
-};
+interface EditArticleType {
+  title: string
+  context: string
+}
 
 export const WritePetArticle: React.FC<PetArticleType> = (props) => {
-  const dispatch = useDispatch();
-  const notifyDispatcher = useNotifyDispatcher();
+  const dispatch = useDispatch()
+  const notifyDispatcher = useNotifyDispatcher()
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
+    state => state.profile,
+  ) as Profile
   const [editArticleContext, setEditArticleContext] = useState<EditArticleType>(
-    { title: "", context: "" }
-  );
+    { title: '', context: '' },
+  )
   const [editArticleCover, setEditArticleCover] = useState<imgType>({
-    file: "",
-    url: "",
-  });
-  const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1);
-  const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>();
-  const [addArticleMode, setAddArticleMode] = useState<boolean>(false);
-  const [editArticleMode, setEditArticleMode] = useState<boolean>(false);
-  const [detailArticleOpen, setDetailArticleOpen] = useState<boolean>(false);
-  const [openDeleteBox, setOpenDeleteBox] = useState(false);
+    file: '',
+    url: '',
+  })
+  const [ownArticleIndex, setOwnArticleIndex] = useState<number>(-1)
+  const [initialDiaryTimeStamp, setInitialDiaryTimeStamp] = useState<number>()
+  const [addArticleMode, setAddArticleMode] = useState<boolean>(false)
+  const [editArticleMode, setEditArticleMode] = useState<boolean>(false)
+  const [detailArticleOpen, setDetailArticleOpen] = useState<boolean>(false)
+  const [openDeleteBox, setOpenDeleteBox] = useState(false)
 
   async function addPetArticleDoc(imgURL: string) {
     await addDoc(collection(db, `/petArticles`), {
@@ -395,126 +396,128 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       commentCount: 0,
       likedBy: [],
       authorUid: profile.uid,
-    });
+    })
     props.setAddArticleInfo({
-      title: "",
-      context: "",
-    });
-    props.setArticleCover({ file: "", url: "" });
+      title: '',
+      context: '',
+    })
+    props.setArticleCover({ file: '', url: '' })
   }
 
   function updateNewArticleDataFirebase(photoName: string, newPetImg: File) {
-    const storageRef = ref(storage, `petArticles/${photoName}`);
-    const uploadTask = uploadBytesResumable(storageRef, newPetImg);
+    const storageRef = ref(storage, `petArticles/${photoName}`)
+    const uploadTask = uploadBytesResumable(storageRef, newPetImg)
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       (snapshot) => {
-        console.log("upload");
+        console.log('upload')
       },
       (error) => {
-        console.log(error);
+        console.log(error)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          updateArticleInfo(downloadURL);
-        });
-      }
-    );
+          updateArticleInfo(downloadURL)
+        })
+      },
+    )
   }
 
   async function updateArticleInfo(imgURL: string) {
     const q = query(
       collection(db, `/petArticles`),
-      where("postTime", "==", initialDiaryTimeStamp),
-      where("authorUid", "==", profile.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const promises: Promise<void>[] = [];
+      where('postTime', '==', initialDiaryTimeStamp),
+      where('authorUid', '==', profile.uid),
+    )
+    const querySnapshot = await getDocs(q)
+    const promises: Promise<void>[] = []
     querySnapshot.forEach(async (d) => {
-      const ownArticleRef = doc(db, `/petArticles`, d.id);
+      const ownArticleRef = doc(db, `/petArticles`, d.id)
       if (imgURL) {
         promises.push(
           updateDoc(ownArticleRef, {
             title: editArticleContext.title,
             context: editArticleContext.context,
             img: imgURL,
-          })
-        );
-      } else {
+          }),
+        )
+      }
+      else {
         promises.push(
           updateDoc(ownArticleRef, {
             title: editArticleContext.title,
             context: editArticleContext.context,
-          })
-        );
+          }),
+        )
       }
-    });
-    await Promise.all(promises);
+    })
+    await Promise.all(promises)
   }
 
   async function updateArticleInfoCondition() {
-    const initialContext = profile.ownArticles[ownArticleIndex].context;
-    const initialTitle = profile.ownArticles[ownArticleIndex].title;
-    const initialCover = profile.ownArticles[ownArticleIndex].img;
+    const initialContext = profile.ownArticles[ownArticleIndex].context
+    const initialTitle = profile.ownArticles[ownArticleIndex].title
+    const initialCover = profile.ownArticles[ownArticleIndex].img
     if (
-      !editArticleContext.context ||
-      !editArticleContext.title ||
-      editArticleContext.context === "<p></p>"
+      !editArticleContext.context
+      || !editArticleContext.title
+      || editArticleContext.context === '<p></p>'
     ) {
-      props.setIncompleteInfo(true);
-      return;
+      props.setIncompleteInfo(true)
+      return
     }
     if (
-      editArticleContext.context === initialContext &&
-      editArticleContext.title === initialTitle &&
-      editArticleCover.url === initialCover
+      editArticleContext.context === initialContext
+      && editArticleContext.title === initialTitle
+      && editArticleCover.url === initialCover
     ) {
-      return;
+      return
     }
-    props.setIncompleteInfo(false);
+    props.setIncompleteInfo(false)
 
     if (editArticleCover.url !== initialCover) {
-      const updateOwnPetArticle = profile.ownArticles;
+      const updateOwnPetArticle = profile.ownArticles
       updateOwnPetArticle[ownArticleIndex] = {
         ...updateOwnPetArticle[ownArticleIndex],
         title: editArticleContext.title,
         context: editArticleContext.context,
         img: editArticleCover.url,
-      };
-      dispatch(setOwnArticle(updateOwnPetArticle));
+      }
+      dispatch(setOwnArticle(updateOwnPetArticle))
       if (editArticleCover.file) {
         await updateNewArticleDataFirebase(
           (editArticleCover.file as File).name,
-          editArticleCover.file as File
-        );
+          editArticleCover.file as File,
+        )
       }
-    } else {
-      const updateOwnPetArticle = profile.ownArticles;
+    }
+    else {
+      const updateOwnPetArticle = profile.ownArticles
       updateOwnPetArticle[ownArticleIndex] = {
         ...updateOwnPetArticle[ownArticleIndex],
         title: editArticleContext.title,
         context: editArticleContext.context,
-      };
-      dispatch(setOwnArticle(updateOwnPetArticle));
+      }
+      dispatch(setOwnArticle(updateOwnPetArticle))
       await updateFirebaseDataMutipleWhere(
         `/petArticles`,
-        "postTime",
+        'postTime',
         initialDiaryTimeStamp as number,
-        "authorUid",
+        'authorUid',
         profile.uid,
-        "",
+        '',
         {
           title: editArticleContext.title,
           context: editArticleContext.context,
-        }
-      );
+        },
+      )
     }
-    notifyDispatcher("已更新寵物文章");
-    setEditArticleMode(false);
+    notifyDispatcher('已更新寵物文章')
+    setEditArticleMode(false)
   }
 
   function addPetArticleUpdateState() {
-    const newArticleArr = profile.ownArticles;
+    const newArticleArr = profile.ownArticles
     newArticleArr.push({
       ...props.addArticleInfo,
       img: props.articleCover.url,
@@ -523,30 +526,30 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       commentCount: 0,
       likedBy: [],
       authorUid: profile.uid,
-      id: "",
-    });
-    dispatch(setOwnArticle(newArticleArr));
+      id: '',
+    })
+    dispatch(setOwnArticle(newArticleArr))
   }
 
   function clickToAddPetArticle() {
     if (
-      !props.addArticleInfo.title ||
-      !props.addArticleInfo.context ||
-      !props.articleCover.url
+      !props.addArticleInfo.title
+      || !props.addArticleInfo.context
+      || !props.articleCover.url
     ) {
-      props.setIncompleteInfo(true);
-      return;
+      props.setIncompleteInfo(true)
+      return
     }
-    props.setIncompleteInfo(false);
+    props.setIncompleteInfo(false)
     if (props.articleCover.file instanceof File) {
-      addPetArticleUpdateState();
-      notifyDispatcher("已上傳寵物文章！");
-      setAddArticleMode(false);
+      addPetArticleUpdateState()
+      notifyDispatcher('已上傳寵物文章！')
+      setAddArticleMode(false)
       addDataWithUploadImage(
         `petArticles/${props.articleCover.file.name}`,
         props.articleCover.file,
-        addPetArticleDoc
-      );
+        addPetArticleDoc,
+      )
     }
   }
 
@@ -560,18 +563,18 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           accept="image/*"
           onChange={(e) => {
             if (
-              e.target.files &&
-              e.target.files[0].type.split("/")[0] === "image"
+              e.target.files
+              && e.target.files[0].type.split('/')[0] === 'image'
             ) {
               updateUseStateInputImage(
                 e.target.files as FileList,
-                props.setArticleCover
-              );
+                props.setArticleCover,
+              )
             }
           }}
         />
       </>
-    );
+    )
   }
 
   function renderEditPetArticleToUploadCover() {
@@ -584,18 +587,18 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           accept="image/*"
           onChange={(e) => {
             if (
-              e.target.files &&
-              e.target.files[0].type.split("/")[0] === "image"
+              e.target.files
+              && e.target.files[0].type.split('/')[0] === 'image'
             ) {
               updateUseStateInputImage(
                 e.target.files as FileList,
-                setEditArticleCover
-              );
+                setEditArticleCover,
+              )
             }
           }}
         />
       </>
-    );
+    )
   }
 
   function renderAddPetArticle() {
@@ -603,20 +606,20 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       <AddArticleInfoContainer>
         <FinishAddArticleBtn
           onClick={() => {
-            clickToAddPetArticle();
+            clickToAddPetArticle()
           }}
         >
           上傳文章
         </FinishAddArticleBtn>
         <CancelBtn
           onClick={() => {
-            setAddArticleMode(false);
+            setAddArticleMode(false)
             props.setAddArticleInfo({
-              title: "",
-              context: "",
-            });
-            props.setArticleCover({ file: "", url: "" });
-            props.setIncompleteInfo(false);
+              title: '',
+              context: '',
+            })
+            props.setArticleCover({ file: '', url: '' })
+            props.setIncompleteInfo(false)
           }}
         >
           取消
@@ -630,23 +633,26 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
               props.setAddArticleInfo({
                 ...props.addArticleInfo,
                 title: e.target.value,
-              });
+              })
             }}
           />
         </EditContainer>
         <EditContainer>
           <CoverEditArticleLabel htmlFor="cover">
-            文章封面:{" "}
+            文章封面:
+            {' '}
           </CoverEditArticleLabel>
-          {props.articleCover.url ? (
-            <ToPreviewImg
-              imgURL={props.articleCover.url}
-              emptyImg={props.setArticleCover}
-              recOrSquare="rec"
-            />
-          ) : (
-            renderTellUserUploadPetArticleCover()
-          )}
+          {props.articleCover.url
+            ? (
+                <ToPreviewImg
+                  imgURL={props.articleCover.url}
+                  emptyImg={props.setArticleCover}
+                  recOrSquare="rec"
+                />
+              )
+            : (
+                renderTellUserUploadPetArticleCover()
+              )}
         </EditContainer>
         <PetArticle
           setAddArticleInfo={props.setAddArticleInfo}
@@ -657,7 +663,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           <WarningText>請填寫完整文章資訊及文章封面</WarningText>
         )}
       </AddArticleInfoContainer>
-    );
+    )
   }
 
   function renderEditPetArticle() {
@@ -672,23 +678,26 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
               setEditArticleContext({
                 ...editArticleContext,
                 title: e.target.value,
-              });
+              })
             }}
           />
         </EditContainer>
         <EditContainer>
           <CoverEditArticleLabel htmlFor="cover">
-            文章封面:{" "}
+            文章封面:
+            {' '}
           </CoverEditArticleLabel>
-          {editArticleCover.url ? (
-            <ToPreviewImg
-              imgURL={editArticleCover.url}
-              emptyImg={setEditArticleCover}
-              recOrSquare="rec"
-            />
-          ) : (
-            renderEditPetArticleToUploadCover()
-          )}
+          {editArticleCover.url
+            ? (
+                <ToPreviewImg
+                  imgURL={editArticleCover.url}
+                  emptyImg={setEditArticleCover}
+                  recOrSquare="rec"
+                />
+              )
+            : (
+                renderEditPetArticleToUploadCover()
+              )}
         </EditContainer>
 
         <EditPetArticle
@@ -698,37 +707,37 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         <EditContextDetails editArticleContext={editArticleContext} />
         <FinishAddArticleBtn
           onClick={() => {
-            updateArticleInfoCondition();
+            updateArticleInfoCondition()
           }}
         >
           更新文章
         </FinishAddArticleBtn>
         <CancelBtn
           onClick={() => {
-            setEditArticleMode(false);
-            props.setIncompleteInfo(false);
+            setEditArticleMode(false)
+            props.setIncompleteInfo(false)
             setEditArticleContext({
               ...editArticleContext,
               title: profile.ownArticles[ownArticleIndex].title,
               context: profile.ownArticles[ownArticleIndex].context,
-            });
+            })
             setEditArticleCover({
               ...editArticleCover,
               url: profile.ownArticles[ownArticleIndex].img,
-            });
+            })
           }}
         >
           取消
         </CancelBtn>
         {props.incompleteInfo && <WarningText>更新資料不可為空值</WarningText>}
       </InfoContainer>
-    );
+    )
   }
 
   function deletePetArticleUpdateState() {
-    const DeleOwnPetArticle = profile.ownArticles;
-    DeleOwnPetArticle.splice(ownArticleIndex, 1);
-    dispatch(setOwnArticle(DeleOwnPetArticle));
+    const DeleOwnPetArticle = profile.ownArticles
+    DeleOwnPetArticle.splice(ownArticleIndex, 1)
+    dispatch(setOwnArticle(DeleOwnPetArticle))
   }
 
   function renderDeletePetArticleBox() {
@@ -740,15 +749,15 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
             onClick={async () => {
               await deleteFirebaseDataMutipleWhere(
                 `/petArticles`,
-                "postTime",
+                'postTime',
                 profile.ownArticles[ownArticleIndex].postTime,
-                "authorUid",
-                profile.uid
-              );
-              setDetailArticleOpen(false);
-              setOpenDeleteBox(false);
-              deletePetArticleUpdateState();
-              notifyDispatcher("已刪除文章");
+                'authorUid',
+                profile.uid,
+              )
+              setDetailArticleOpen(false)
+              setOpenDeleteBox(false)
+              deletePetArticleUpdateState()
+              notifyDispatcher('已刪除文章')
             }}
           >
             確定
@@ -758,32 +767,32 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           </DeleteCheckBoxBtn>
         </DeleteCheckBoxBtnContainer>
       </ArticleDeleteBox>
-    );
+    )
   }
 
   function renderDetailPetArticle() {
-    const articleCover = profile.ownArticles[ownArticleIndex].img;
-    const articleTitle = profile.ownArticles[ownArticleIndex].title;
+    const articleCover = profile.ownArticles[ownArticleIndex].img
+    const articleTitle = profile.ownArticles[ownArticleIndex].title
     const artcilePostTime = `${new Date(
-      profile.ownArticles[ownArticleIndex].postTime
+      profile.ownArticles[ownArticleIndex].postTime,
     ).getFullYear()}-${
-      new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() + 1 <
-      10
+      new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() + 1
+        < 10
         ? `0${
-            new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() +
-            1
-          }`
+          new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth()
+            + 1
+        }`
         : `${
-            new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth() +
-            1
-          }`
+          new Date(profile.ownArticles[ownArticleIndex].postTime).getMonth()
+            + 1
+        }`
     }-${
       new Date(profile.ownArticles[ownArticleIndex].postTime).getDate() < 10
         ? `0${new Date(
-            profile.ownArticles[ownArticleIndex].postTime
-          ).getDate()}`
+          profile.ownArticles[ownArticleIndex].postTime,
+        ).getDate()}`
         : `${new Date(profile.ownArticles[ownArticleIndex].postTime).getDate()}`
-    }`;
+    }`
 
     return (
       <InfoContainer>
@@ -793,14 +802,14 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
           {artcilePostTime}
           <EditArticleBtn
             onClick={() => {
-              setEditArticleMode(true);
+              setEditArticleMode(true)
             }}
           >
             編輯
           </EditArticleBtn>
           <DeteleArticleBtn
             onClick={() => {
-              setOpenDeleteBox(true);
+              setOpenDeleteBox(true)
             }}
           >
             刪除
@@ -814,7 +823,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         </ArticleContext>
         {openDeleteBox && renderDeletePetArticleBox()}
       </InfoContainer>
-    );
+    )
   }
 
   function renderNowNoPetArticle() {
@@ -823,7 +832,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
         <NowNoInfoImg src={noarticle.src} alt="now-no-article" />
         <NowNoInfoText>\ 目前沒有文章 點擊右上角可以新增 /</NowNoInfoText>
       </NowNoInfoInHere>
-    );
+    )
   }
 
   function renderSimpleAllPetArticle() {
@@ -840,18 +849,18 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
                 <UserArticle
                   key={index}
                   onClick={() => {
-                    setDetailArticleOpen(true);
-                    setInitialDiaryTimeStamp(article.postTime);
-                    setOwnArticleIndex(index);
+                    setDetailArticleOpen(true)
+                    setInitialDiaryTimeStamp(article.postTime)
+                    setOwnArticleIndex(index)
                     setEditArticleCover({
                       ...editArticleCover,
                       url: profile.ownArticles[index].img,
-                    });
+                    })
                     setEditArticleContext({
                       ...editArticleContext,
                       title: profile.ownArticles[index].title,
                       context: profile.ownArticles[index].context,
-                    });
+                    })
                   }}
                 >
                   <UserArticleImg src={article.img} alt="article-cover" />
@@ -860,7 +869,7 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
               ))}
         </UserArticleContainer>
       </InfoContainer>
-    );
+    )
   }
 
   return (
@@ -868,10 +877,10 @@ export const WritePetArticle: React.FC<PetArticleType> = (props) => {
       {addArticleMode
         ? renderAddPetArticle()
         : editArticleMode
-        ? renderEditPetArticle()
-        : detailArticleOpen && profile.ownArticles[ownArticleIndex]
-        ? renderDetailPetArticle()
-        : renderSimpleAllPetArticle()}
+          ? renderEditPetArticle()
+          : detailArticleOpen && profile.ownArticles[ownArticleIndex]
+            ? renderDetailPetArticle()
+            : renderSimpleAllPetArticle()}
     </>
-  );
-};
+  )
+}

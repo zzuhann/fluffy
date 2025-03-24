@@ -2,6 +2,14 @@
   "name": "fluffy",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "npx serve@latest ./build",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -22,11 +30,16 @@
     "styled-components": "^6.1.16",
     "styled-reset": "^4.4.2"
   },
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "npx serve@latest ./build",
-    "preinstall": "npx only-allow pnpm"
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.11.0",
+    "@eslint-react/eslint-plugin": "^1.37.3",
+    "@types/react-calendar": "^3.5.2",
+    "@types/styled-components": "^5.1.34",
+    "eslint": "^9.23.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "sass": "^1.54.9",
+    "typescript": "^4.8.2"
   },
   "eslintConfig": {
     "extends": [
@@ -45,11 +58,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react-calendar": "^3.5.2",
-    "@types/styled-components": "^5.1.34",
-    "sass": "^1.54.9",
-    "typescript": "^4.8.2"
   }
 }

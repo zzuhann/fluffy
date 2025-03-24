@@ -1,29 +1,31 @@
-import React, {
+import type {
   Dispatch,
   SetStateAction,
+} from 'react'
+import type { Dating } from '../reducers/dating'
+import type { Profile } from '../reducers/profile'
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import React, {
   useEffect,
   useRef,
   useState,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { setUpcomingDateList } from "../functions/datingReducerFunction";
-import { Btn } from "../app/profile/components/UserInfos";
-import { Dating } from "../reducers/dating";
-import { Profile } from "../reducers/profile";
-import meetingBanner from "./img/meetingBanner.png";
-import phoneCall from "./img/phone-call.png";
-import { db } from "../utils/firebase";
-import {
-  getDocs,
-  collection,
-  doc,
-  updateDoc,
-  query,
-  where,
-} from "firebase/firestore";
-import close from "./img/close.png";
-import { CloseBtn } from "./ShelterMeeting";
+} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
+import { Btn } from '../app/profile/components/UserInfos'
+import { setUpcomingDateList } from '../functions/datingReducerFunction'
+import { db } from '../utils/firebase'
+import close from './img/close.png'
+import meetingBanner from './img/meetingBanner.png'
+import phoneCall from './img/phone-call.png'
+import { CloseBtn } from './ShelterMeeting'
 
 const MeetingContainer = styled.div`
   width: 70vw;
@@ -38,7 +40,7 @@ const MeetingContainer = styled.div`
   padding: 50px;
   background-color: #efefef;
   overflow-x: hidden;
-`;
+`
 
 const MeetingPerson = styled.video`
   height: 75%;
@@ -52,7 +54,7 @@ const MeetingPerson = styled.video`
     height: 35vh;
     width: auto;
   }
-`;
+`
 
 const MeetingMe = styled.video`
   height: 20vh;
@@ -68,7 +70,7 @@ const MeetingMe = styled.video`
     right: 15px;
     bottom: 100px;
   }
-`;
+`
 
 const PhoneBtn = styled(Btn)`
   left: 50%;
@@ -77,12 +79,12 @@ const PhoneBtn = styled(Btn)`
   @media (max-width: 600px) {
     font-size: 16px;
   }
-`;
+`
 
 const ImgBtn = styled.img`
   width: 15px;
   height: 15px;
-`;
+`
 
 const TextInfoBtn = styled.div`
   position: absolute;
@@ -103,7 +105,7 @@ const TextInfoBtn = styled.div`
   @media (max-width: 453px) {
     font-size: 14px;
   }
-`;
+`
 
 const BlackMask = styled.div`
   opacity: 0.5;
@@ -116,7 +118,7 @@ const BlackMask = styled.div`
   left: 0;
   height: 100vh;
   z-index: 1;
-`;
+`
 
 const NowStatus = styled.div`
   position: absolute;
@@ -131,103 +133,106 @@ const NowStatus = styled.div`
     padding: 5px 10px;
     width: 200px;
   }
-`;
+`
 
-type MeetingType = {
+interface MeetingType {
   nowMeetingShelter: {
-    petId: number;
-    shelterName: string;
-    userName: string;
-    index: number;
-  };
-  setOpenMeeting: Dispatch<SetStateAction<boolean>>;
-};
+    petId: number
+    shelterName: string
+    userName: string
+    index: number
+  }
+  setOpenMeeting: Dispatch<SetStateAction<boolean>>
+}
 
 const Meeting: React.FC<MeetingType> = (props) => {
-  const dispatch = useDispatch();
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const pc = useRef<RTCPeerConnection>();
-  const localStreamRef = useRef<MediaStream>();
-  const wsRef = useRef(new WebSocket("wss://fluffyserver.herokuapp.com"));
-  const [status, setStatus] = useState("開始通話");
+  const dispatch = useDispatch()
+  const localVideoRef = useRef<HTMLVideoElement>(null)
+  const remoteVideoRef = useRef<HTMLVideoElement>(null)
+  const pc = useRef<RTCPeerConnection>()
+  const localStreamRef = useRef<MediaStream>()
+  const wsRef = useRef(new WebSocket('wss://fluffyserver.herokuapp.com'))
+  const [status, setStatus] = useState('開始通話')
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
+    state => state.profile,
+  ) as Profile
   const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
+    state => state.dating,
+  ) as Dating
 
   const initWs = () => {
-    wsRef.current.onopen = () => console.log("ws 已經打開");
-    wsRef.current.onmessage = wsOnMessage;
-  };
+    wsRef.current.onopen = () => console.log('ws 已經打開')
+    wsRef.current.onmessage = wsOnMessage
+  }
 
   const wsOnMessage = async (e: MessageEvent) => {
-    const wsData = JSON.parse(e.data);
-    const wsType = wsData["type"];
+    const wsData = JSON.parse(e.data)
+    const wsType = wsData.type
 
-    if (wsType === "leave") {
+    if (wsType === 'leave') {
       if (pc.current) {
-        pc.current.close();
-        pc.current = undefined;
-        remoteVideoRef.current!.srcObject = null;
-        props.setOpenMeeting(false);
-        const allUpcomingList = [...dating.upcomingDateList];
+        pc.current.close()
+        pc.current = undefined
+        remoteVideoRef.current!.srcObject = null
+        props.setOpenMeeting(false)
+        const allUpcomingList = [...dating.upcomingDateList]
         allUpcomingList[props.nowMeetingShelter.index] = {
           ...allUpcomingList[props.nowMeetingShelter.index],
           doneWithMeeting: true,
-        };
-        dispatch(setUpcomingDateList(allUpcomingList));
+        }
+        dispatch(setUpcomingDateList(allUpcomingList))
 
         const q = query(
           collection(db, `/memberProfiles/${profile.uid}/upcomingDates`),
-          where("id", "==", allUpcomingList[props.nowMeetingShelter.index].id)
-        );
-        const querySnapshot = await getDocs(q);
-        const promises: Promise<void>[] = [];
+          where('id', '==', allUpcomingList[props.nowMeetingShelter.index].id),
+        )
+        const querySnapshot = await getDocs(q)
+        const promises: Promise<void>[] = []
         querySnapshot.forEach(async (d) => {
           const updatingRef = doc(
             db,
             `/memberProfiles/${profile.uid}/upcomingDates`,
-            d.id
-          );
+            d.id,
+          )
 
           promises.push(
             updateDoc(
               updatingRef,
-              allUpcomingList[props.nowMeetingShelter.index]
-            )
-          );
-        });
-        await Promise.all(promises);
+              {
+                ...allUpcomingList[props.nowMeetingShelter.index],
+                id: allUpcomingList[props.nowMeetingShelter.index].id
+              }
+            ),
+          )
+        })
+        await Promise.all(promises)
       }
     }
 
-    const wsUsername = wsData["username"];
+    const wsUsername = wsData.username
     if (profile.uid === wsUsername) {
-      return;
+      return
     }
 
-    if (wsType === "offer") {
-      const wsOffer = wsData["data"];
+    if (wsType === 'offer') {
+      const wsOffer = wsData.data
       pc.current?.setRemoteDescription(
-        new RTCSessionDescription(JSON.parse(wsOffer))
-      );
-      setStatus("電話響起");
+        new RTCSessionDescription(JSON.parse(wsOffer)),
+      )
+      setStatus('電話響起')
     }
-    if (wsType === "answer") {
-      const wsAnswer = wsData["data"];
+    if (wsType === 'answer') {
+      const wsAnswer = wsData.data
       pc.current?.setRemoteDescription(
-        new RTCSessionDescription(JSON.parse(wsAnswer))
-      );
-      setStatus("通話中");
+        new RTCSessionDescription(JSON.parse(wsAnswer)),
+      )
+      setStatus('通話中')
     }
-    if (wsType === "candidate") {
-      const wsCandidate = JSON.parse(wsData["data"]);
-      pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate));
+    if (wsType === 'candidate') {
+      const wsCandidate = JSON.parse(wsData.data)
+      pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate))
     }
-  };
+  }
 
   const wsSend = (type: string, data: object | string) => {
     wsRef.current.send(
@@ -235,18 +240,18 @@ const Meeting: React.FC<MeetingType> = (props) => {
         username: profile.uid,
         type,
         data,
-      })
-    );
-  };
+      }),
+    )
+  }
 
   const getMediaDevices = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,
-    });
-    localVideoRef.current!.srcObject = stream;
-    localStreamRef.current = stream;
-  };
+    })
+    localVideoRef.current!.srcObject = stream
+    localStreamRef.current = stream
+  }
 
   const createOffer = () => {
     pc.current
@@ -255,11 +260,11 @@ const Meeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        pc.current?.setLocalDescription(sdp);
-        wsSend("offer", JSON.stringify(sdp));
-        setStatus("等待對方接聽");
-      });
-  };
+        pc.current?.setLocalDescription(sdp)
+        wsSend('offer', JSON.stringify(sdp))
+        setStatus('等待對方接聽')
+      })
+  }
 
   const createAnswer = () => {
     pc.current
@@ -268,51 +273,51 @@ const Meeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        pc.current?.setLocalDescription(sdp);
-        wsSend("answer", JSON.stringify(sdp));
-        setStatus("通話中");
-      });
-  };
+        pc.current?.setLocalDescription(sdp)
+        wsSend('answer', JSON.stringify(sdp))
+        setStatus('通話中')
+      })
+  }
 
   const createRtcConnection = () => {
     const _pc = new RTCPeerConnection({
       iceServers: [
         {
-          urls: ["stun:stun.stunprotocol.org:3478"],
+          urls: ['stun:stun.stunprotocol.org:3478'],
         },
       ],
-    });
+    })
     _pc.onicecandidate = (e) => {
       if (e.candidate) {
-        wsSend("candidate", JSON.stringify(e.candidate));
+        wsSend('candidate', JSON.stringify(e.candidate))
       }
-    };
+    }
     _pc.ontrack = (e) => {
-      remoteVideoRef.current!.srcObject = e.streams[0];
-    };
-    pc.current = _pc;
-  };
+      remoteVideoRef.current!.srcObject = e.streams[0]
+    }
+    pc.current = _pc
+  }
 
   const addLocalStreamToRtcConnection = () => {
-    const localStream = localStreamRef.current!;
+    const localStream = localStreamRef.current!
     localStream.getTracks().forEach((track) => {
-      pc.current!.addTrack(track, localStream);
-    });
-  };
+      pc.current!.addTrack(track, localStream)
+    })
+  }
 
   const hangup = () => {
     if (pc.current) {
-      wsSend("leave", "離線");
+      wsSend('leave', '離線')
     }
-  };
+  }
 
   useEffect(() => {
-    initWs();
+    initWs()
     getMediaDevices().then(() => {
-      createRtcConnection();
-      addLocalStreamToRtcConnection();
-    });
-  }, []);
+      createRtcConnection()
+      addLocalStreamToRtcConnection()
+    })
+  }, [])
 
   return (
     <>
@@ -320,7 +325,10 @@ const Meeting: React.FC<MeetingType> = (props) => {
       <MeetingContainer>
         {props.nowMeetingShelter && (
           <NowStatus>
-            視訊約會：來自{props.nowMeetingShelter.shelterName}的{" "}
+            視訊約會：來自
+            {props.nowMeetingShelter.shelterName}
+            的
+            {' '}
             {props.nowMeetingShelter.petId}
           </NowStatus>
         )}
@@ -328,57 +336,61 @@ const Meeting: React.FC<MeetingType> = (props) => {
           ref={remoteVideoRef}
           autoPlay
           poster={meetingBanner.src}
-        ></MeetingPerson>
-        <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
-        {status === "開始通話" && (
+        />
+        <MeetingMe ref={localVideoRef} autoPlay />
+        {status === '開始通話' && (
           <PhoneBtn onClick={() => createOffer()}>
             <ImgBtn src={phoneCall.src} alt="call" />
-            {"  "}撥打電話給收容所
+            {'  '}
+            撥打電話給收容所
           </PhoneBtn>
         )}
-        {status === "等待對方接聽" && (
+        {status === '等待對方接聽' && (
           <TextInfoBtn>等待對方接聽 ...</TextInfoBtn>
         )}
-        {status === "電話響起" && (
+        {status === '電話響起' && (
           <PhoneBtn onClick={createAnswer}>接聽電話</PhoneBtn>
         )}
-        {status === "通話中" && (
+        {status === '通話中' && (
           <PhoneBtn
             onClick={async () => {
-              hangup();
-              props.setOpenMeeting(false);
-              const allUpcomingList = [...dating.upcomingDateList];
+              hangup()
+              props.setOpenMeeting(false)
+              const allUpcomingList = [...dating.upcomingDateList]
               allUpcomingList[props.nowMeetingShelter.index] = {
                 ...allUpcomingList[props.nowMeetingShelter.index],
                 doneWithMeeting: true,
-              };
-              dispatch(setUpcomingDateList(allUpcomingList));
+              }
+              dispatch(setUpcomingDateList(allUpcomingList))
 
               const q = query(
                 collection(db, `/memberProfiles/${profile.uid}/upcomingDates`),
                 where(
-                  "id",
-                  "==",
-                  allUpcomingList[props.nowMeetingShelter.index].id
-                )
-              );
-              const querySnapshot = await getDocs(q);
-              const promises: Promise<void>[] = [];
+                  'id',
+                  '==',
+                  allUpcomingList[props.nowMeetingShelter.index].id,
+                ),
+              )
+              const querySnapshot = await getDocs(q)
+              const promises: Promise<void>[] = []
               querySnapshot.forEach(async (d) => {
                 const updatingRef = doc(
                   db,
                   `/memberProfiles/${profile.uid}/upcomingDates`,
-                  d.id
-                );
+                  d.id,
+                )
 
                 promises.push(
                   updateDoc(
                     updatingRef,
-                    allUpcomingList[props.nowMeetingShelter.index]
-                  )
-                );
-              });
-              await Promise.all(promises);
+                    {
+                      doneWithMeeting: allUpcomingList[props.nowMeetingShelter.index].doneWithMeeting,
+                      id: allUpcomingList[props.nowMeetingShelter.index].id
+                    }
+                  ),
+                )
+              })
+              await Promise.all(promises)
             }}
           >
             結束視訊
@@ -391,7 +403,7 @@ const Meeting: React.FC<MeetingType> = (props) => {
         />
       </MeetingContainer>
     </>
-  );
-};
+  )
+}
 
-export default Meeting;
+export default Meeting

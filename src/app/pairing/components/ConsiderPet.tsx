@@ -1,44 +1,44 @@
-"use client";
+'use client'
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import emailjs from "emailjs-com";
-import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
-import { area, shelterInfo } from "../../../utils/ConstantInfo";
-import { Dating } from "../../../reducers/dating";
-import { db, deleteFirebaseData } from "../../../utils/firebase";
+import type { Dispatch, SetStateAction } from 'react'
+import type { Card, Dating, InviteDating } from '../../../reducers/dating'
+import type { Profile } from '../../../reducers/profile'
+import emailjs from 'emailjs-com'
 import {
-  collection,
   addDoc,
+  collection,
   getDocs,
-  query,
   orderBy,
-} from "firebase/firestore";
-import { Card, InviteDating } from "../../../reducers/dating";
+  query,
+} from 'firebase/firestore'
+import shelter from 'public/img/animal-shelter.png'
+import close from 'public/img/close.png'
+import findplace from 'public/img/loupe.png'
+import googlemap from 'public/img/placeholder.png'
+import cutEgg from 'public/img/scissors.png'
+import tel from 'public/img/telephone.png'
+import React, { useEffect, useState } from 'react'
+import Calendar from 'react-calendar'
+import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
+import { BlackMask } from '../../../component/Header'
+import { useNotifyDispatcher } from '../../../component/SidebarNotify'
 import {
   setConsiderList,
   setUpcomingDateList,
-} from "../../../functions/datingReducerFunction";
-import { Profile } from "../../../reducers/profile";
-import cutEgg from "public/img/scissors.png";
-import findplace from "public/img/loupe.png";
-import shelter from "public/img/animal-shelter.png";
-import googlemap from "public/img/placeholder.png";
-import tel from "public/img/telephone.png";
-import { Btn } from "../../profile/components/UserInfos";
-import close from "public/img/close.png";
-import { CalendarContainer } from "../../profile/components/PetDiary";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+} from '../../../functions/datingReducerFunction'
+import { area, shelterInfo } from '../../../utils/ConstantInfo'
+import { db, deleteFirebaseData } from '../../../utils/firebase'
+import { CalendarContainer } from '../../profile/components/PetDiary'
+import { Btn } from '../../profile/components/UserInfos'
 import {
   DeleteCheckBox,
-  DeleteCheckText,
-  DeleteCheckBoxBtnContainer,
   DeleteCheckBoxBtn,
+  DeleteCheckBoxBtnContainer,
+  DeleteCheckText,
   WarningDeleteBtn,
-} from "../../profile/components/UserOwnPetInfos";
-import { BlackMask } from "../../../component/Header";
-import { useNotifyDispatcher } from "../../../component/SidebarNotify";
+} from '../../profile/components/UserOwnPetInfos'
+import 'react-calendar/dist/Calendar.css'
 
 const ConsiderPetCalendarContainer = styled(CalendarContainer)`
   margin-left: 0;
@@ -83,12 +83,12 @@ const ConsiderPetCalendarContainer = styled(CalendarContainer)`
     margin-left: 0;
     margin-top: 0;
   }
-`;
+`
 
 const TimeBtnContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-`;
+`
 
 const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
@@ -101,14 +101,14 @@ const TimeBtn = styled(Btn)<{ $isActive: boolean }>`
   margin-right: 15px;
   margin-top: 5px;
   font-size: 16px;
-  background-color: ${(props) => (props.$isActive ? "#d1cfcf" : "#fff")};
+  background-color: ${props => (props.$isActive ? '#d1cfcf' : '#fff')};
   &:nth-child(2n) {
     margin-right: 0;
   }
   &:last-child {
     margin-right: 0;
   }
-`;
+`
 
 const PetCard = styled.div`
   width: 350px;
@@ -123,50 +123,50 @@ const PetCard = styled.div`
   transform: translateX(-50%);
   z-index: 2502;
   padding-bottom: 50px;
-`;
+`
 
 const PetImg = styled.img`
   width: 350px;
   height: 300px;
   object-fit: cover;
-`;
+`
 const PetInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
   letter-spacing: 1px;
-`;
+`
 const InfoTitle = styled.div`
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 15px;
-`;
+`
 
 const PetInfoImgContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-`;
+`
 
 const PetInfoImg = styled.img`
   width: 20px;
   height: 20px;
-`;
+`
 const PetInfo = styled.div`
   font-size: 16px;
   margin-left: 5px;
   line-height: 20px;
   word-break: break-all;
-`;
+`
 
 const PetInfoWarning = styled(PetInfo)`
   color: #b54745;
   margin-left: 0;
-`;
+`
 
 const PetShelterAddress = styled.a`
   color: #db5452;
-`;
+`
 
 const CloseBtn = styled(Btn)`
   top: 15px;
@@ -176,7 +176,7 @@ const CloseBtn = styled(Btn)`
   &:hover {
     border: solid 3px #d1cfcf;
   }
-`;
+`
 
 const InviteDatingBtn = styled(Btn)`
   bottom: 18px;
@@ -184,31 +184,31 @@ const InviteDatingBtn = styled(Btn)`
   padding: 5px 5px;
   width: 220px;
   font-size: 16px;
-`;
+`
 
 const NotCondiserBtn = styled(Btn)`
   bottom: 18px;
   right: 10px;
   padding: 5px 5px;
   font-size: 16px;
-`;
+`
 const MeetingBtnContainer = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
-`;
+`
 
 const MeetingWayBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   flex: 1;
   margin-right: 20px;
   padding: 5px 10px;
-  background-color: ${(props) => (props.$isActive ? "#B7B0A8" : "#fff")};
-  color: ${(props) => (props.$isActive ? "#3c3c3c" : "#737373")};
+  background-color: ${props => (props.$isActive ? '#B7B0A8' : '#fff')};
+  color: ${props => (props.$isActive ? '#3c3c3c' : '#737373')};
   &:last-child {
     margin-right: 0;
   }
-`;
+`
 
 const InviteDatingBox = styled.div`
   width: 250px;
@@ -224,26 +224,26 @@ const InviteDatingBox = styled.div`
     right: 50px;
     left: auto;
   } ;
-`;
+`
 
 const InviteDatingTitle = styled.div`
   text-align: center;
   font-weight: bold;
   margin-bottom: 10px;
-`;
+`
 const InviteInfoContainer = styled.div`
   margin-bottom: 5px;
   display: flex;
   flex-direction: column;
-`;
+`
 const InviteInfoLabel = styled.label`
   margin-bottom: 5px;
-`;
+`
 const InviteInfoInput = styled.input`
   border: 2px solid #d1cfcf;
   border-radius: 5px;
   padding: 5px;
-`;
+`
 
 const CloseInviteBoxBtn = styled.img`
   position: absolute;
@@ -257,7 +257,7 @@ const CloseInviteBoxBtn = styled.img`
   &:hover {
     opacity: 1;
   }
-`;
+`
 
 const ConsiderPetCard = styled.div`
   position: relative;
@@ -274,7 +274,7 @@ const ConsiderPetCard = styled.div`
     bottom: 3px;
     box-shadow: 2px 2px 3px 4px rgba(0, 0, 0, 0.2);
   }
-`;
+`
 
 const ConsiderImgMask = styled.div`
   position: absolute;
@@ -285,14 +285,14 @@ const ConsiderImgMask = styled.div`
   );
   width: 100%;
   height: 100%;
-`;
+`
 
 const ConsiderImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-`;
+`
 
 const ConsiderTitle = styled.div`
   position: absolute;
@@ -300,7 +300,7 @@ const ConsiderTitle = styled.div`
   letter-spacing: 1.5px;
   left: 10px;
   bottom: 10px;
-`;
+`
 
 const SendInviteBtn = styled(Btn)`
   font-size: 16px;
@@ -309,7 +309,7 @@ const SendInviteBtn = styled(Btn)`
   left: 50%;
   transform: translateX(-50%);
   bottom: -5px;
-`;
+`
 
 const ConsiderDeleteBox = styled(DeleteCheckBox)`
   width: 320px;
@@ -328,40 +328,41 @@ const ConsiderDeleteBox = styled(DeleteCheckBox)`
     font-size: 18px;
     width: 350px;
   } ;
-`;
+`
 
-type ConsiderSingleCard = {
-  setNowChosenPetIndex: (value: number) => void;
-  setConsiderDetail: (value: Boolean) => void;
-  tab: string;
-  considerDetail: Boolean;
-  nowChosenPetIndex: number;
-  getUpcomingListData: () => void;
-};
+interface ConsiderSingleCard {
+  setNowChosenPetIndex: (value: number) => void
+  setConsiderDetail: (value: boolean) => void
+  tab: string
+  considerDetail: boolean
+  nowChosenPetIndex: number
+  getUpcomingListData: () => void
+}
 
 export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
-  props
+  props,
 ) => {
   const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
+    state => state.dating,
+  ) as Dating
 
   useEffect(() => {
-    props.getUpcomingListData();
-  }, []);
+    props.getUpcomingListData()
+  }, [])
 
-  if (!dating.considerList) return null;
+  if (!dating.considerList)
+    return null
   return (
     <>
       {dating.considerList.map((pet, index) => (
         <ConsiderPetCard
           key={index}
           onClick={() => {
-            props.setNowChosenPetIndex(index);
-            props.setConsiderDetail(true);
+            props.setNowChosenPetIndex(index)
+            props.setConsiderDetail(true)
           }}
         >
-          <ConsiderImgMask></ConsiderImgMask>
+          <ConsiderImgMask />
           <ConsiderImg src={pet.image} alt="pet" />
           <ConsiderTitle>
             {area[Number(pet.area) - 2]}
@@ -371,124 +372,127 @@ export const ConsiderEverySinglePetCard: React.FC<ConsiderSingleCard> = (
         </ConsiderPetCard>
       ))}
     </>
-  );
-};
+  )
+}
 
-const ConsiderPetDetail = (props: {
-  nowChosenPetIndex: number;
-  setConsiderDetail: (considerDetail: Boolean) => void;
-  considerDetail: Boolean;
-  setDatingArr: Dispatch<SetStateAction<number[]>>;
-  datingArr: number[];
-}) => {
+function ConsiderPetDetail(props: {
+  nowChosenPetIndex: number
+  setConsiderDetail: (considerDetail: boolean) => void
+  considerDetail: boolean
+  setDatingArr: Dispatch<SetStateAction<number[]>>
+  datingArr: number[]
+}) {
   const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
+    state => state.dating,
+  ) as Dating
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const dispatch = useDispatch();
-  const notifyDispatcher = useNotifyDispatcher();
+    state => state.profile,
+  ) as Profile
+  const dispatch = useDispatch()
+  const notifyDispatcher = useNotifyDispatcher()
   const [inviteDatingInfo, setInviteDatingInfo] = useState<{
-    name: string;
-    email: string;
-    date: Date | string;
-    time: string;
-    dateAndTime: number;
-    way: string;
-  }>({ name: "", email: "", date: "", time: "", dateAndTime: 0, way: "實體" });
-  const [inviteBoxOpen, setInviteBoxOpen] = useState<Boolean>(false);
+    name: string
+    email: string
+    date: Date | string
+    time: string
+    dateAndTime: number
+    way: string
+  }>({ name: '', email: '', date: '', time: '', dateAndTime: 0, way: '實體' })
+  const [inviteBoxOpen, setInviteBoxOpen] = useState<boolean>(false)
   const [timeSelect, setTimeSelect] = useState([
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "Right Now",
-  ]);
-  const [timeIndex, setTimeIndex] = useState<number>(-1);
-  const [repeatInvite, setRepeatInvite] = useState(false);
-  const [incompleteInfo, setIncompleteInfo] = useState(false);
-  const [openDeleteBox, setOpenDeleteBox] = useState(false);
-  const [meetingWay, setMeetingWay] = useState("實體");
-  const [shelterDates, setShelterDates] = useState<InviteDating[]>();
-  const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false);
+    '14:00',
+    '14:30',
+    '15:00',
+    '15:30',
+    'Right Now',
+  ])
+  const [timeIndex, setTimeIndex] = useState<number>(-1)
+  const [repeatInvite, setRepeatInvite] = useState(false)
+  const [incompleteInfo, setIncompleteInfo] = useState(false)
+  const [openDeleteBox, setOpenDeleteBox] = useState(false)
+  const [meetingWay, setMeetingWay] = useState('實體')
+  const [shelterDates, setShelterDates] = useState<InviteDating[]>()
+  const [nowNoTimeSelect, setNowNoTimeSelect] = useState(false)
 
   useEffect(() => {
     async function getShelterUpcomingDates() {
-      let upcomingDate: InviteDating[] = [];
+      const upcomingDate: InviteDating[] = []
       const q = query(
         collection(db, `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`),
-        orderBy("datingDate")
-      );
-      const querySnapshot = await getDocs(q);
+        orderBy('datingDate'),
+      )
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
         upcomingDate.push({
           ...info.data(),
           datingDate: info.data().dateAndTime,
-        } as InviteDating);
-      });
-      setShelterDates(upcomingDate);
+        } as InviteDating)
+      })
+      setShelterDates(upcomingDate)
     }
-    getShelterUpcomingDates();
-  }, []);
+    getShelterUpcomingDates()
+  }, [])
 
   function isSameDate(year: number, month: number, day: number) {
-    const sameDate: InviteDating[] = [];
+    const sameDate: InviteDating[] = []
     shelterDates?.forEach((date) => {
       if (
-        new Date(date.datingDate).getFullYear() === year &&
-        new Date(date.datingDate).getMonth() + 1 === month &&
-        new Date(date.datingDate).getDate() === day
+        new Date(date.datingDate).getFullYear() === year
+          && new Date(date.datingDate).getMonth() + 1 === month
+          && new Date(date.datingDate).getDate() === day
       ) {
-        sameDate.push(date);
+        sameDate.push(date)
       }
-    });
+    })
 
-    filterDateTime(sameDate, year, month, day);
-    return sameDate;
+    filterDateTime(sameDate, year, month, day)
+    return sameDate
   }
 
   function filterDateTime(
     thatDayDate: InviteDating[],
     year: number,
     month: number,
-    day: number
+    day: number,
   ) {
-    const dateTime: string[] = [];
+    const dateTime: string[] = []
     thatDayDate.forEach((date) => {
-      dateTime.push(date.time);
-    });
+      dateTime.push(date.time)
+    })
     if (
-      year === new Date().getFullYear() &&
-      day === new Date().getDate() &&
-      month === new Date().getMonth() + 1
+      year === new Date().getFullYear()
+      && day === new Date().getDate()
+      && month === new Date().getMonth() + 1
     ) {
       if (dateTime.length > 0) {
         const newTimeSelect = [
-          "14:00",
-          "14:30",
-          "15:00",
-          "15:30",
-          "Right Now",
-        ].filter((e) => (dateTime.indexOf(e) > -1 ? false : true));
-        setTimeSelect(newTimeSelect);
+          '14:00',
+          '14:30',
+          '15:00',
+          '15:30',
+          'Right Now',
+        ].filter(e => (!dateTime.includes(e)))
+        setTimeSelect(newTimeSelect)
         if (dateTime.length === 4) {
-          setNowNoTimeSelect(true);
+          setNowNoTimeSelect(true)
         }
-      } else {
-        setTimeSelect(["14:00", "14:30", "15:00", "15:30", "Right Now"]);
       }
-    } else {
+      else {
+        setTimeSelect(['14:00', '14:30', '15:00', '15:30', 'Right Now'])
+      }
+    }
+    else {
       if (dateTime.length > 0) {
-        const newTimeSelect = ["14:00", "14:30", "15:00", "15:30"].filter((e) =>
-          dateTime.indexOf(e) > -1 ? false : true
-        );
-        setTimeSelect(newTimeSelect);
+        const newTimeSelect = ['14:00', '14:30', '15:00', '15:30'].filter(e =>
+          !dateTime.includes(e),
+        )
+        setTimeSelect(newTimeSelect)
         if (dateTime.length === 4) {
-          setNowNoTimeSelect(true);
+          setNowNoTimeSelect(true)
         }
-      } else {
-        setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
+      }
+      else {
+        setTimeSelect(['14:00', '14:30', '15:00', '15:30'])
       }
     }
   }
@@ -514,12 +518,12 @@ const ConsiderPetDetail = (props: {
         way: inviteDatingInfo.way,
         dateAndTime: inviteDatingInfo.dateAndTime,
         doneWithMeeting: false,
-      }
-    );
+      },
+    )
   }
 
   function updateUpcomingDateState(list: Card) {
-    let newUpcomingDate = [...dating.upcomingDateList];
+    const newUpcomingDate = [...dating.upcomingDateList]
     newUpcomingDate.push({
       id: list.id,
       area: list.area,
@@ -537,8 +541,8 @@ const ConsiderPetDetail = (props: {
       time: inviteDatingInfo.time,
       way: inviteDatingInfo.way,
       doneWithMeeting: false,
-    });
-    dispatch(setUpcomingDateList(newUpcomingDate));
+    })
+    dispatch(setUpcomingDateList(newUpcomingDate))
   }
 
   async function updateShelterUpcomingDate(list: Card) {
@@ -562,32 +566,32 @@ const ConsiderPetDetail = (props: {
         way: inviteDatingInfo.way,
         dateAndTime: inviteDatingInfo.dateAndTime,
         doneWithMeeting: false,
-      }
-    );
+      },
+    )
   }
 
   async function sendEmailToNotifyUser(list: Card) {
-    emailjs.init("d3NE6N9LoE4ezwk2I");
-    let templateParams = {
+    emailjs.init('d3NE6N9LoE4ezwk2I')
+    const templateParams = {
       to_name: inviteDatingInfo.name,
       shelterName: list.shelterName,
       petID: list.id,
       datingDate: `${new Date(inviteDatingInfo.date).getFullYear()}/
                   ${new Date(inviteDatingInfo.date).getMonth() + 1}/
-                  ${new Date(inviteDatingInfo.date).getDate()}${" "}
+                  ${new Date(inviteDatingInfo.date).getDate()}${' '}
                   ${inviteDatingInfo.time}`,
-      reply_to: "maorongrongfluffy@gmail.com",
+      reply_to: 'maorongrongfluffy@gmail.com',
       userEmail: inviteDatingInfo.email,
-    };
+    }
 
-    emailjs.send("fluffy_02tfnuf", "template_ausnrq5", templateParams).then(
-      function (response) {
-        console.log("SUCCESS!", response.status, response.text);
+    emailjs.send('fluffy_02tfnuf', 'template_ausnrq5', templateParams).then(
+      (response) => {
+        console.log('SUCCESS!', response.status, response.text)
       },
-      function (error) {
-        console.log("FAILED...", error);
-      }
-    );
+      (error) => {
+        console.log('FAILED...', error)
+      },
+    )
   }
 
   return (
@@ -600,21 +604,24 @@ const ConsiderPetDetail = (props: {
         />
         <PetInfoContainer>
           <InfoTitle>
-            {dating.considerList[props.nowChosenPetIndex].id} /{" "}
+            {dating.considerList[props.nowChosenPetIndex].id}
+            {' '}
+            /
+            {' '}
             {dating.considerList[props.nowChosenPetIndex].color}
             {dating.considerList[props.nowChosenPetIndex].kind}
-            {dating.considerList[props.nowChosenPetIndex].sex === "M"
-              ? "♂"
-              : "♀"}
+            {dating.considerList[props.nowChosenPetIndex].sex === 'M'
+              ? '♂'
+              : '♀'}
           </InfoTitle>
           <PetInfoImgContainer>
             <PetInfoImg src={cutEgg.src} alt="sterilization" />
             <PetInfo>
               結紮狀態:
-              {dating.considerList[props.nowChosenPetIndex].sterilization ===
-              "F"
-                ? "尚未結紮"
-                : "已結紮"}
+              {dating.considerList[props.nowChosenPetIndex].sterilization
+                === 'F'
+                ? '尚未結紮'
+                : '已結紮'}
             </PetInfo>
           </PetInfoImgContainer>
           <PetInfoImgContainer>
@@ -637,15 +644,15 @@ const ConsiderPetDetail = (props: {
               <PetShelterAddress
                 href={`https://www.google.com/maps/search/?api=1&query=${
                   shelterInfo.find(
-                    (shelter) =>
-                      shelter.pkid ===
-                      dating.considerList[props.nowChosenPetIndex].shleterPkid
+                    shelter =>
+                      shelter.pkid
+                      === dating.considerList[props.nowChosenPetIndex].shleterPkid,
                   )?.latAndLng
                 }&query_place_id=${
                   shelterInfo.find(
-                    (shelter) =>
-                      shelter.pkid ===
-                      dating.considerList[props.nowChosenPetIndex].shleterPkid
+                    shelter =>
+                      shelter.pkid
+                      === dating.considerList[props.nowChosenPetIndex].shleterPkid,
                   )?.placeid
                 }`}
                 target="_blank"
@@ -671,7 +678,7 @@ const ConsiderPetDetail = (props: {
 
         <CloseBtn
           onClick={() => {
-            props.setConsiderDetail(false);
+            props.setConsiderDetail(false)
           }}
         >
           關閉
@@ -680,26 +687,26 @@ const ConsiderPetDetail = (props: {
           onClick={() => {
             if (
               dating.upcomingDateList.find(
-                (date) =>
-                  date.id === dating.considerList[props.nowChosenPetIndex].id
+                date =>
+                  date.id === dating.considerList[props.nowChosenPetIndex].id,
               )
             ) {
-              setRepeatInvite(true);
-              return;
+              setRepeatInvite(true)
+              return
             }
-            setInviteBoxOpen(true);
+            setInviteBoxOpen(true)
             setInviteDatingInfo({
               ...inviteDatingInfo,
               name: profile.name,
               email: profile.email,
-            });
+            })
           }}
         >
           申請與他約會: 相處體驗
         </InviteDatingBtn>
         <NotCondiserBtn
           onClick={async () => {
-            setOpenDeleteBox(true);
+            setOpenDeleteBox(true)
           }}
         >
           不考慮領養
@@ -711,40 +718,40 @@ const ConsiderPetDetail = (props: {
             <DeleteCheckBoxBtnContainer>
               <WarningDeleteBtn
                 onClick={async () => {
-                  let newUpcomingDatingArr = props.datingArr.filter(
-                    (date) =>
-                      date !== dating.considerList[props.nowChosenPetIndex].id
-                  );
-                  props.setDatingArr(newUpcomingDatingArr);
+                  const newUpcomingDatingArr = props.datingArr.filter(
+                    date =>
+                      date !== dating.considerList[props.nowChosenPetIndex].id,
+                  )
+                  props.setDatingArr(newUpcomingDatingArr)
                   deleteFirebaseData(
                     `/memberProfiles/${profile.uid}/considerLists`,
-                    "id",
-                    dating.considerList[props.nowChosenPetIndex].id
-                  );
+                    'id',
+                    dating.considerList[props.nowChosenPetIndex].id,
+                  )
                   deleteFirebaseData(
                     `/memberProfiles/${profile.uid}/upcomingDates`,
-                    "id",
-                    dating.considerList[props.nowChosenPetIndex].id
-                  );
+                    'id',
+                    dating.considerList[props.nowChosenPetIndex].id,
+                  )
                   await addDoc(
                     collection(
                       db,
-                      `/memberProfiles/${profile.uid}/notConsiderLists`
+                      `/memberProfiles/${profile.uid}/notConsiderLists`,
                     ),
-                    { id: dating.considerList[props.nowChosenPetIndex].id }
-                  );
-                  const newConsiderList = dating.considerList;
-                  newConsiderList.splice(props.nowChosenPetIndex, 1);
-                  dispatch(setConsiderList(newConsiderList));
-                  props.setConsiderDetail(false);
-                  notifyDispatcher("已更新考慮領養清單");
+                    { id: dating.considerList[props.nowChosenPetIndex].id },
+                  )
+                  const newConsiderList = dating.considerList
+                  newConsiderList.splice(props.nowChosenPetIndex, 1)
+                  dispatch(setConsiderList(newConsiderList))
+                  props.setConsiderDetail(false)
+                  notifyDispatcher('已更新考慮領養清單')
                 }}
               >
                 確定
               </WarningDeleteBtn>
               <DeleteCheckBoxBtn
                 onClick={() => {
-                  setOpenDeleteBox(false);
+                  setOpenDeleteBox(false)
                 }}
               >
                 取消
@@ -753,186 +760,193 @@ const ConsiderPetDetail = (props: {
           </ConsiderDeleteBox>
         )}
       </PetCard>
-      {inviteBoxOpen ? (
-        <InviteDatingBox>
-          <InviteDatingTitle>
-            申請與 {dating.considerList[props.nowChosenPetIndex].id} 約會
-          </InviteDatingTitle>
-          <InviteInfoContainer>
-            <InviteInfoLabel htmlFor="name">您的本名：</InviteInfoLabel>
-            <InviteInfoInput
-              value={inviteDatingInfo.name}
-              type="text"
-              id="name"
-              onChange={(e) =>
-                setInviteDatingInfo({
-                  ...inviteDatingInfo,
-                  name: e.target.value,
-                })
-              }
-            />
-          </InviteInfoContainer>
-          <InviteInfoContainer>
-            <InviteInfoLabel htmlFor="email">您的信箱：</InviteInfoLabel>
-            <InviteInfoInput
-              value={inviteDatingInfo.email}
-              type="email"
-              id="email"
-              onChange={(e) =>
-                setInviteDatingInfo({
-                  ...inviteDatingInfo,
-                  email: e.target.value,
-                })
-              }
-            />
-          </InviteInfoContainer>
-          {dating.considerList[props.nowChosenPetIndex].shelterName ===
-            "臺北市動物之家" && (
-            <MeetingBtnContainer>
-              <MeetingWayBtn
-                $isActive={meetingWay === "實體"}
-                onClick={() => {
-                  setMeetingWay("實體");
-                  setTimeSelect(["14:00", "14:30", "15:00", "15:30"]);
-                  setInviteDatingInfo({ ...inviteDatingInfo, way: "實體" });
-                  setNowNoTimeSelect(false);
-                }}
-              >
-                實體
-              </MeetingWayBtn>
-              <MeetingWayBtn
-                $isActive={meetingWay === "視訊"}
-                onClick={() => {
-                  setMeetingWay("視訊");
-                  setInviteDatingInfo({ ...inviteDatingInfo, way: "視訊" });
-                  if (inviteDatingInfo.date) {
-                    setNowNoTimeSelect(false);
-                    isSameDate(
-                      new Date(inviteDatingInfo.date).getFullYear(),
-                      new Date(inviteDatingInfo.date).getMonth() + 1,
-                      new Date(inviteDatingInfo.date).getDate()
-                    );
-                  }
-                }}
-              >
-                視訊
-              </MeetingWayBtn>
-            </MeetingBtnContainer>
-          )}
-
-          <InviteInfoContainer>
-            <InviteInfoLabel htmlFor="datingTime">
-              申請日期與時間：
-            </InviteInfoLabel>
-            <ConsiderPetCalendarContainer>
-              <Calendar
-                minDate={new Date()}
-                onClickDay={(value) => {
-                  setNowNoTimeSelect(false);
-                  setInviteDatingInfo({
-                    ...inviteDatingInfo,
-                    date: value,
-                  });
-                  if (meetingWay === "視訊") {
-                    isSameDate(
-                      value.getFullYear(),
-                      value.getMonth() + 1,
-                      value.getDate()
-                    );
-                  }
-                }}
-              />
-            </ConsiderPetCalendarContainer>
-            {inviteDatingInfo.date && (
-              <TimeBtnContainer>
-                {timeSelect.map((time, index) => (
-                  <TimeBtn
-                    $isActive={timeIndex === index}
-                    key={index}
+      {inviteBoxOpen
+        ? (
+            <InviteDatingBox>
+              <InviteDatingTitle>
+                申請與
+                {' '}
+                {dating.considerList[props.nowChosenPetIndex].id}
+                {' '}
+                約會
+              </InviteDatingTitle>
+              <InviteInfoContainer>
+                <InviteInfoLabel htmlFor="name">您的本名：</InviteInfoLabel>
+                <InviteInfoInput
+                  value={inviteDatingInfo.name}
+                  type="text"
+                  id="name"
+                  onChange={e =>
+                    setInviteDatingInfo({
+                      ...inviteDatingInfo,
+                      name: e.target.value,
+                    })}
+                />
+              </InviteInfoContainer>
+              <InviteInfoContainer>
+                <InviteInfoLabel htmlFor="email">您的信箱：</InviteInfoLabel>
+                <InviteInfoInput
+                  value={inviteDatingInfo.email}
+                  type="email"
+                  id="email"
+                  onChange={e =>
+                    setInviteDatingInfo({
+                      ...inviteDatingInfo,
+                      email: e.target.value,
+                    })}
+                />
+              </InviteInfoContainer>
+              {dating.considerList[props.nowChosenPetIndex].shelterName
+                === '臺北市動物之家' && (
+                <MeetingBtnContainer>
+                  <MeetingWayBtn
+                    $isActive={meetingWay === '實體'}
                     onClick={() => {
-                      if (timeSelect[index] === "Right Now") {
-                        setTimeIndex(index);
-                        setInviteDatingInfo({
-                          ...inviteDatingInfo,
-                          time: `${new Date().getHours()}:${new Date().getMinutes()}`,
-                          dateAndTime: Number(new Date()),
-                        });
-                      } else {
-                        setTimeIndex(index);
-                        setInviteDatingInfo({
-                          ...inviteDatingInfo,
-                          time: timeSelect[index],
-                          dateAndTime: (inviteDatingInfo.date as Date).setHours(
-                            Number(timeSelect[index].split(":")[0]),
-                            Number(timeSelect[index].split(":")[1])
-                          ),
-                        });
+                      setMeetingWay('實體')
+                      setTimeSelect(['14:00', '14:30', '15:00', '15:30'])
+                      setInviteDatingInfo({ ...inviteDatingInfo, way: '實體' })
+                      setNowNoTimeSelect(false)
+                    }}
+                  >
+                    實體
+                  </MeetingWayBtn>
+                  <MeetingWayBtn
+                    $isActive={meetingWay === '視訊'}
+                    onClick={() => {
+                      setMeetingWay('視訊')
+                      setInviteDatingInfo({ ...inviteDatingInfo, way: '視訊' })
+                      if (inviteDatingInfo.date) {
+                        setNowNoTimeSelect(false)
+                        isSameDate(
+                          new Date(inviteDatingInfo.date).getFullYear(),
+                          new Date(inviteDatingInfo.date).getMonth() + 1,
+                          new Date(inviteDatingInfo.date).getDate(),
+                        )
                       }
                     }}
                   >
-                    {time}
-                  </TimeBtn>
-                ))}
-              </TimeBtnContainer>
-            )}
+                    視訊
+                  </MeetingWayBtn>
+                </MeetingBtnContainer>
+              )}
 
-            {incompleteInfo && (
-              <PetInfoWarning>請填寫完整資料以利進行約會申請</PetInfoWarning>
-            )}
-          </InviteInfoContainer>
-          {nowNoTimeSelect ? (
-            <PetInfoWarning>
-              此日期已無可預約時間，請選擇其他日期
-            </PetInfoWarning>
-          ) : (
-            <SendInviteBtn
-              onClick={async () => {
-                if (
-                  Object.values(inviteDatingInfo).some((item) => item === "")
-                ) {
-                  setIncompleteInfo(true);
-                  return;
-                }
-                updateUpcomingDate(
-                  dating.considerList[props.nowChosenPetIndex]
-                );
-                updateUpcomingDateState(
-                  dating.considerList[props.nowChosenPetIndex]
-                );
-                if (meetingWay === "視訊") {
-                  updateShelterUpcomingDate(
-                    dating.considerList[props.nowChosenPetIndex]
-                  );
-                }
-                sendEmailToNotifyUser(
-                  dating.considerList[props.nowChosenPetIndex]
-                );
-                let newDatingArr = [...props.datingArr];
-                newDatingArr.push(
-                  dating.considerList[props.nowChosenPetIndex].id
-                );
-                props.setDatingArr(newDatingArr);
-                setInviteBoxOpen(false);
-                notifyDispatcher("申請成功！可至「即將到來的約會」查看");
-              }}
-            >
-              送出邀請
-            </SendInviteBtn>
+              <InviteInfoContainer>
+                <InviteInfoLabel htmlFor="datingTime">
+                  申請日期與時間：
+                </InviteInfoLabel>
+                <ConsiderPetCalendarContainer>
+                  <Calendar
+                    minDate={new Date()}
+                    onClickDay={(value) => {
+                      setNowNoTimeSelect(false)
+                      setInviteDatingInfo({
+                        ...inviteDatingInfo,
+                        date: value,
+                      })
+                      if (meetingWay === '視訊') {
+                        isSameDate(
+                          value.getFullYear(),
+                          value.getMonth() + 1,
+                          value.getDate(),
+                        )
+                      }
+                    }}
+                  />
+                </ConsiderPetCalendarContainer>
+                {inviteDatingInfo.date && (
+                  <TimeBtnContainer>
+                    {timeSelect.map((time, index) => (
+                      <TimeBtn
+                        $isActive={timeIndex === index}
+                        key={index}
+                        onClick={() => {
+                          if (timeSelect[index] === 'Right Now') {
+                            setTimeIndex(index)
+                            setInviteDatingInfo({
+                              ...inviteDatingInfo,
+                              time: `${new Date().getHours()}:${new Date().getMinutes()}`,
+                              dateAndTime: Number(new Date()),
+                            })
+                          }
+                          else {
+                            setTimeIndex(index)
+                            setInviteDatingInfo({
+                              ...inviteDatingInfo,
+                              time: timeSelect[index],
+                              dateAndTime: (inviteDatingInfo.date as Date).setHours(
+                                Number(timeSelect[index].split(':')[0]),
+                                Number(timeSelect[index].split(':')[1]),
+                              ),
+                            })
+                          }
+                        }}
+                      >
+                        {time}
+                      </TimeBtn>
+                    ))}
+                  </TimeBtnContainer>
+                )}
+
+                {incompleteInfo && (
+                  <PetInfoWarning>請填寫完整資料以利進行約會申請</PetInfoWarning>
+                )}
+              </InviteInfoContainer>
+              {nowNoTimeSelect
+                ? (
+                    <PetInfoWarning>
+                      此日期已無可預約時間，請選擇其他日期
+                    </PetInfoWarning>
+                  )
+                : (
+                    <SendInviteBtn
+                      onClick={async () => {
+                        if (
+                          Object.values(inviteDatingInfo).includes('')
+                        ) {
+                          setIncompleteInfo(true)
+                          return
+                        }
+                        updateUpcomingDate(
+                          dating.considerList[props.nowChosenPetIndex],
+                        )
+                        updateUpcomingDateState(
+                          dating.considerList[props.nowChosenPetIndex],
+                        )
+                        if (meetingWay === '視訊') {
+                          updateShelterUpcomingDate(
+                            dating.considerList[props.nowChosenPetIndex],
+                          )
+                        }
+                        sendEmailToNotifyUser(
+                          dating.considerList[props.nowChosenPetIndex],
+                        )
+                        const newDatingArr = [...props.datingArr]
+                        newDatingArr.push(
+                          dating.considerList[props.nowChosenPetIndex].id,
+                        )
+                        props.setDatingArr(newDatingArr)
+                        setInviteBoxOpen(false)
+                        notifyDispatcher('申請成功！可至「即將到來的約會」查看')
+                      }}
+                    >
+                      送出邀請
+                    </SendInviteBtn>
+                  )}
+
+              <CloseInviteBoxBtn
+                onClick={() => {
+                  setInviteBoxOpen(false)
+                }}
+                src={close.src}
+                alt="close"
+              />
+            </InviteDatingBox>
+          )
+        : (
+            ''
           )}
-
-          <CloseInviteBoxBtn
-            onClick={() => {
-              setInviteBoxOpen(false);
-            }}
-            src={close.src}
-            alt="close"
-          />
-        </InviteDatingBox>
-      ) : (
-        ""
-      )}
     </>
-  );
-};
+  )
+}
 
-export default ConsiderPetDetail;
+export default ConsiderPetDetail

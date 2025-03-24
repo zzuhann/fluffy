@@ -1,3 +1,9 @@
+import type {
+  Dispatch,
+  SetStateAction,
+} from 'react'
+import type { InviteDating } from '../reducers/dating'
+import type { Profile } from '../reducers/profile'
 import {
   collection,
   doc,
@@ -5,22 +11,18 @@ import {
   query,
   updateDoc,
   where,
-} from "firebase/firestore";
+} from 'firebase/firestore'
 import React, {
-  Dispatch,
-  SetStateAction,
   useEffect,
   useRef,
   useState,
-} from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-import { Btn } from "../app/profile/components/UserInfos";
-import { InviteDating } from "../reducers/dating";
-import { Profile } from "../reducers/profile";
-import { db } from "../utils/firebase";
-import meetingBanner from "./img/meetingBanner.png";
-import close from "./img/close.png";
+} from 'react'
+import { useSelector } from 'react-redux'
+import styled from 'styled-components'
+import { Btn } from '../app/profile/components/UserInfos'
+import { db } from '../utils/firebase'
+import close from './img/close.png'
+import meetingBanner from './img/meetingBanner.png'
 
 export const CloseBtn = styled.img`
   cursor: pointer;
@@ -29,7 +31,7 @@ export const CloseBtn = styled.img`
   position: absolute;
   right: 15px;
   top: 15px;
-`;
+`
 
 const MeetingContainer = styled.div`
   width: 70vw;
@@ -44,7 +46,7 @@ const MeetingContainer = styled.div`
   padding: 50px;
   background-color: #efefef;
   overflow-x: hidden;
-`;
+`
 
 const MeetingPerson = styled.video`
   height: 75%;
@@ -58,7 +60,7 @@ const MeetingPerson = styled.video`
     height: 35vh;
     width: auto;
   }
-`;
+`
 
 const MeetingMe = styled.video`
   height: 20vh;
@@ -74,7 +76,7 @@ const MeetingMe = styled.video`
     right: 15px;
     bottom: 100px;
   }
-`;
+`
 
 const PhoneBtn = styled(Btn)`
   left: 50%;
@@ -86,7 +88,7 @@ const PhoneBtn = styled(Btn)`
   @media (max-width: 600px) {
     font-size: 14px;
   }
-`;
+`
 
 const BlackMask = styled.div`
   opacity: 0.5;
@@ -99,7 +101,7 @@ const BlackMask = styled.div`
   left: 0;
   height: 100vh;
   z-index: 1;
-`;
+`
 
 const NowStatus = styled.div`
   position: absolute;
@@ -114,105 +116,107 @@ const NowStatus = styled.div`
     padding: 5px 10px;
     width: 200px;
   }
-`;
+`
 
-type MeetingType = {
+interface MeetingType {
   nowMeetingShelter: {
-    petId: number;
-    shelterName: string;
-    userName: string;
-    index: number;
-  };
-  setOpenMeeting: Dispatch<SetStateAction<boolean>>;
-  shelterUpcomingList: InviteDating[];
-  setShelterUpcomingList: Dispatch<SetStateAction<InviteDating[] | undefined>>;
-};
+    petId: number
+    shelterName: string
+    userName: string
+    index: number
+  }
+  setOpenMeeting: Dispatch<SetStateAction<boolean>>
+  shelterUpcomingList: InviteDating[]
+  setShelterUpcomingList: Dispatch<SetStateAction<InviteDating[] | undefined>>
+}
 
 const ShelterMeeting: React.FC<MeetingType> = (props) => {
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const pc = useRef<RTCPeerConnection>();
-  const localStreamRef = useRef<MediaStream>();
-  const wsRef = useRef(new WebSocket("wss://fluffyserver.herokuapp.com"));
+  const localVideoRef = useRef<HTMLVideoElement>(null)
+  const remoteVideoRef = useRef<HTMLVideoElement>(null)
+  const pc = useRef<RTCPeerConnection>()
+  const localStreamRef = useRef<MediaStream>()
+  const wsRef = useRef(new WebSocket('wss://fluffyserver.herokuapp.com'))
 
-  const [status, setStatus] = useState("開始通話");
+  const [status, setStatus] = useState('開始通話')
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
+    state => state.profile,
+  ) as Profile
 
   const initWs = () => {
-    wsRef.current.onopen = () => console.log("ws 已經打開");
-    wsRef.current.onmessage = wsOnMessage;
-  };
+    wsRef.current.onopen = () => console.log('ws 已經打開')
+    wsRef.current.onmessage = wsOnMessage
+  }
 
   const wsOnMessage = async (e: MessageEvent) => {
-    const wsData = JSON.parse(e.data);
-    const wsType = wsData["type"];
+    const wsData = JSON.parse(e.data)
+    const wsType = wsData.type
 
-    if (wsType === "leave") {
+    if (wsType === 'leave') {
       if (pc.current) {
-        pc.current.close();
-        pc.current = undefined;
-        remoteVideoRef.current!.srcObject = null;
-        props.setOpenMeeting(false);
-        const allUpcomingList = [...props.shelterUpcomingList];
+        pc.current.close()
+        pc.current = undefined
+        remoteVideoRef.current!.srcObject = null
+        props.setOpenMeeting(false)
+        const allUpcomingList = [...props.shelterUpcomingList]
         allUpcomingList[props.nowMeetingShelter.index] = {
           ...allUpcomingList[props.nowMeetingShelter.index],
           doneWithMeeting: true,
-        };
-        props.setShelterUpcomingList(allUpcomingList);
+        }
+        props.setShelterUpcomingList(allUpcomingList)
 
         const q = query(
           collection(
             db,
-            `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`
+            `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`,
           ),
-          where("id", "==", allUpcomingList[props.nowMeetingShelter.index].id)
-        );
-        const querySnapshot = await getDocs(q);
-        const promises: Promise<void>[] = [];
+          where('id', '==', allUpcomingList[props.nowMeetingShelter.index].id),
+        )
+        const querySnapshot = await getDocs(q)
+        const promises: Promise<void>[] = []
         querySnapshot.forEach(async (d) => {
           const updatingRef = doc(
             db,
             `/governmentDatings/OB5pxPMXvKfglyETMnqh/upcomingDates`,
-            d.id
-          );
+            d.id,
+          )
 
           promises.push(
             updateDoc(
               updatingRef,
-              allUpcomingList[props.nowMeetingShelter.index]
-            )
-          );
-        });
-        await Promise.all(promises);
+              {
+                doneWithMeeting: allUpcomingList[props.nowMeetingShelter.index].doneWithMeeting
+              }
+            ),
+          )
+        })
+        await Promise.all(promises)
       }
     }
 
-    const wsUsername = wsData["username"];
+    const wsUsername = wsData.username
     if (profile.uid === wsUsername) {
-      return;
+      return
     }
 
-    if (wsType === "offer") {
-      const wsOffer = wsData["data"];
+    if (wsType === 'offer') {
+      const wsOffer = wsData.data
       pc.current?.setRemoteDescription(
-        new RTCSessionDescription(JSON.parse(wsOffer))
-      );
-      setStatus("電話響起");
+        new RTCSessionDescription(JSON.parse(wsOffer)),
+      )
+      setStatus('電話響起')
     }
-    if (wsType === "answer") {
-      const wsAnswer = wsData["data"];
+    if (wsType === 'answer') {
+      const wsAnswer = wsData.data
       pc.current?.setRemoteDescription(
-        new RTCSessionDescription(JSON.parse(wsAnswer))
-      );
-      setStatus("通話中");
+        new RTCSessionDescription(JSON.parse(wsAnswer)),
+      )
+      setStatus('通話中')
     }
-    if (wsType === "candidate") {
-      const wsCandidate = JSON.parse(wsData["data"]);
-      pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate));
+    if (wsType === 'candidate') {
+      const wsCandidate = JSON.parse(wsData.data)
+      pc.current?.addIceCandidate(new RTCIceCandidate(wsCandidate))
     }
-  };
+  }
 
   const wsSend = (type: string, data: object | string) => {
     wsRef.current.send(
@@ -220,18 +224,18 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         username: profile.uid,
         type,
         data,
-      })
-    );
-  };
+      }),
+    )
+  }
 
   const getMediaDevices = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,
-    });
-    localVideoRef.current!.srcObject = stream;
-    localStreamRef.current = stream;
-  };
+    })
+    localVideoRef.current!.srcObject = stream
+    localStreamRef.current = stream
+  }
 
   const createAnswer = () => {
     pc.current
@@ -240,57 +244,57 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         offerToReceiveVideo: true,
       })
       .then((sdp) => {
-        pc.current?.setLocalDescription(sdp);
-        wsSend("answer", JSON.stringify(sdp));
-        setStatus("通話中");
-      });
-  };
+        pc.current?.setLocalDescription(sdp)
+        wsSend('answer', JSON.stringify(sdp))
+        setStatus('通話中')
+      })
+  }
 
   const createRtcConnection = () => {
     const _pc = new RTCPeerConnection({
       iceServers: [
         {
-          urls: ["stun:stun.stunprotocol.org:3478"],
+          urls: ['stun:stun.stunprotocol.org:3478'],
         },
       ],
-    });
+    })
     _pc.onicecandidate = (e) => {
       if (e.candidate) {
-        wsSend("candidate", JSON.stringify(e.candidate));
+        wsSend('candidate', JSON.stringify(e.candidate))
       }
-    };
+    }
     _pc.ontrack = (e) => {
-      remoteVideoRef.current!.srcObject = e.streams[0];
-    };
-    pc.current = _pc;
-  };
+      remoteVideoRef.current!.srcObject = e.streams[0]
+    }
+    pc.current = _pc
+  }
 
   const addLocalStreamToRtcConnection = () => {
-    const localStream = localStreamRef.current!;
+    const localStream = localStreamRef.current!
     localStream.getTracks().forEach((track) => {
-      pc.current!.addTrack(track, localStream);
-    });
-  };
+      pc.current!.addTrack(track, localStream)
+    })
+  }
 
   const hangup = () => {
     if (pc.current) {
-      wsSend("leave", "離線");
+      wsSend('leave', '離線')
     }
-  };
+  }
 
   useEffect(() => {
-    initWs();
+    initWs()
     getMediaDevices().then(() => {
-      createRtcConnection();
-      addLocalStreamToRtcConnection();
-    });
-  }, []);
+      createRtcConnection()
+      addLocalStreamToRtcConnection()
+    })
+  }, [])
 
   useEffect(() => {
     setInterval(() => {
-      wsSend("dontdisconnect", "please");
-    }, 10000);
-  }, []);
+      wsSend('dontdisconnect', 'please')
+    }, 10000)
+  }, [])
 
   return (
     <>
@@ -298,7 +302,10 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
       <MeetingContainer>
         {props.nowMeetingShelter && (
           <NowStatus>
-            申請人：{props.nowMeetingShelter.userName} / 寵物編號：
+            申請人：
+            {props.nowMeetingShelter.userName}
+            {' '}
+            / 寵物編號：
             {props.nowMeetingShelter.petId}
           </NowStatus>
         )}
@@ -306,15 +313,20 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
           ref={remoteVideoRef}
           autoPlay
           poster={meetingBanner.src}
-        ></MeetingPerson>
-        <MeetingMe ref={localVideoRef} autoPlay></MeetingMe>
-        {status === "開始通話" && (
-          <PhoneBtn>等待 {props.nowMeetingShelter.userName} 來電</PhoneBtn>
+        />
+        <MeetingMe ref={localVideoRef} autoPlay />
+        {status === '開始通話' && (
+          <PhoneBtn>
+            等待
+            {props.nowMeetingShelter.userName}
+            {' '}
+            來電
+          </PhoneBtn>
         )}
-        {status === "電話響起" && (
+        {status === '電話響起' && (
           <PhoneBtn onClick={createAnswer}>點擊接聽電話</PhoneBtn>
         )}
-        {status === "通話中" && <PhoneBtn onClick={hangup}>結束視訊</PhoneBtn>}
+        {status === '通話中' && <PhoneBtn onClick={hangup}>結束視訊</PhoneBtn>}
         <CloseBtn
           src={close.src}
           onClick={() => props.setOpenMeeting(false)}
@@ -322,7 +334,7 @@ const ShelterMeeting: React.FC<MeetingType> = (props) => {
         />
       </MeetingContainer>
     </>
-  );
-};
+  )
+}
 
-export default ShelterMeeting;
+export default ShelterMeeting

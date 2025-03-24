@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useSelector } from "react-redux";
-import styled, { keyframes } from "styled-components";
-import { Profile } from "../reducers/profile";
+import type { Profile } from '../reducers/profile'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import styled, { keyframes } from 'styled-components'
 
 const PopupAnimation = keyframes`
   0% {right: -300px}
   70% {right:0}
   100% {right: -300px}
-`;
+`
 
 export const PopupHint = styled.div`
   background-color: #b54745;
@@ -24,15 +24,15 @@ export const PopupHint = styled.div`
   z-index: 2503;
   font-size: 18px;
   animation: ${PopupAnimation} 3s ease infinite;
-`;
+`
 
-const SideNotification = () => {
+function SideNotification() {
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
+    state => state.profile,
+  ) as Profile
   return (
     <>{profile.notification && <PopupHint>{profile.notification}</PopupHint>}</>
-  );
-};
+  )
+}
 
-export default SideNotification;
+export default SideNotification

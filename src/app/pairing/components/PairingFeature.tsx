@@ -1,21 +1,22 @@
-"use client";
+'use client'
 
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import styled, { keyframes } from "styled-components";
-import { setAllCardInfrontOfUser } from "../../../functions/datingReducerFunction";
-import { Card, Dating } from "../../../reducers/dating";
-import { db } from "../../../utils/firebase";
-import { collection, addDoc } from "firebase/firestore";
-import { area } from "../../../utils/ConstantInfo";
-import { Profile } from "../../../reducers/profile";
-import consider from "public/img/consider.png";
-import notconsider from "public/img/close.png";
+import type { Dispatch, SetStateAction } from 'react'
+import type { Card, Dating } from '../../../reducers/dating'
+import type { Profile } from '../../../reducers/profile'
+import { addDoc, collection } from 'firebase/firestore'
+import notconsider from 'public/img/close.png'
+import consider from 'public/img/consider.png'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import styled, { keyframes } from 'styled-components'
+import { setAllCardInfrontOfUser } from '../../../functions/datingReducerFunction'
+import { area } from '../../../utils/ConstantInfo'
+import { db } from '../../../utils/firebase'
 
 const ChooseBtnAnimation = keyframes`
   0% {bottom: 200px}
   100% {bottom: 250px}
-`;
+`
 
 const ChooseMask = styled.div`
   z-index: 1000;
@@ -23,7 +24,7 @@ const ChooseMask = styled.div`
   height: 100%;
   background: rgba(255, 255, 255, 0.5);
   position: absolute;
-`;
+`
 
 const AnimationChooseBtn = styled.img`
   z-index: 1001;
@@ -38,7 +39,7 @@ const AnimationChooseBtn = styled.img`
   animation-name: ${ChooseBtnAnimation};
   animation-duration: 0.35s;
   scale: 1.5;
-`;
+`
 
 const PetCard = styled.div`
   width: 100%;
@@ -59,7 +60,7 @@ const PetCard = styled.div`
   @media (max-width: 574px) {
     width: 100%;
   }
-`;
+`
 
 const PetImg = styled.img`
   width: calc(100% - 15px);
@@ -71,7 +72,7 @@ const PetImg = styled.img`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-`;
+`
 
 const ImgMask = styled.div`
   width: calc(100% - 15px);
@@ -86,7 +87,7 @@ const ImgMask = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
-`;
+`
 
 const PetTextInfoContainer = styled.div`
   display: flex;
@@ -100,10 +101,10 @@ const PetTextInfoContainer = styled.div`
   @media (max-width: 385px) {
     font-size: 16px;
   }
-`;
+`
 const PetText = styled.div`
   margin-bottom: 8px;
-`;
+`
 
 const ChooseIcon = styled.img`
   font-size: 50px;
@@ -124,14 +125,14 @@ const ChooseIcon = styled.img`
     width: 50px;
     height: 50px;
   }
-`;
+`
 
 const Cross = styled(ChooseIcon)`
   left: 40px;
   @media (max-width: 385px) {
     left: 30px;
   }
-`;
+`
 
 const Circle = styled(ChooseIcon)`
   right: 40px;
@@ -139,58 +140,66 @@ const Circle = styled(ChooseIcon)`
   @media (max-width: 385px) {
     right: 30px;
   }
-`;
+`
 
 interface PetInfos {
-  petInfo: Card[];
-  setMatchSuccessQty: Dispatch<SetStateAction<number>>;
+  petInfo: Card[]
+  setMatchSuccessQty: Dispatch<SetStateAction<number>>
 }
 
 const PetCardDetail: React.FC<PetInfos> = (props) => {
   const dating = useSelector<{ dating: Dating }>(
-    (state) => state.dating
-  ) as Dating;
+    state => state.dating,
+  ) as Dating
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const dispatch = useDispatch();
-  const [openAnimation, setOpenAnimation] = useState<boolean>(false);
-  const [pressBtn, setPressBtn] = useState<string>("");
-  const [clickIndex, setClickIndex] = useState<number>(0);
+    state => state.profile,
+  ) as Profile
+  const dispatch = useDispatch()
+  const [openAnimation, setOpenAnimation] = useState<boolean>(false)
+  const [pressBtn, setPressBtn] = useState<string>('')
+  const [clickIndex, setClickIndex] = useState<number>(0)
 
   return (
     <>
       {props.petInfo.map((info, index) => (
         <PetCard key={index}>
-          {openAnimation &&
-          pressBtn === "notconsider" &&
-          clickIndex === index ? (
-            <>
-              <ChooseMask></ChooseMask>
-              <AnimationChooseBtn src={notconsider.src} alt="not-consider" />
-            </>
-          ) : openAnimation &&
-            pressBtn === "consider" &&
-            clickIndex === index ? (
-            <>
-              <ChooseMask></ChooseMask>
-              <AnimationChooseBtn src={consider.src} alt="consider" />
-            </>
-          ) : (
-            ""
-          )}
+          {openAnimation
+            && pressBtn === 'notconsider'
+            && clickIndex === index
+            ? (
+                <>
+                  <ChooseMask />
+                  <AnimationChooseBtn src={notconsider.src} alt="not-consider" />
+                </>
+              )
+            : openAnimation
+              && pressBtn === 'consider'
+              && clickIndex === index
+              ? (
+                  <>
+                    <ChooseMask />
+                    <AnimationChooseBtn src={consider.src} alt="consider" />
+                  </>
+                )
+              : (
+                  ''
+                )}
 
           <PetImg src={info.image} alt="pet" />
-          <ImgMask></ImgMask>
+          <ImgMask />
           <PetTextInfoContainer>
             <PetText>{info.id}</PetText>
             <PetText>{area[info.area - 2]}</PetText>
             <PetText>
               {info.color}
-              {info.kind} ({info.sex === "M" ? "♂" : "♀"})
+              {info.kind}
+              {' '}
+              (
+              {info.sex === 'M' ? '♂' : '♀'}
+              )
             </PetText>
             <PetText>
-              {info.sterilization === "F" ? "尚未結紮" : "已結紮"}
+              {info.sterilization === 'F' ? '尚未結紮' : '已結紮'}
             </PetText>
           </PetTextInfoContainer>
           <Cross
@@ -200,19 +209,19 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
               await addDoc(
                 collection(
                   db,
-                  `/memberProfiles/${profile.uid}/notConsiderLists`
+                  `/memberProfiles/${profile.uid}/notConsiderLists`,
                 ),
-                { id: info.id }
-              );
-              let cardsInFrontOfUser = dating.allCards;
-              setOpenAnimation(true);
-              setClickIndex(index);
-              setPressBtn("notconsider");
+                { id: info.id },
+              )
+              const cardsInFrontOfUser = dating.allCards
+              setOpenAnimation(true)
+              setClickIndex(index)
+              setPressBtn('notconsider')
               setTimeout(() => {
-                setOpenAnimation(false);
-                cardsInFrontOfUser.pop();
-                dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
-              }, 350);
+                setOpenAnimation(false)
+                cardsInFrontOfUser.pop()
+                dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser))
+              }, 350)
             }}
           />
           <Circle
@@ -234,25 +243,25 @@ const PetCardDetail: React.FC<PetInfos> = (props) => {
                   sterilization: info.sterilization,
                   foundPlace: info.foundPlace,
                   image: info.image,
-                }
-              );
+                },
+              )
 
-              let cardsInFrontOfUser = dating.allCards;
-              setOpenAnimation(true);
-              props.setMatchSuccessQty((prev) => prev + 1);
-              setClickIndex(index);
-              setPressBtn("consider");
+              const cardsInFrontOfUser = dating.allCards
+              setOpenAnimation(true)
+              props.setMatchSuccessQty(prev => prev + 1)
+              setClickIndex(index)
+              setPressBtn('consider')
               setTimeout(() => {
-                setOpenAnimation(false);
-                cardsInFrontOfUser.pop();
-                dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser));
-              }, 350);
+                setOpenAnimation(false)
+                cardsInFrontOfUser.pop()
+                dispatch(setAllCardInfrontOfUser(cardsInFrontOfUser))
+              }, 350)
             }}
           />
         </PetCard>
       ))}
     </>
-  );
-};
+  )
+}
 
-export default PetCardDetail;
+export default PetCardDetail

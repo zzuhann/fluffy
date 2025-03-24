@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction } from "react";
-import styled from "styled-components";
-import { imgType } from "../functions/commonFunctionAndType";
-import trash from "./img/bin.png";
-import defaultProfile from "./img/defaultprofile.png";
-import upload from "./img/upload.png";
+import type { Dispatch, SetStateAction } from 'react'
+import type { imgType } from '../functions/commonFunctionAndType'
+import React from 'react'
+import styled from 'styled-components'
+import trash from './img/bin.png'
+import defaultProfile from './img/defaultprofile.png'
+import upload from './img/upload.png'
 
 const CancelIcon = styled.img`
   position: relative;
@@ -12,13 +13,13 @@ const CancelIcon = styled.img`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-`;
+`
 
 const PreviewContainer = styled.div`
   position: relative;
   width: 200px;
   height: 200px;
-`;
+`
 
 const PreviewArticleContainer = styled(PreviewContainer)`
   width: 350px;
@@ -28,7 +29,7 @@ const PreviewArticleContainer = styled(PreviewContainer)`
     padding-left: 0px;
     width: 100%;
   }
-`;
+`
 
 const HintUploadImg = styled.div`
   font-size: 18px;
@@ -42,13 +43,13 @@ const HintUploadImg = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const ImageUploadLabel = styled.label`
   width: 200px;
   height: 200px;
   position: relative;
-`;
+`
 
 const PetDetailImg = styled.label`
   width: 350px;
@@ -59,7 +60,7 @@ const PetDetailImg = styled.label`
   @media (max-width: 533px) {
     padding-left: 0px;
   }
-`;
+`
 
 const PreviewImg = styled.img`
   width: 200px;
@@ -67,7 +68,7 @@ const PreviewImg = styled.img`
   object-fit: cover;
   position: relative;
   border-radius: 40px;
-`;
+`
 
 const PreviewArticleImg = styled(PreviewImg)`
   width: 350px;
@@ -76,7 +77,7 @@ const PreviewArticleImg = styled(PreviewImg)`
   @media (max-width: 533px) {
     width: 100%;
   }
-`;
+`
 
 const PreviewCancelBtn = styled.div`
   position: absolute;
@@ -103,7 +104,7 @@ const PreviewCancelBtn = styled.div`
     bottom: -8px;
     right: -5px;
   }
-`;
+`
 
 const SquarePreviewCancelBtn = styled.div`
   position: absolute;
@@ -119,62 +120,66 @@ const SquarePreviewCancelBtn = styled.div`
     background-color: #b54745;
     color: #fff;
   }
-`;
+`
 
 export const ToPreviewImg: React.FC<{
-  imgURL: string;
-  emptyImg: Dispatch<SetStateAction<imgType>>;
-  recOrSquare: string;
+  imgURL: string
+  emptyImg: Dispatch<SetStateAction<imgType>>
+  recOrSquare: string
 }> = ({ imgURL, emptyImg, recOrSquare }) => {
   return (
     <>
-      {recOrSquare === "rec" ? (
-        <PreviewArticleContainer>
-          <PreviewArticleImg src={imgURL} />
-          <PreviewCancelBtn
-            onClick={() => {
-              emptyImg({ file: "", url: "" });
-            }}
-          >
-            <CancelIcon src={trash} alt="delete" />
-          </PreviewCancelBtn>
-        </PreviewArticleContainer>
-      ) : (
-        <PreviewContainer>
-          <PreviewImg src={imgURL} alt="preview" />
-          <SquarePreviewCancelBtn
-            onClick={() => {
-              emptyImg({ file: "", url: "" });
-            }}
-          >
-            <CancelIcon src={trash} alt="delete" />
-          </SquarePreviewCancelBtn>
-        </PreviewContainer>
-      )}
+      {recOrSquare === 'rec'
+        ? (
+            <PreviewArticleContainer>
+              <PreviewArticleImg src={imgURL} />
+              <PreviewCancelBtn
+                onClick={() => {
+                  emptyImg({ file: '', url: '' })
+                }}
+              >
+                <CancelIcon src={trash} alt="delete" />
+              </PreviewCancelBtn>
+            </PreviewArticleContainer>
+          )
+        : (
+            <PreviewContainer>
+              <PreviewImg src={imgURL} alt="preview" />
+              <SquarePreviewCancelBtn
+                onClick={() => {
+                  emptyImg({ file: '', url: '' })
+                }}
+              >
+                <CancelIcon src={trash} alt="delete" />
+              </SquarePreviewCancelBtn>
+            </PreviewContainer>
+          )}
     </>
-  );
-};
+  )
+}
 
 export const TellUserUploadImg: React.FC<{ recOrSqu: string }> = ({
   recOrSqu,
 }) => {
   return (
     <>
-      {recOrSqu === "rec" ? (
-        <PetDetailImg htmlFor="cover">
-          <HintUploadImg>請在此上傳封面</HintUploadImg>
-          <PreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </PreviewCancelBtn>
-        </PetDetailImg>
-      ) : (
-        <ImageUploadLabel htmlFor="image">
-          <PreviewImg src={defaultProfile} alt="default-img" />
-          <SquarePreviewCancelBtn>
-            <CancelIcon src={upload} alt="upload" />
-          </SquarePreviewCancelBtn>
-        </ImageUploadLabel>
-      )}
+      {recOrSqu === 'rec'
+        ? (
+            <PetDetailImg htmlFor="cover">
+              <HintUploadImg>請在此上傳封面</HintUploadImg>
+              <PreviewCancelBtn>
+                <CancelIcon src={upload} alt="upload" />
+              </PreviewCancelBtn>
+            </PetDetailImg>
+          )
+        : (
+            <ImageUploadLabel htmlFor="image">
+              <PreviewImg src={defaultProfile} alt="default-img" />
+              <SquarePreviewCancelBtn>
+                <CancelIcon src={upload} alt="upload" />
+              </SquarePreviewCancelBtn>
+            </ImageUploadLabel>
+          )}
     </>
-  );
-};
+  )
+}

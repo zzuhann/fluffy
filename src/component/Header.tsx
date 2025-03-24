@@ -1,12 +1,8 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import logo from "./img/fluffylogo.png";
-import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "../utils/firebase";
+import type { InviteDating } from '../reducers/dating'
+import type { OwnArticle, OwnPet, PetDiaryType, Profile } from '../reducers/profile'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
 import {
   collection,
   doc,
@@ -15,32 +11,33 @@ import {
   orderBy,
   query,
   where,
-} from "firebase/firestore";
-import {
-  setName,
-  setImage,
-  setOwnPetDiary,
-  setOwnArticle,
-  setEmail,
-  clearProfileInfo,
-  setShelter,
-} from "../functions/profileReducerFunction";
-import defaultProfile from "./img/defaultprofile.png";
-import catHand from "./img/cat_hand_white.png";
+} from 'firebase/firestore'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
+import { setUpcomingDateList } from '../functions/datingReducerFunction'
 import {
   checkIfLogged,
-  targetRegisterOrLogin,
-  setProfileUid,
+  clearProfileInfo,
+  setEmail,
+  setImage,
+  setName,
+  setOwnArticle,
+  setOwnPetDiary,
   setOwnPets,
-} from "../functions/profileReducerFunction";
-import { OwnArticle, OwnPet, PetDiaryType, Profile } from "../reducers/profile";
-import burgerMenu from "./img/bar.png";
-import { InviteDating } from "../reducers/dating";
-import { setUpcomingDateList } from "../functions/datingReducerFunction";
-import { navbars } from "../utils/ConstantInfo";
-import { useNotifyDispatcher } from "./SidebarNotify";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+  setProfileUid,
+  setShelter,
+  targetRegisterOrLogin,
+} from '../functions/profileReducerFunction'
+import { navbars } from '../utils/ConstantInfo'
+import { auth, db } from '../utils/firebase'
+import burgerMenu from './img/bar.png'
+import catHand from './img/cat_hand_white.png'
+import defaultProfile from './img/defaultprofile.png'
+import logo from './img/fluffylogo.png'
+import { useNotifyDispatcher } from './SidebarNotify'
 
 const Wrapper = styled.header`
   display: flex;
@@ -54,7 +51,7 @@ const Wrapper = styled.header`
   letter-spacing: 1.5px;
   transition: 0.1s;
   height: 72px;
-`;
+`
 
 const BurgerMenu = styled.img`
   width: 40px;
@@ -65,25 +62,25 @@ const BurgerMenu = styled.img`
   @media (max-width: 1025px) {
     display: block;
   }
-`;
+`
 
 const Logo = styled.a`
   @media (max-width: 1025px) {
     margin-right: auto;
   }
-`;
+`
 const LogoImg = styled.img`
   width: 150px;
   height: 41px;
-`;
+`
 
 const SidebarContainer = styled.ul<{ $isActive: boolean }>`
   left: -250px;
   top: 72px;
   display: none;
   @media (max-width: 1025px) {
-    left: ${(props) => (props.$isActive ? "0" : "-250px")};
-    transition: ${(props) => (props.$isActive ? "0.3s" : "0")};
+    left: ${props => (props.$isActive ? '0' : '-250px')};
+    transition: ${props => (props.$isActive ? '0.3s' : '0')};
     width: 250px;
     height: 100vh;
     position: fixed;
@@ -95,12 +92,12 @@ const SidebarContainer = styled.ul<{ $isActive: boolean }>`
     padding: 20px;
     border-top: solid 1px #d1cfcf;
   }
-`;
+`
 
 export const BlackMask = styled.div<{
-  $isActive: boolean;
+  $isActive: boolean
 }>`
-  opacity: ${(props) => (props.$isActive ? "1" : "0")};
+  opacity: ${props => (props.$isActive ? '1' : '0')};
   overflow-y: hidden;
   transition: 0.3s;
   position: fixed;
@@ -108,9 +105,9 @@ export const BlackMask = styled.div<{
   left: 0;
   top: 0;
   width: 100%;
-  height: ${(props) => (props.$isActive ? "100%" : "0")};
-  z-index: ${(props) => (props.$isActive ? "2500" : "0")};
-`;
+  height: ${props => (props.$isActive ? '100%' : '0')};
+  z-index: ${props => (props.$isActive ? '2500' : '0')};
+`
 
 const NavBarTag = styled.nav`
   margin-right: auto;
@@ -118,7 +115,7 @@ const NavBarTag = styled.nav`
   @media (max-width: 1025px) {
     display: none;
   }
-`;
+`
 
 const NavBarContainer = styled.ul`
   display: flex;
@@ -126,14 +123,14 @@ const NavBarContainer = styled.ul`
   @media (max-width: 1025px) {
     display: none;
   }
-`;
+`
 
 const ProfileNavBarContainer = styled.ul`
   display: flex;
   align-items: center;
   margin-right: 5px;
   cursor: pointer;
-`;
+`
 
 const NavBar = styled.li`
   margin-right: 20px;
@@ -165,7 +162,7 @@ const NavBar = styled.li`
     margin-right: 0;
     margin-top: 40px;
   }
-`;
+`
 
 const ProfileNavBar = styled.li`
   font-size: 18px;
@@ -197,12 +194,12 @@ const ProfileNavBar = styled.li`
   @media (max-width: 564px) {
     display: none;
   }
-`;
+`
 
 const LoginRegisterBtnWrapper = styled.div`
   display: flex;
   align-items: center;
-`;
+`
 
 const LoginRegisterBtn = styled.div`
   margin-right: 20px;
@@ -227,39 +224,28 @@ const LoginRegisterBtn = styled.div`
   &:last-child {
     margin-right: 0;
   }
-`;
-
-const ProfileImg = styled.img`
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 25px;
-  margin-right: 20px;
-  @media (max-width: 564px) {
-    margin-right: 0;
-  }
-`;
+`
 
 const ProfileHoverBox = styled.ul<{ $isActive: boolean }>`
   width: 150px;
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  border: ${(props) => (props.$isActive ? "solid 1px #d1cfcf" : "none")};
+  border: ${props => (props.$isActive ? 'solid 1px #d1cfcf' : 'none')};
   position: absolute;
   top: 70px;
   transition: 0.3s;
-  height: ${(props) => (props.$isActive ? "auto" : "0")};
+  height: ${props => (props.$isActive ? 'auto' : '0')};
   overflow: hidden;
   border-radius: 5px;
   right: 20px;
-  padding: ${(props) => (props.$isActive ? "20px" : "0")};
+  padding: ${props => (props.$isActive ? '20px' : '0')};
   @media (max-width: 564px) {
     width: 120px;
     top: 70px;
-    padding: ${(props) => (props.$isActive ? "10px" : "0")};
+    padding: ${props => (props.$isActive ? '10px' : '0')};
   }
-`;
+`
 
 const ProfileHoverUnit = styled.li`
   font-size: 22px;
@@ -292,7 +278,7 @@ const ProfileHoverUnit = styled.li`
   &:hover:after {
     width: 100%;
   }
-`;
+`
 
 export const PopUpMessage = styled.div`
   width: 400px;
@@ -307,14 +293,14 @@ export const PopUpMessage = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
-`;
+`
 
 export const PopUpText = styled.div`
   text-align: center;
   vertical-align: middle;
   font-size: 22px;
   margin-top: 20px;
-`;
+`
 
 export const PopUpNote = styled.div`
   text-align: center;
@@ -322,142 +308,143 @@ export const PopUpNote = styled.div`
   font-size: 20px;
   letter-spacing: 1.5px;
   margin-top: 15px;
-`;
+`
 
 export const PopImg = styled(Image)`
   width: 100px;
   height: 100px;
   object-fit: cover;
   object-position: top;
-`;
+`
 
-const Header = () => {
+function Header() {
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const notifyDispatcher = useNotifyDispatcher();
-  const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false);
-  const [openProfileBox, setOpenProfileBox] = useState<boolean>(false);
-  const [openPopupBox, setOpenPopupBox] = useState(false);
-  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3);
+    state => state.profile,
+  ) as Profile
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const notifyDispatcher = useNotifyDispatcher()
+  const [clickBurgerMenu, setClickBurgerMenu] = useState<boolean>(false)
+  const [openProfileBox, setOpenProfileBox] = useState<boolean>(false)
+  const [openPopupBox, setOpenPopupBox] = useState(false)
+  const [navigateToProfileTime, setNavigateToProfileTime] = useState(3)
 
   useEffect(() => {
     async function getAuthorPetDiary(authorUid: string) {
-      const authorPetDiary: PetDiaryType[] = [];
+      const authorPetDiary: PetDiaryType[] = []
       const q = query(
-        collection(db, "petDiaries"),
-        where("authorUid", "==", authorUid),
-        orderBy("postTime")
-      );
-      const querySnapshot = await getDocs(q);
+        collection(db, 'petDiaries'),
+        where('authorUid', '==', authorUid),
+        orderBy('postTime'),
+      )
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
-        authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType);
-      });
-      dispatch(setOwnPetDiary(authorPetDiary));
+        authorPetDiary.push({ id: info.id, ...info.data() } as PetDiaryType)
+      })
+      dispatch(setOwnPetDiary(authorPetDiary))
     }
 
     async function getAuthorArticles(authorUid: string) {
-      const authorPetDiary: OwnArticle[] = [];
+      const authorPetDiary: OwnArticle[] = []
       const q = query(
-        collection(db, "petArticles"),
-        where("authorUid", "==", authorUid)
-      );
-      const querySnapshot = await getDocs(q);
+        collection(db, 'petArticles'),
+        where('authorUid', '==', authorUid),
+      )
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
         authorPetDiary.push({
           id: info.id,
           ...info.data(),
-        } as OwnArticle);
-      });
-      dispatch(setOwnArticle(authorPetDiary));
+        } as OwnArticle)
+      })
+      dispatch(setOwnArticle(authorPetDiary))
     }
 
     async function getUpcomingListData(uid: string) {
-      let upcomingDate: InviteDating[] = [];
+      const upcomingDate: InviteDating[] = []
       const q = query(
-        collection(db, "memberProfiles", uid, "upcomingDates"),
-        orderBy("datingDate")
-      );
-      const querySnapshot = await getDocs(q);
+        collection(db, 'memberProfiles', uid, 'upcomingDates'),
+        orderBy('datingDate'),
+      )
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
         upcomingDate.push({
           ...info.data(),
           datingDate: info.data().dateAndTime,
-        } as InviteDating);
-      });
-      dispatch(setUpcomingDateList(upcomingDate));
+        } as InviteDating)
+      })
+      dispatch(setUpcomingDateList(upcomingDate))
     }
 
     async function getOwnPetList(id: string) {
-      const allOwnPet: OwnPet[] = [];
-      const q = collection(db, `memberProfiles/${id}/ownPets`);
-      const querySnapshot = await getDocs(q);
+      const allOwnPet: OwnPet[] = []
+      const q = collection(db, `memberProfiles/${id}/ownPets`)
+      const querySnapshot = await getDocs(q)
       querySnapshot.forEach((info) => {
-        allOwnPet.push(info.data() as OwnPet);
-      });
-      dispatch(setOwnPets(allOwnPet));
+        allOwnPet.push(info.data() as OwnPet)
+      })
+      dispatch(setOwnPets(allOwnPet))
     }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        getOwnPetList(user.uid);
-        dispatch(setProfileUid(user.uid));
-        dispatch(checkIfLogged(true));
-        getAuthorPetDiary(user.uid);
-        getAuthorArticles(user.uid);
-        getUpcomingListData(user.uid);
-        const docRef = doc(db, "memberProfiles", user.uid);
-        const docSnap = await getDoc(docRef);
+        getOwnPetList(user.uid)
+        dispatch(setProfileUid(user.uid))
+        dispatch(checkIfLogged(true))
+        getAuthorPetDiary(user.uid)
+        getAuthorArticles(user.uid)
+        getUpcomingListData(user.uid)
+        const docRef = doc(db, 'memberProfiles', user.uid)
+        const docSnap = await getDoc(docRef)
         if (docSnap.exists()) {
-          dispatch(setName(docSnap.data().name));
-          dispatch(setEmail(user.email as string));
-          if (docSnap.data().shelter === "true") {
-            dispatch(setShelter(true));
+          dispatch(setName(docSnap.data().name))
+          dispatch(setEmail(user.email as string))
+          if (docSnap.data().shelter === 'true') {
+            dispatch(setShelter(true))
           }
           if (docSnap.data().img) {
-            dispatch(setImage(docSnap.data().img));
-          } else {
-            dispatch(setImage(defaultProfile.src));
+            dispatch(setImage(docSnap.data().img))
           }
-        } else {
-          console.log("No such document!");
+          else {
+            dispatch(setImage(defaultProfile.src))
+          }
         }
-      } else {
-        dispatch(checkIfLogged(false));
-        dispatch(targetRegisterOrLogin("login"));
       }
-    });
-  }, [dispatch]);
+      else {
+        dispatch(checkIfLogged(false))
+        dispatch(targetRegisterOrLogin('login'))
+      }
+    })
+  }, [dispatch])
 
   function signOutProfile() {
     signOut(auth)
       .then(() => {
-        dispatch(checkIfLogged(false));
-        dispatch(clearProfileInfo());
-        notifyDispatcher("登出成功");
+        dispatch(checkIfLogged(false))
+        dispatch(clearProfileInfo())
+        notifyDispatcher('登出成功')
       })
       .catch((error) => {
-        console.log(error);
-      });
+        console.error(error)
+      })
   }
 
   function gotoProfilePage() {
-    setNavigateToProfileTime(3);
-    setOpenPopupBox(true);
+    setNavigateToProfileTime(3)
+    setOpenPopupBox(true)
     const coundDownTimer = setInterval(() => {
       setNavigateToProfileTime((prev) => {
         if (prev <= 0) {
-          clearInterval(coundDownTimer);
-          setOpenPopupBox(false);
-          router.push("/profile");
-          return 0;
-        } else {
-          return prev - 1;
+          clearInterval(coundDownTimer)
+          setOpenPopupBox(false)
+          router.push('/profile')
+          return 0
         }
-      });
-    }, 1000);
+        else {
+          return prev - 1
+        }
+      })
+    }, 1000)
   }
 
   return (
@@ -465,8 +452,7 @@ const Header = () => {
       <BlackMask
         $isActive={clickBurgerMenu === true}
         onClick={() =>
-          clickBurgerMenu ? setClickBurgerMenu(false) : setClickBurgerMenu(true)
-        }
+          clickBurgerMenu ? setClickBurgerMenu(false) : setClickBurgerMenu(true)}
       />
       <Wrapper>
         <BurgerMenu
@@ -475,8 +461,7 @@ const Header = () => {
           onClick={() =>
             clickBurgerMenu
               ? setClickBurgerMenu(false)
-              : setClickBurgerMenu(true)
-          }
+              : setClickBurgerMenu(true)}
         />
         <Logo href="/">
           <LogoImg src={logo.src} alt="fluffy" />
@@ -488,9 +473,10 @@ const Header = () => {
                 key={index}
                 onClick={() => {
                   if (navbar.needToLogin && !profile.isLogged) {
-                    gotoProfilePage();
-                  } else {
-                    router.push(navbar.targetLink);
+                    gotoProfilePage()
+                  }
+                  else {
+                    router.push(navbar.targetLink)
                   }
                 }}
               >
@@ -500,7 +486,7 @@ const Header = () => {
             {profile.isShelter && (
               <NavBar
                 onClick={() => {
-                  router.push("/shelter");
+                  router.push('/shelter')
                 }}
               >
                 所有視訊申請
@@ -519,7 +505,9 @@ const Header = () => {
               />
               <PopUpText>進入配對專區需先登入/註冊</PopUpText>
               <PopUpNote>
-                {navigateToProfileTime} 秒後自動跳轉至登入頁面 ...
+                {navigateToProfileTime}
+                {' '}
+                秒後自動跳轉至登入頁面 ...
               </PopUpNote>
             </PopUpMessage>
             <BlackMask $isActive={openPopupBox === true} />
@@ -531,8 +519,7 @@ const Header = () => {
             onClick={() =>
               openProfileBox
                 ? setOpenProfileBox(false)
-                : setOpenProfileBox(true)
-            }
+                : setOpenProfileBox(true)}
           >
             {/* {typeof profile.img === "string" && profile.img !== "" && (
               <ProfileImg src={profile.img} alt="profile" />
@@ -550,7 +537,7 @@ const Header = () => {
               >
                 個人頁面
               </ProfileHoverUnit>
-              <ProfileHoverUnit onClick={() => router.push("/profile")}>
+              <ProfileHoverUnit onClick={() => router.push('/profile')}>
                 會員設定
               </ProfileHoverUnit>
               <ProfileHoverUnit onClick={() => signOutProfile()}>
@@ -562,16 +549,16 @@ const Header = () => {
           <LoginRegisterBtnWrapper>
             <LoginRegisterBtn
               onClick={() => {
-                dispatch(targetRegisterOrLogin("register"));
-                router.push("/profile");
+                dispatch(targetRegisterOrLogin('register'))
+                router.push('/profile')
               }}
             >
               註冊
             </LoginRegisterBtn>
             <LoginRegisterBtn
               onClick={() => {
-                dispatch(targetRegisterOrLogin("login"));
-                router.push("/profile");
+                dispatch(targetRegisterOrLogin('login'))
+                router.push('/profile')
               }}
             >
               登入
@@ -583,11 +570,12 @@ const Header = () => {
         {navbars.map((navbar, index) => (
           <NavBar
             onClick={() => {
-              setClickBurgerMenu(false);
+              setClickBurgerMenu(false)
               if (navbar.needToLogin && !profile.isLogged) {
-                gotoProfilePage();
-              } else {
-                router.push(navbar.targetLink);
+                gotoProfilePage()
+              }
+              else {
+                router.push(navbar.targetLink)
               }
             }}
             key={index}
@@ -598,8 +586,8 @@ const Header = () => {
         {profile.isShelter && (
           <NavBar
             onClick={() => {
-              setClickBurgerMenu(false);
-              router.push("/shelter");
+              setClickBurgerMenu(false)
+              router.push('/shelter')
             }}
           >
             所有視訊申請
@@ -607,7 +595,7 @@ const Header = () => {
         )}
       </SidebarContainer>
     </>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

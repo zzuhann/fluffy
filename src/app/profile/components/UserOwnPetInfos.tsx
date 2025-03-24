@@ -1,7 +1,23 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Profile } from "src/reducers/profile";
+import type { Dispatch, SetStateAction } from 'react'
+import type { imgType } from 'src/functions/commonFunctionAndType'
+import type { Profile } from 'src/reducers/profile'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import noPetNow from 'public/img/cat_fish_run.png'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { TellUserUploadImg, ToPreviewImg } from 'src/component/PreviewImg'
+import { useNotifyDispatcher } from 'src/component/SidebarNotify'
+import { imgInitialState } from 'src/functions/commonFunctionAndType'
+import { setOwnPets } from 'src/functions/profileReducerFunction'
 import {
   addDataWithUploadImage,
   db,
@@ -10,34 +26,20 @@ import {
   storage,
   updateFirebaseDataMutipleWhere,
   updateUseStateInputImage,
-} from "src/utils/firebase";
-import {
-  getDocs,
-  collection,
-  doc,
-  updateDoc,
-  query,
-  where,
-  addDoc,
-} from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+} from 'src/utils/firebase'
+import styled from 'styled-components'
 import {
   Btn,
-  EditModeContainer,
-  ImageUploadInput,
-  EditModeUserInfoContainer,
   CancelUpdateBtn,
-  UpdateBtn,
   EditContainer,
-  EditInfoLabel,
   EditInfoInput,
+  EditInfoLabel,
+  EditModeContainer,
+  EditModeUserInfoContainer,
+  ImageUploadInput,
   Title,
-} from "./UserInfos";
-import { setOwnPets } from "src/functions/profileReducerFunction";
-import noPetNow from "public/img/cat_fish_run.png";
-import { imgInitialState, imgType } from "src/functions/commonFunctionAndType";
-import { useNotifyDispatcher } from "src/component/SidebarNotify";
-import { TellUserUploadImg, ToPreviewImg } from "src/component/PreviewImg";
+  UpdateBtn,
+} from './UserInfos'
 
 export const InfoContainer = styled.div`
   max-width: 1120px;
@@ -56,7 +58,7 @@ export const InfoContainer = styled.div`
   @media (max-width: 432px) {
     padding: 50px 15px;
   }
-`;
+`
 
 export const PetTitle = styled(Title)`
   @media (max-width: 725px) {
@@ -70,7 +72,7 @@ export const PetTitle = styled(Title)`
     padding-left: 10px;
     left: 15px;
   }
-`;
+`
 
 const PetInfo = styled.div`
   width: 100%;
@@ -89,7 +91,7 @@ const PetInfo = styled.div`
   @media (max-width: 432px) {
     grid-template-columns: repeat(auto-fill, 250px);
   }
-`;
+`
 
 const PetSimpleCard = styled.div`
   border-radius: 10px;
@@ -102,7 +104,7 @@ const PetSimpleCard = styled.div`
     box-shadow: 5px 5px 4px 3px rgba(0, 0, 0, 0.2);
     bottom: 5px;
   }
-`;
+`
 
 export const AddBtnSimple = styled(Btn)`
   top: 15px;
@@ -112,7 +114,7 @@ export const AddBtnSimple = styled(Btn)`
     font-size: 16px;
     top: 25px;
   }
-`;
+`
 
 const PetSimpleImage = styled.img`
   width: 250px;
@@ -124,7 +126,7 @@ const PetSimpleImage = styled.img`
   @media (max-width: 432px) {
     width: 250px;
   }
-`;
+`
 const PetSimpleInfos = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
   display: flex;
@@ -134,17 +136,17 @@ const PetSimpleInfos = styled.div`
   left: 0;
   width: 100%;
   padding: 10px 15px;
-`;
+`
 
 const PetSimpleNameSex = styled.div`
   display: flex;
   align-items: center;
-`;
+`
 const PetSimpleInfo = styled.div`
   font-size: 22px;
   color: #fff;
   letter-spacing: 1.5px;
-`;
+`
 
 const PetSimpleName = styled(PetSimpleInfo)`
   max-width: 150px;
@@ -152,7 +154,7 @@ const PetSimpleName = styled(PetSimpleInfo)`
   overflow: hidden;
   line-height: 30px;
   white-space: nowrap;
-`;
+`
 
 const PetDetailCard = styled.div`
   width: 100%;
@@ -166,13 +168,13 @@ const PetDetailCard = styled.div`
   @media (max-width: 882px) {
     padding-bottom: 70px;
   }
-`;
+`
 
 const PetDetailSexBtn = styled(Btn)<{ $isActive: boolean }>`
   position: relative;
   margin-left: 10px;
-  background-color: ${(props) => (props.$isActive ? "#d1cfcf" : "#fff")};
-`;
+  background-color: ${props => (props.$isActive ? '#d1cfcf' : '#fff')};
+`
 
 const AddPetBtn = styled(Btn)`
   bottom: 15px;
@@ -183,7 +185,7 @@ const AddPetBtn = styled(Btn)`
   @media (max-width: 401px) {
     right: 10px;
   }
-`;
+`
 
 const AddPetCancelBtn = styled(Btn)`
   bottom: 15px;
@@ -195,7 +197,7 @@ const AddPetCancelBtn = styled(Btn)`
   @media (max-width: 401px) {
     left: 10px;
   }
-`;
+`
 
 const PetDeatilContainer = styled.div`
   border: solid 3px #d1cfcf;
@@ -206,7 +208,7 @@ const PetDeatilContainer = styled.div`
   @media (max-width: 725px) {
     padding-bottom: 80px;
   }
-`;
+`
 
 const PetSingleContainer = styled.div`
   display: flex;
@@ -215,14 +217,14 @@ const PetSingleContainer = styled.div`
     flex-direction: column;
     margin-top: 80px;
   }
-`;
+`
 const PetSingleDetailTextContainer = styled.div`
   display: flex;
   flex-direction: column;
   @media (max-width: 725px) {
     margin-top: 20px;
   }
-`;
+`
 
 const PetSingleName = styled.div`
   font-size: 22px;
@@ -232,7 +234,7 @@ const PetSingleName = styled.div`
   @media (max-width: 614px) {
     margin-left: 0;
   }
-`;
+`
 
 const WarningText = styled.div`
   margin-left: 20px;
@@ -241,14 +243,14 @@ const WarningText = styled.div`
   @media (max-width: 614px) {
     margin-left: 0;
   }
-`;
+`
 
 const PetSingleImage = styled.img`
   width: 200px;
   height: 200px;
   object-fit: cover;
   border-radius: 40px;
-`;
+`
 
 const EditBtn = styled(Btn)`
   top: 15px;
@@ -259,7 +261,7 @@ const EditBtn = styled(Btn)`
     left: 20px;
     width: 69px;
   }
-`;
+`
 
 const CloseDetailBtn = styled(Btn)`
   top: 15px;
@@ -270,7 +272,7 @@ const CloseDetailBtn = styled(Btn)`
     width: 69px;
     right: 20px;
   }
-`;
+`
 
 const DeleteBtn = styled(Btn)`
   top: 15px;
@@ -282,7 +284,7 @@ const DeleteBtn = styled(Btn)`
     transform: translateX(-50%);
     width: 69px;
   }
-`;
+`
 
 export const DeleteCheckBox = styled.div`
   width: 400px;
@@ -301,24 +303,24 @@ export const DeleteCheckBox = styled.div`
     font-size: 18px;
     width: 350px;
   }
-`;
+`
 
 export const DeleteCheckText = styled.div`
   text-align: center;
   margin-bottom: 20px;
   letter-spacing: 1px;
   line-height: 24px;
-`;
+`
 
 export const DeleteCheckBoxBtnContainer = styled.div`
   display: flex;
   justify-content: space-around;
-`;
+`
 
 export const DeleteCheckBoxBtn = styled(Btn)`
   font-size: 18px;
   position: relative;
-`;
+`
 
 export const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
   border-color: #db5452;
@@ -327,7 +329,7 @@ export const WarningDeleteBtn = styled(DeleteCheckBoxBtn)`
     background-color: #db5452;
     color: #fff;
   }
-`;
+`
 
 export const NowNoInfoInHere = styled.div`
   width: 100%;
@@ -342,13 +344,13 @@ export const NowNoInfoInHere = styled.div`
   @media (max-width: 913px) {
     flex-direction: column;
   }
-`;
+`
 export const NowNoInfoImg = styled.img`
   height: 100%;
   @media (max-width: 913px) {
     height: 70%;
   }
-`;
+`
 
 export const NowNoInfoText = styled.div`
   font-size: 22px;
@@ -366,7 +368,7 @@ export const NowNoInfoText = styled.div`
   @media (max-width: 387px) {
     font-size: 14px;
   }
-`;
+`
 
 const EditModePetInfoContainer = styled(EditModeUserInfoContainer)`
   margin-left: 15px;
@@ -374,46 +376,46 @@ const EditModePetInfoContainer = styled(EditModeUserInfoContainer)`
     margin-top: 30px;
     margin-left: 0px;
   }
-`;
+`
 
-type UserOwnPetInfosType = {
-  setIncompleteInfo: Dispatch<SetStateAction<boolean>>;
-  incompleteInfo: boolean;
-  getOwnPetList: () => void;
-};
+interface UserOwnPetInfosType {
+  setIncompleteInfo: Dispatch<SetStateAction<boolean>>
+  incompleteInfo: boolean
+  getOwnPetList: () => void
+}
 
 const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
   const profile = useSelector<{ profile: Profile }>(
-    (state) => state.profile
-  ) as Profile;
-  const dispatch = useDispatch();
-  const notifyDispatcher = useNotifyDispatcher();
-  const [invalidBirthYear, setInvalidBirthYear] = useState(false);
-  const [invalidName, setInvalidName] = useState(false);
-  const [addPet, setAddPet] = useState<boolean>(false);
-  const [petImg, setPetImg] = useState<imgType>(imgInitialState);
-  const [petNewImg, setPetNewImg] = useState<imgType>(imgInitialState);
-  const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false);
+    state => state.profile,
+  ) as Profile
+  const dispatch = useDispatch()
+  const notifyDispatcher = useNotifyDispatcher()
+  const [invalidBirthYear, setInvalidBirthYear] = useState(false)
+  const [invalidName, setInvalidName] = useState(false)
+  const [addPet, setAddPet] = useState<boolean>(false)
+  const [petImg, setPetImg] = useState<imgType>(imgInitialState)
+  const [petNewImg, setPetNewImg] = useState<imgType>(imgInitialState)
+  const [ownPetDetail, setOwnPetDetail] = useState<boolean>(false)
   const [addPetInfo, setAddPetInfo] = useState<{
-    name: string;
-    sex: string;
-    shelterName: string;
-    kind: string;
-    birthYear: number;
-  }>({ name: "", sex: "", shelterName: "false", kind: "", birthYear: 0 });
+    name: string
+    sex: string
+    shelterName: string
+    kind: string
+    birthYear: number
+  }>({ name: '', sex: '', shelterName: 'false', kind: '', birthYear: 0 })
   const [petNewInfo, setPetNewInfo] = useState<{
-    name: string;
-    birthYear: number;
-  }>({ name: "", birthYear: 0 });
-  const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false);
-  const [ownPetIndex, setOwnPetIndex] = useState<number>(-1);
-  const [openDeleteBox, setOpenDeleteBox] = useState(false);
+    name: string
+    birthYear: number
+  }>({ name: '', birthYear: 0 })
+  const [ownPetEdit, setOwnPetEdit] = useState<boolean>(false)
+  const [ownPetIndex, setOwnPetIndex] = useState<number>(-1)
+  const [openDeleteBox, setOpenDeleteBox] = useState(false)
 
   async function addDocOwnPets(downloadURL: string) {
     await addDoc(collection(db, `/memberProfiles/${profile.uid}/ownPets`), {
       ...addPetInfo,
       img: downloadURL,
-    });
+    })
   }
 
   function renderAddUserOwnPetInfo() {
@@ -421,33 +423,35 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
       <PetDetailCard>
         <Title>新增寵物</Title>
         <EditModeContainer>
-          {petImg.url ? (
-            <ToPreviewImg
-              imgURL={petImg.url}
-              emptyImg={setPetImg}
-              recOrSquare="square"
-            />
-          ) : (
-            <>
-              <TellUserUploadImg recOrSqu="squ" />
-              <ImageUploadInput
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (
-                    e.target.files &&
-                    e.target.files[0].type.split("/")[0] === "image"
-                  ) {
-                    updateUseStateInputImage(
-                      e.target.files as FileList,
-                      setPetImg
-                    );
-                  }
-                }}
-              />
-            </>
-          )}
+          {petImg.url
+            ? (
+                <ToPreviewImg
+                  imgURL={petImg.url}
+                  emptyImg={setPetImg}
+                  recOrSquare="square"
+                />
+              )
+            : (
+                <>
+                  <TellUserUploadImg recOrSqu="squ" />
+                  <ImageUploadInput
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (
+                        e.target.files
+                        && e.target.files[0].type.split('/')[0] === 'image'
+                      ) {
+                        updateUseStateInputImage(
+                          e.target.files as FileList,
+                          setPetImg,
+                        )
+                      }
+                    }}
+                  />
+                </>
+              )}
           <EditModePetInfoContainer>
             <EditContainer>
               <EditInfoLabel htmlFor="name">名字: </EditInfoLabel>
@@ -458,13 +462,14 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                   setAddPetInfo({
                     ...addPetInfo,
                     name: e.target.value,
-                  });
+                  })
                   if (
-                    profile.ownPets.some((pet) => pet.name === e.target.value)
+                    profile.ownPets.some(pet => pet.name === e.target.value)
                   ) {
-                    setInvalidName(true);
-                  } else {
-                    setInvalidName(false);
+                    setInvalidName(true)
+                  }
+                  else {
+                    setInvalidName(false)
                   }
                 }}
               />
@@ -479,7 +484,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                   setAddPetInfo({
                     ...addPetInfo,
                     kind: e.target.value,
-                  });
+                  })
                 }}
               />
             </EditContainer>
@@ -492,32 +497,35 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                 max={new Date().getFullYear()}
                 onKeyDown={(e) => {
                   if (
-                    e.key === "." ||
-                    e.key === "e" ||
-                    e.key === "+" ||
-                    e.key === "-"
+                    e.key === '.'
+                    || e.key === 'e'
+                    || e.key === '+'
+                    || e.key === '-'
                   ) {
-                    e.preventDefault();
+                    e.preventDefault()
                   }
                 }}
                 onChange={(e) => {
                   setAddPetInfo({
                     ...addPetInfo,
                     birthYear: Number(e.target.value),
-                  });
+                  })
                   if (
-                    Number(e.target.value) > new Date().getFullYear() ||
-                    Number(e.target.value) < 1911
+                    Number(e.target.value) > new Date().getFullYear()
+                    || Number(e.target.value) < 1911
                   ) {
-                    setInvalidBirthYear(true);
-                  } else {
-                    setInvalidBirthYear(false);
+                    setInvalidBirthYear(true)
+                  }
+                  else {
+                    setInvalidBirthYear(false)
                   }
                 }}
               />
               {invalidBirthYear && (
                 <WarningText>
-                  請輸入1911~{new Date().getFullYear()}的數字
+                  請輸入1911~
+                  {new Date().getFullYear()}
+                  的數字
                 </WarningText>
               )}
             </EditContainer>
@@ -525,17 +533,17 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               <EditInfoLabel htmlFor="sex">性別: </EditInfoLabel>
               <PetDetailSexBtn
                 onClick={() => {
-                  setAddPetInfo({ ...addPetInfo, sex: "F" });
+                  setAddPetInfo({ ...addPetInfo, sex: 'F' })
                 }}
-                $isActive={addPetInfo.sex === "F"}
+                $isActive={addPetInfo.sex === 'F'}
               >
                 女
               </PetDetailSexBtn>
               <PetDetailSexBtn
                 onClick={() => {
-                  setAddPetInfo({ ...addPetInfo, sex: "M" });
+                  setAddPetInfo({ ...addPetInfo, sex: 'M' })
                 }}
-                $isActive={addPetInfo.sex === "M"}
+                $isActive={addPetInfo.sex === 'M'}
               >
                 男
               </PetDetailSexBtn>
@@ -547,149 +555,151 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
           <AddPetBtn
             onClick={async () => {
               if (
-                Object.values(addPetInfo).some((info) => !info) ||
-                Object.values(petImg).some((info) => !info)
+                Object.values(addPetInfo).some(info => !info)
+                || Object.values(petImg).some(info => !info)
               ) {
-                props.setIncompleteInfo(true);
-                return;
+                props.setIncompleteInfo(true)
+                return
               }
               if (invalidBirthYear || invalidName) {
-                props.setIncompleteInfo(false);
-                return;
+                props.setIncompleteInfo(false)
+                return
               }
-              props.setIncompleteInfo(false);
-              setAddPet(false);
+              props.setIncompleteInfo(false)
+              setAddPet(false)
               addDataWithUploadImage(
                 `pets/${profile.uid}-${addPetInfo.name}`,
                 petImg.file as File,
-                addDocOwnPets
-              );
-              const addNewPet = profile.ownPets;
-              addNewPet.push({ ...addPetInfo, img: petImg.url });
-              dispatch(setOwnPets(addNewPet));
-              notifyDispatcher("新增寵物成功！");
-              setPetImg({ file: "", url: "" });
+                addDocOwnPets,
+              )
+              const addNewPet = profile.ownPets
+              addNewPet.push({ ...addPetInfo, img: petImg.url })
+              dispatch(setOwnPets(addNewPet))
+              notifyDispatcher('新增寵物成功！')
+              setPetImg({ file: '', url: '' })
             }}
           >
             上傳寵物資料
           </AddPetBtn>
           <AddPetCancelBtn
             onClick={() => {
-              props.setIncompleteInfo(false);
-              setAddPet(false);
+              props.setIncompleteInfo(false)
+              setAddPet(false)
             }}
           >
             取消
           </AddPetCancelBtn>
         </EditModeContainer>
       </PetDetailCard>
-    );
+    )
   }
 
   async function updateOwnPetInfo() {
-    const storageRef = ref(storage, `pets/${profile.uid}-${petNewInfo.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, petNewImg.file as File);
+    const storageRef = ref(storage, `pets/${profile.uid}-${petNewInfo.name}`)
+    const uploadTask = uploadBytesResumable(storageRef, petNewImg.file as File)
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       (snapshot) => {
-        console.log("upload");
+        console.log('upload')
       },
       (error) => {
-        console.log(error);
+        console.log(error)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          await updatePetInfo(downloadURL);
-        });
-      }
-    );
+          await updatePetInfo(downloadURL)
+        })
+      },
+    )
   }
 
   async function updatePetInfo(imgURL: string) {
     const q = query(
       collection(db, `/memberProfiles/${profile.uid}/ownPets`),
-      where("name", "==", profile.ownPets[ownPetIndex].name)
-    );
-    const querySnapshot = await getDocs(q);
-    const promises: Promise<void>[] = [];
+      where('name', '==', profile.ownPets[ownPetIndex].name),
+    )
+    const querySnapshot = await getDocs(q)
+    const promises: Promise<void>[] = []
     querySnapshot.forEach(async (d) => {
       const petProfileRef = doc(
         db,
         `/memberProfiles/${profile.uid}/ownPets`,
-        d.id
-      );
+        d.id,
+      )
       if (imgURL) {
         promises.push(
           updateDoc(petProfileRef, {
             name: petNewInfo.name,
             birthYear: petNewInfo.birthYear,
             img: imgURL,
-          })
-        );
-      } else {
+          }),
+        )
+      }
+      else {
         promises.push(
           updateDoc(petProfileRef, {
             name: petNewInfo.name,
             birthYear: petNewInfo.birthYear,
-          })
-        );
+          }),
+        )
       }
-    });
-    await Promise.all(promises);
+    })
+    await Promise.all(promises)
   }
 
   async function updatePetInfoCondition() {
     if (!petNewInfo.name || !petNewImg.url) {
-      props.setIncompleteInfo(true);
-      return;
+      props.setIncompleteInfo(true)
+      return
     }
     if (
-      petNewInfo.name === profile.ownPets[ownPetIndex].name &&
-      petNewInfo.birthYear === profile.ownPets[ownPetIndex].birthYear &&
-      petNewImg.url === profile.ownPets[ownPetIndex].img
+      petNewInfo.name === profile.ownPets[ownPetIndex].name
+      && petNewInfo.birthYear === profile.ownPets[ownPetIndex].birthYear
+      && petNewImg.url === profile.ownPets[ownPetIndex].img
     ) {
-      return;
+      return
     }
-    props.setIncompleteInfo(false);
+    props.setIncompleteInfo(false)
     if (petNewImg.url !== profile.ownPets[ownPetIndex].img) {
-      await updateOwnPetInfo();
+      await updateOwnPetInfo()
       await updateFirebaseDataMutipleWhere(
         `/petDiaries`,
-        "authorUid",
+        'authorUid',
         profile.uid,
-        "petName",
+        'petName',
         profile.ownPets[ownPetIndex].name,
-        "",
-        { petName: petNewInfo.name }
-      );
-      setOwnPetEdit(false);
-      const updateOwnPet = profile.ownPets;
+        '',
+        { petName: petNewInfo.name },
+      )
+      setOwnPetEdit(false)
+      const updateOwnPet = profile.ownPets
       updateOwnPet[ownPetIndex] = {
         ...updateOwnPet[ownPetIndex],
         name: petNewInfo.name,
         birthYear: petNewInfo.birthYear,
         img: petNewImg.url,
-      };
-      notifyDispatcher("已更新寵物資訊");
-    } else {
-      await updatePetInfo("");
+      }
+      notifyDispatcher('已更新寵物資訊')
+    }
+    else {
+      await updatePetInfo('')
       await updateFirebaseDataMutipleWhere(
         `/petDiaries`,
-        "authorUid",
+        'authorUid',
         profile.uid,
-        "petName",
+        'petName',
         profile.ownPets[ownPetIndex].name,
-        "",
-        { petName: petNewInfo.name }
-      );
-      setOwnPetEdit(false);
-      const updateOwnPet = profile.ownPets;
+        '',
+        { petName: petNewInfo.name },
+      )
+      setOwnPetEdit(false)
+      const updateOwnPet = profile.ownPets
       updateOwnPet[ownPetIndex] = {
         ...updateOwnPet[ownPetIndex],
         name: petNewInfo.name,
         birthYear: petNewInfo.birthYear,
-      };
-      notifyDispatcher("已更新寵物資訊");
+      }
+      notifyDispatcher('已更新寵物資訊')
     }
   }
 
@@ -698,33 +708,35 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
       <PetDetailCard>
         <Title>編輯寵物資訊</Title>
         <EditModeContainer>
-          {petNewImg.url ? (
-            <ToPreviewImg
-              imgURL={petNewImg.url}
-              emptyImg={setPetNewImg}
-              recOrSquare="square"
-            />
-          ) : (
-            <>
-              <TellUserUploadImg recOrSqu="squ" />
-              <ImageUploadInput
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (
-                    e.target.files &&
-                    e.target.files[0].type.split("/")[0] === "image"
-                  ) {
-                    updateUseStateInputImage(
-                      e.target.files as FileList,
-                      setPetNewImg
-                    );
-                  }
-                }}
-              />
-            </>
-          )}
+          {petNewImg.url
+            ? (
+                <ToPreviewImg
+                  imgURL={petNewImg.url}
+                  emptyImg={setPetNewImg}
+                  recOrSquare="square"
+                />
+              )
+            : (
+                <>
+                  <TellUserUploadImg recOrSqu="squ" />
+                  <ImageUploadInput
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (
+                        e.target.files
+                        && e.target.files[0].type.split('/')[0] === 'image'
+                      ) {
+                        updateUseStateInputImage(
+                          e.target.files as FileList,
+                          setPetNewImg,
+                        )
+                      }
+                    }}
+                  />
+                </>
+              )}
           <EditModeUserInfoContainer>
             <EditContainer>
               <EditInfoLabel>名字: </EditInfoLabel>
@@ -734,13 +746,14 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                   setPetNewInfo({
                     ...petNewInfo,
                     name: e.target.value,
-                  });
+                  })
                   if (
-                    profile.ownPets.some((pet) => pet.name === e.target.value)
+                    profile.ownPets.some(pet => pet.name === e.target.value)
                   ) {
-                    setInvalidName(true);
-                  } else {
-                    setInvalidName(false);
+                    setInvalidName(true)
+                  }
+                  else {
+                    setInvalidName(false)
                   }
                 }}
               />
@@ -756,40 +769,47 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
                 value={petNewInfo.birthYear}
                 onKeyDown={(e) => {
                   if (
-                    e.key === "." ||
-                    e.key === "e" ||
-                    e.key === "+" ||
-                    e.key === "-"
+                    e.key === '.'
+                    || e.key === 'e'
+                    || e.key === '+'
+                    || e.key === '-'
                   ) {
-                    e.preventDefault();
+                    e.preventDefault()
                   }
                 }}
                 onChange={(e) => {
                   setPetNewInfo({
                     ...petNewInfo,
                     birthYear: Number(e.target.value),
-                  });
+                  })
                   if (
-                    Number(e.target.value) > new Date().getFullYear() ||
-                    Number(e.target.value) < 1911
+                    Number(e.target.value) > new Date().getFullYear()
+                    || Number(e.target.value) < 1911
                   ) {
-                    setInvalidBirthYear(true);
-                  } else {
-                    setInvalidBirthYear(false);
+                    setInvalidBirthYear(true)
+                  }
+                  else {
+                    setInvalidBirthYear(false)
                   }
                 }}
               />
               {invalidBirthYear && (
                 <WarningText>
-                  請輸入1911~{new Date().getFullYear()}的數字
+                  請輸入1911~
+                  {new Date().getFullYear()}
+                  的數字
                 </WarningText>
               )}
             </EditContainer>
             <PetSingleName>
-              種類: {profile.ownPets[ownPetIndex].kind}
+              種類:
+              {' '}
+              {profile.ownPets[ownPetIndex].kind}
             </PetSingleName>
             <PetSingleName>
-              性別: {profile.ownPets[ownPetIndex].sex === "M" ? "公" : "母"}
+              性別:
+              {' '}
+              {profile.ownPets[ownPetIndex].sex === 'M' ? '公' : '母'}
             </PetSingleName>
 
             {props.incompleteInfo && (
@@ -798,16 +818,16 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
           </EditModeUserInfoContainer>
           <CancelUpdateBtn
             onClick={() => {
-              setOwnPetEdit(false);
+              setOwnPetEdit(false)
               setPetNewImg({
                 ...petNewImg,
                 url: profile.ownPets[ownPetIndex].img,
-              });
+              })
               setPetNewInfo({
                 name: profile.ownPets[ownPetIndex].name,
                 birthYear: profile.ownPets[ownPetIndex].birthYear,
-              });
-              props.setIncompleteInfo(false);
+              })
+              props.setIncompleteInfo(false)
             }}
           >
             取消
@@ -815,17 +835,17 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
           <UpdateBtn
             onClick={async () => {
               if (invalidBirthYear) {
-                props.setIncompleteInfo(false);
-                return;
+                props.setIncompleteInfo(false)
+                return
               }
-              updatePetInfoCondition();
+              updatePetInfoCondition()
             }}
           >
             更新寵物資料
           </UpdateBtn>
         </EditModeContainer>
       </PetDetailCard>
-    );
+    )
   }
 
   function renderDetailPetSingleInfo() {
@@ -838,43 +858,59 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               <PetSingleImage src={petNewImg.url} alt="pet" />
               <PetSingleDetailTextContainer>
                 <PetSingleName>
-                  姓名: {petNewInfo.name} (
-                  {profile.ownPets[ownPetIndex].sex === "F" ? "♀" : "♂"})
+                  姓名:
+                  {' '}
+                  {petNewInfo.name}
+                  {' '}
+                  (
+                  {profile.ownPets[ownPetIndex].sex === 'F' ? '♀' : '♂'}
+                  )
                 </PetSingleName>
                 <PetSingleName>
-                  出生年: {petNewInfo.birthYear} 年 (
-                  {new Date().getFullYear() - petNewInfo.birthYear}y)
+                  出生年:
+                  {' '}
+                  {petNewInfo.birthYear}
+                  {' '}
+                  年 (
+                  {new Date().getFullYear() - petNewInfo.birthYear}
+                  y)
                 </PetSingleName>
                 <PetSingleName>
-                  種類: {profile.ownPets[ownPetIndex].kind}
+                  種類:
+                  {' '}
+                  {profile.ownPets[ownPetIndex].kind}
                 </PetSingleName>
-                {profile.ownPets[ownPetIndex].shelterName === "false" ? (
-                  ""
-                ) : (
-                  <PetSingleName>
-                    從{profile.ownPets[ownPetIndex].shelterName}領養
-                  </PetSingleName>
-                )}
+                {profile.ownPets[ownPetIndex].shelterName === 'false'
+                  ? (
+                      ''
+                    )
+                  : (
+                      <PetSingleName>
+                        從
+                        {profile.ownPets[ownPetIndex].shelterName}
+                        領養
+                      </PetSingleName>
+                    )}
               </PetSingleDetailTextContainer>
             </PetSingleContainer>
 
             <CloseDetailBtn
               onClick={() => {
-                setOwnPetDetail(false);
+                setOwnPetDetail(false)
               }}
             >
               關閉
             </CloseDetailBtn>
             <DeleteBtn
               onClick={async () => {
-                setOpenDeleteBox(true);
+                setOpenDeleteBox(true)
               }}
             >
               刪除
             </DeleteBtn>
             <EditBtn
               onClick={() => {
-                setOwnPetEdit(true);
+                setOwnPetEdit(true)
               }}
             >
               編輯
@@ -883,36 +919,40 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
               <DeleteCheckBox>
                 <DeleteCheckText>確定要刪除嗎？</DeleteCheckText>
                 <DeleteCheckText>
-                  將會連同 {profile.ownPets[ownPetIndex].name} 的日記一起刪除
+                  將會連同
+                  {' '}
+                  {profile.ownPets[ownPetIndex].name}
+                  {' '}
+                  的日記一起刪除
                 </DeleteCheckText>
                 <DeleteCheckBoxBtnContainer>
                   <WarningDeleteBtn
                     onClick={async () => {
                       await deleteFirebaseDataMutipleWhere(
                         `/petDiaries`,
-                        "petName",
+                        'petName',
                         profile.ownPets[ownPetIndex].name,
-                        "authorUid",
-                        profile.uid
-                      );
+                        'authorUid',
+                        profile.uid,
+                      )
                       await deleteFirebaseData(
                         `/memberProfiles/${profile.uid}/ownPets`,
-                        "name",
-                        profile.ownPets[ownPetIndex].name
-                      );
-                      const newOwnPets = profile.ownPets;
-                      newOwnPets.splice(ownPetIndex, 1);
-                      dispatch(setOwnPets(newOwnPets));
-                      setOpenDeleteBox(false);
-                      setOwnPetDetail(false);
-                      notifyDispatcher("已刪除寵物資訊");
+                        'name',
+                        profile.ownPets[ownPetIndex].name,
+                      )
+                      const newOwnPets = profile.ownPets
+                      newOwnPets.splice(ownPetIndex, 1)
+                      dispatch(setOwnPets(newOwnPets))
+                      setOpenDeleteBox(false)
+                      setOwnPetDetail(false)
+                      notifyDispatcher('已刪除寵物資訊')
                     }}
                   >
                     確定
                   </WarningDeleteBtn>
                   <DeleteCheckBoxBtn
                     onClick={() => {
-                      setOpenDeleteBox(false);
+                      setOpenDeleteBox(false)
                     }}
                   >
                     取消
@@ -923,7 +963,7 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
           </PetDeatilContainer>
         )}
       </>
-    );
+    )
   }
 
   function renderSimpleSinglePetCard() {
@@ -931,44 +971,49 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
       <InfoContainer>
         <PetTitle>寵物資料</PetTitle>
         <PetInfo>
-          {profile.ownPets.length !== 0 ? (
-            profile.ownPets.map((pet, index) => (
-              <PetSimpleCard
-                key={index}
-                onClick={() => {
-                  setOwnPetDetail(true);
-                  setAddPet(false);
-                  setOwnPetIndex(index);
-                  setPetNewImg({
-                    ...petNewImg,
-                    url: profile.ownPets[index].img,
-                  });
-                  setPetNewInfo({
-                    name: profile.ownPets[index].name,
-                    birthYear: profile.ownPets[index].birthYear,
-                  });
-                }}
-              >
-                <PetSimpleImage src={pet.img} alt="pet" />
-                <PetSimpleInfos>
-                  <PetSimpleNameSex>
-                    <PetSimpleName>{pet.name}</PetSimpleName>
-                    <PetSimpleInfo>{pet.sex === "M" ? "♂" : "♀"}</PetSimpleInfo>
-                  </PetSimpleNameSex>
-                  <PetSimpleInfo>{`${2022 - pet.birthYear}`}Y</PetSimpleInfo>
-                </PetSimpleInfos>
-              </PetSimpleCard>
-            ))
-          ) : (
-            <NowNoInfoInHere>
-              <NowNoInfoImg src={noPetNow.src} alt="now-no-pet" />
-              <NowNoInfoText>\ 目前沒有寵物 點擊右上角可以新增 /</NowNoInfoText>
-            </NowNoInfoInHere>
-          )}
+          {profile.ownPets.length !== 0
+            ? (
+                profile.ownPets.map((pet, index) => (
+                  <PetSimpleCard
+                    key={index}
+                    onClick={() => {
+                      setOwnPetDetail(true)
+                      setAddPet(false)
+                      setOwnPetIndex(index)
+                      setPetNewImg({
+                        ...petNewImg,
+                        url: profile.ownPets[index].img,
+                      })
+                      setPetNewInfo({
+                        name: profile.ownPets[index].name,
+                        birthYear: profile.ownPets[index].birthYear,
+                      })
+                    }}
+                  >
+                    <PetSimpleImage src={pet.img} alt="pet" />
+                    <PetSimpleInfos>
+                      <PetSimpleNameSex>
+                        <PetSimpleName>{pet.name}</PetSimpleName>
+                        <PetSimpleInfo>{pet.sex === 'M' ? '♂' : '♀'}</PetSimpleInfo>
+                      </PetSimpleNameSex>
+                      <PetSimpleInfo>
+                        {`${2022 - pet.birthYear}`}
+                        Y
+                      </PetSimpleInfo>
+                    </PetSimpleInfos>
+                  </PetSimpleCard>
+                ))
+              )
+            : (
+                <NowNoInfoInHere>
+                  <NowNoInfoImg src={noPetNow.src} alt="now-no-pet" />
+                  <NowNoInfoText>\ 目前沒有寵物 點擊右上角可以新增 /</NowNoInfoText>
+                </NowNoInfoInHere>
+              )}
         </PetInfo>
         <AddBtnSimple onClick={() => setAddPet(true)}>新增寵物 +</AddBtnSimple>
       </InfoContainer>
-    );
+    )
   }
 
   return (
@@ -976,12 +1021,12 @@ const UserOwnPetInfos: React.FC<UserOwnPetInfosType> = (props) => {
       {addPet
         ? renderAddUserOwnPetInfo()
         : ownPetDetail && ownPetEdit
-        ? renderEditUserOwnPetInfo()
-        : ownPetDetail && !ownPetEdit
-        ? renderDetailPetSingleInfo()
-        : renderSimpleSinglePetCard()}
+          ? renderEditUserOwnPetInfo()
+          : ownPetDetail && !ownPetEdit
+            ? renderDetailPetSingleInfo()
+            : renderSimpleSinglePetCard()}
     </>
-  );
-};
+  )
+}
 
-export default UserOwnPetInfos;
+export default UserOwnPetInfos

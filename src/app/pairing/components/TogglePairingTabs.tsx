@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction } from "react";
-import styled from "styled-components";
+import type { Dispatch, SetStateAction } from 'react'
+import React from 'react'
+import styled from 'styled-components'
 
 const TogglePairingTab = styled.div<{ $isActive: boolean }>`
   position: fixed;
@@ -12,8 +13,8 @@ const TogglePairingTab = styled.div<{ $isActive: boolean }>`
   border-radius: 8px;
   overflow: hidden;
   transition: 0.3s;
-  height: ${(props) => (props.$isActive ? "auto" : "0")};
-`;
+  height: ${props => (props.$isActive ? 'auto' : '0')};
+`
 
 const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
@@ -24,8 +25,8 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   cursor: pointer;
   font-size: 18px;
   transition: 0.3s;
-  background-color: ${(props) => (props.$isActive ? "#FFE5E5" : "#fff")};
-  opacity: ${(props) => (props.$isActive ? "1" : "0.9")};
+  background-color: ${props => (props.$isActive ? '#FFE5E5' : '#fff')};
+  opacity: ${props => (props.$isActive ? '1' : '0.9')};
   &:hover {
     background-color: #ffe5e5;
     opacity: 1;
@@ -36,7 +37,7 @@ const PairingTabContainer = styled.div<{ $isActive: boolean }>`
   @media (max-width: 574px) {
     padding: 5px;
   }
-`;
+`
 
 const PairingTab = styled.div`
   letter-spacing: 1.5px;
@@ -47,7 +48,7 @@ const PairingTab = styled.div`
     letter-spacing: 1px;
     margin-left: 10px;
   }
-`;
+`
 
 const AlertMatchQty = styled.div`
   width: 30px;
@@ -63,21 +64,21 @@ const AlertMatchQty = styled.div`
   top: 50%;
   transform: translateY(-50%);
   letter-spacing: 1px;
-`;
+`
 
-export type TogglePairingTabsProps = {
-  tab: string;
-  setTab: (value: string) => void;
-  getListsData: () => void;
-  setConsiderDetail: (value: Boolean) => void;
-  getUpcomingListData: () => void;
-  matchSuccessQty: number;
-  setMatchSuccessQty: Dispatch<SetStateAction<number>>;
-  setOpenDatingFeatureMenu: Dispatch<SetStateAction<boolean>>;
-  openDatingFeatureMenu: boolean;
-  setDatingArr: Dispatch<SetStateAction<number[]>>;
-  datingArr: number[];
-};
+export interface TogglePairingTabsProps {
+  tab: string
+  setTab: (value: string) => void
+  getListsData: () => void
+  setConsiderDetail: (value: boolean) => void
+  getUpcomingListData: () => void
+  matchSuccessQty: number
+  setMatchSuccessQty: Dispatch<SetStateAction<number>>
+  setOpenDatingFeatureMenu: Dispatch<SetStateAction<boolean>>
+  openDatingFeatureMenu: boolean
+  setDatingArr: Dispatch<SetStateAction<number[]>>
+  datingArr: number[]
+}
 
 const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
   return (
@@ -86,40 +87,46 @@ const TogglePairingTabs: React.FC<TogglePairingTabsProps> = (props) => {
       $isActive={props.openDatingFeatureMenu === true}
     >
       <PairingTabContainer
-        onClick={() => props.setTab("pairing")}
-        $isActive={props.tab === "pairing"}
+        onClick={() => props.setTab('pairing')}
+        $isActive={props.tab === 'pairing'}
       >
         <PairingTab>配對系統</PairingTab>
       </PairingTabContainer>
       <PairingTabContainer
         onClick={() => {
-          props.setTab("considerAdopt");
-          props.getListsData();
-          props.setConsiderDetail(false);
-          props.setMatchSuccessQty(0);
+          props.setTab('considerAdopt')
+          props.getListsData()
+          props.setConsiderDetail(false)
+          props.setMatchSuccessQty(0)
         }}
-        $isActive={props.tab === "considerAdopt"}
+        $isActive={props.tab === 'considerAdopt'}
       >
         {props.matchSuccessQty > 0 && (
-          <AlertMatchQty>+{props.matchSuccessQty}</AlertMatchQty>
+          <AlertMatchQty>
+            +
+            {props.matchSuccessQty}
+          </AlertMatchQty>
         )}
         <PairingTab>考慮領養清單</PairingTab>
       </PairingTabContainer>
       <PairingTabContainer
         onClick={() => {
-          props.setTab("upcomingDate");
-          props.getUpcomingListData();
-          props.setDatingArr([]);
+          props.setTab('upcomingDate')
+          props.getUpcomingListData()
+          props.setDatingArr([])
         }}
-        $isActive={props.tab === "upcomingDate"}
+        $isActive={props.tab === 'upcomingDate'}
       >
         {props.datingArr.length > 0 && (
-          <AlertMatchQty>+{props.datingArr.length}</AlertMatchQty>
+          <AlertMatchQty>
+            +
+            {props.datingArr.length}
+          </AlertMatchQty>
         )}
         <PairingTab>即將到來的約會</PairingTab>
       </PairingTabContainer>
     </TogglePairingTab>
-  );
-};
+  )
+}
 
-export default TogglePairingTabs;
+export default TogglePairingTabs
